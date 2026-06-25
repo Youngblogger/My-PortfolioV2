@@ -147,7 +147,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] as const }}
-          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.9] tracking-tight mt-6"
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.95] sm:leading-[0.9] tracking-tight mt-6 text-balance"
         >
           <span className="block">BUILDING AFRICA&apos;S</span>
           <span className="block text-gradient">NEXT GENERATION</span>
@@ -160,10 +160,6 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
           className="mt-8 text-xl md:text-2xl text-muted max-w-2xl mx-auto leading-relaxed"
         >
-          <span className="text-gold font-semibold">Learn.</span>{" "}
-          <span className="text-gold font-semibold">Build.</span>{" "}
-          <span className="text-gold font-semibold">Launch.</span>
-          <br />
           Master modern software development, build real-world products, and work
           with industry professionals.
         </motion.p>
@@ -176,19 +172,19 @@ export default function Hero() {
         >
           <a
             href="#learn"
-            className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold transition-all duration-300"
+            className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
           >
             Join Academy
           </a>
           <a
             href="#build"
-            className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 transition-all duration-300"
+            className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
           >
-            Explore Projects
+            View Projects
           </a>
           <a
             href="#hire"
-            className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 transition-all duration-300"
+            className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
           >
             Hire Us
           </a>
@@ -198,16 +194,39 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] as const }}
-          className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 max-w-3xl mx-auto"
+          className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-xl mx-auto"
         >
           {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
+            <div
+              key={stat.label}
+              className="text-center rounded-xl border border-white/[0.04] bg-white/[0.02] py-5 px-3"
+            >
               <div className="text-2xl md:text-3xl font-bold text-gold">
                 {stat.value}
               </div>
-              <div className="text-sm text-muted mt-1">{stat.label}</div>
+              <div className="text-xs md:text-sm text-muted mt-1">{stat.label}</div>
             </div>
           ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] as const }}
+          className="mt-10 flex items-center justify-center gap-6 text-sm text-muted"
+        >
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+            Project-based learning
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+            Live mentorship
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+            Career support
+          </span>
         </motion.div>
       </div>
       <motion.div

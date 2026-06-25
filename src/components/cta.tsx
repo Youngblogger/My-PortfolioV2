@@ -37,7 +37,7 @@ export default function CTA() {
             <br />
             <span className="text-gradient">The Future?</span>
           </h2>
-          <p className="text-xl text-muted mt-6 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-muted mt-6 max-w-2xl mx-auto leading-relaxed">
             Join CODEMAFIA Academy, explore real-world projects, or partner with
             us to build your next product.
           </p>
@@ -52,7 +52,7 @@ export default function CTA() {
         >
           <a
             href="#learn"
-            className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold transition-all duration-300"
+            className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
           >
             Start Learning
           </a>

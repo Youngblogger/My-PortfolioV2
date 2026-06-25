@@ -107,10 +107,10 @@ export default function Community() {
         >
           <a
             href="#"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold hover:shadow-gold transition-all duration-300"
+            className="group inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
           >
             Join Community Free
-            <span>→</span>
+            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
           </a>
         </motion.div>
       </div>

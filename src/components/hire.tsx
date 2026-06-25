@@ -108,17 +108,19 @@ export default function Hire() {
               <p className="text-sm text-muted leading-relaxed mb-5">
                 {service.description}
               </p>
-              <ul className="space-y-2">
-                {service.features.map((feature) => (
-                  <li
-                    key={feature}
-                    className="flex items-center gap-2 text-xs text-muted"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-gold flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+              <div className="border-t border-white/[0.04] pt-4">
+                <ul className="space-y-2.5">
+                  {service.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-center gap-2.5 text-xs text-muted"
+                    >
+                      <span className="w-1 h-1 rounded-full bg-gold flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </motion.div>
           ))}
         </motion.div>
@@ -135,14 +137,13 @@ export default function Hire() {
               Ready to start your project?
             </h3>
             <p className="text-muted mb-6">
-              Book a free discovery call and let&apos;s discuss how we can bring
-              your vision to life.
+              Tell us about your project and let&apos;s build something great together.
             </p>
             <a
               href="#"
-              className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold hover:shadow-gold transition-all duration-300"
+              className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
             >
-              Book A Discovery Call
+              Start Your Project
             </a>
           </div>
         </motion.div>

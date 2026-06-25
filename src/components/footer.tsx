@@ -66,7 +66,7 @@ export default function Footer() {
                 <a
                   key={social}
                   href="#"
-                  className="w-9 h-9 rounded-lg glass flex items-center justify-center text-xs text-muted hover:text-gold hover:border-gold/30 transition-all duration-300"
+                  className="w-9 h-9 rounded-lg glass flex items-center justify-center text-xs text-muted hover:text-gold hover:border-gold/30 hover:shadow-[0_0_15px_rgba(212,175,55,0.06)] transition-all duration-300"
                   aria-label={social}
                 >
                   {social[0]}

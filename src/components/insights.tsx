@@ -142,10 +142,10 @@ export default function Insights() {
         >
           <a
             href="#"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 transition-all duration-300"
+            className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-white/10 text-white font-medium hover:bg-white/5 hover:scale-[1.02] transition-all duration-300"
           >
             View All Articles
-            <span>→</span>
+            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
           </a>
         </motion.div>
       </div>

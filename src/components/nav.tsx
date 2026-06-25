@@ -15,9 +15,20 @@ const navLinks = [
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+      const sections = navLinks.map((l) => l.href.slice(1));
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && el.getBoundingClientRect().top <= 200) {
+          setActiveSection(sections[i]);
+          break;
+        }
+      }
+    };
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -26,12 +37,12 @@ export default function Nav() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-background/80 backdrop-blur-xl border-b border-white/5"
+          ? "bg-background/85 backdrop-blur-2xl border-b border-white/5 shadow-[0_1px_0_0_rgba(255,255,255,0.03)]"
           : "bg-transparent"
       }`}
     >
       <nav className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2 group">
+        <a href="#" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 rounded-lg bg-gold-gradient flex items-center justify-center">
             <span className="text-background font-bold text-sm">C</span>
           </div>
@@ -40,22 +51,38 @@ export default function Nav() {
           </span>
         </a>
 
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
+        <div className="hidden md:flex items-center gap-1">
+          {navLinks.map((link) => {
+            const isActive = activeSection === link.href.slice(1);
+            return (
+              <a
+                key={link.href}
+                href={link.href}
+                className={`relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg ${
+                  isActive
+                    ? "text-white"
+                    : "text-muted hover:text-white"
+                }`}
+              >
+                {link.label}
+                {isActive && (
+                  <motion.span
+                    layoutId="nav-active"
+                    className="absolute inset-0 bg-white/5 rounded-lg -z-0"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </a>
+            );
+          })}
+          <div className="ml-4 pl-4 border-l border-white/5">
             <a
-              key={link.href}
-              href={link.href}
-              className="text-sm text-muted hover:text-white transition-colors duration-300 tracking-wide"
+              href="#cta"
+              className="px-5 py-2.5 rounded-lg bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
             >
-              {link.label}
+              Enroll Now
             </a>
-          ))}
-          <a
-            href="#cta"
-            className="px-5 py-2.5 rounded-lg bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold transition-all duration-300"
-          >
-            Get Started
-          </a>
+          </div>
         </div>
 
         <button
@@ -86,29 +113,32 @@ export default function Nav() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background/95 backdrop-blur-xl border-b border-white/5 overflow-hidden"
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="md:hidden bg-background/95 backdrop-blur-2xl border-b border-white/5 overflow-hidden"
           >
-            <div className="px-6 py-6 flex flex-col gap-4">
+            <div className="px-6 py-6 flex flex-col gap-1">
               {navLinks.map((link, i) => (
                 <motion.a
                   key={link.href}
                   href={link.href}
-                  initial={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ delay: i * 0.04 }}
                   onClick={() => setMobileOpen(false)}
-                  className="text-muted hover:text-white transition-colors py-2"
+                  className="text-muted hover:text-white transition-colors px-4 py-3 rounded-lg hover:bg-white/[0.03]"
                 >
                   {link.label}
                 </motion.a>
               ))}
-              <a
-                href="#cta"
-                onClick={() => setMobileOpen(false)}
-                className="mt-2 px-5 py-3 rounded-lg bg-gold-gradient text-background font-semibold text-sm text-center"
-              >
-                Get Started
-              </a>
+              <div className="mt-3 pt-3 border-t border-white/5">
+                <a
+                  href="#cta"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-5 py-3 rounded-lg bg-gold-gradient text-background font-semibold text-sm text-center"
+                >
+                  Enroll Now
+                </a>
+              </div>
             </div>
           </motion.div>
         )}

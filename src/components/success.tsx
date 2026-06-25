@@ -70,7 +70,7 @@ export default function Success() {
                 onClick={() => setActive(i)}
                 className={`w-full text-left p-4 rounded-xl transition-all duration-300 ${
                   active === i
-                    ? "glass gold-border"
+                    ? "glass gold-border shadow-[0_0_20px_rgba(212,175,55,0.04)]"
                     : "hover:bg-white/[0.02]"
                 }`}
               >

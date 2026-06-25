@@ -127,13 +127,13 @@ export default function Learn() {
                   </span>
                 </div>
                 <div className="mt-6 pt-6 border-t border-white/5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted">Course Progress</span>
-                    <span className="text-xs text-gold">85%</span>
-                  </div>
-                  <div className="mt-2 h-1 rounded-full bg-white/5 overflow-hidden">
-                    <div className="h-full w-[85%] rounded-full bg-gold-gradient" />
-                  </div>
+                  <a
+                    href="#"
+                    className="text-sm text-gold hover:text-white transition-colors duration-300 flex items-center gap-1 group"
+                  >
+                    View Course Details
+                    <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+                  </a>
                 </div>
               </div>
             </motion.div>

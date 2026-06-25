@@ -122,54 +122,55 @@ export default function Build() {
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <div>
-                    <h4 className="text-xs font-semibold text-gold uppercase tracking-wider mb-1.5">
+                    <h4 className="text-xs font-semibold text-gold uppercase tracking-wider mb-2">
                       The Challenge
                     </h4>
                     <p className="text-sm text-muted leading-relaxed">
                       {study.challenge}
                     </p>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-semibold text-gold uppercase tracking-wider mb-1.5">
+                  <div className="border-t border-white/[0.03] pt-5">
+                    <h4 className="text-xs font-semibold text-gold uppercase tracking-wider mb-2">
                       Our Solution
                     </h4>
                     <p className="text-sm text-muted leading-relaxed">
                       {study.solution}
                     </p>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-semibold text-gold uppercase tracking-wider mb-2">
+                  <div className="border-t border-white/[0.03] pt-5">
+                    <h4 className="text-xs font-semibold text-gold uppercase tracking-wider mb-2.5">
                       Technologies
                     </h4>
                     <div className="flex flex-wrap gap-2">
                       {study.tech.map((t) => (
                         <span
                           key={t}
-                          className="px-2.5 py-1 rounded-md bg-white/5 border border-white/5 text-xs text-muted"
+                          className="px-3 py-1 rounded-md bg-white/[0.03] border border-white/[0.06] text-xs text-muted"
                         >
                           {t}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <div className="pt-4 border-t border-white/5">
-                    <h4 className="text-xs font-semibold text-gold uppercase tracking-wider mb-1.5">
+                  <div className="border-t border-white/[0.03] pt-5">
+                    <h4 className="text-xs font-semibold text-gold uppercase tracking-wider mb-2">
                       Results
                     </h4>
-                    <p className="text-sm text-white/80 font-medium">
+                    <p className="text-sm text-white/80 font-medium leading-relaxed">
                       {study.results}
                     </p>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between">
+                <div className="mt-6 pt-5 border-t border-white/5 flex items-center justify-between">
                   <a
                     href="#"
-                    className="text-sm text-gold hover:text-gold-secondary transition-colors flex items-center gap-1.5"
+                    className="text-sm text-gold hover:text-white transition-colors flex items-center gap-1.5 group"
                   >
-                    View Case Study →
+                    <span>View Case Study</span>
+                    <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
                   </a>
                   <a
                     href="#"
