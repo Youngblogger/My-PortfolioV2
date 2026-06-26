@@ -50,13 +50,8 @@ export default function Footer() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-16 md:py-20">
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-10">
           <div className="lg:col-span-1">
-            <a href="#" className="flex items-center gap-2 group mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gold-gradient flex items-center justify-center">
-                <span className="text-background font-bold text-sm">C</span>
-              </div>
-              <span className="text-white font-bold text-xl tracking-tight">
-                CODEMAFIA
-              </span>
+            <a href="/" className="flex items-center gap-2 group mb-4">
+              <img src="/Codemafia.png" alt="CODEMAFIA" className="h-28 w-auto sm:h-32 md:h-40" />
             </a>
             <p className="text-sm text-muted leading-relaxed mb-6">
               Building Africa&apos;s next generation of software engineers through

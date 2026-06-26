@@ -4,137 +4,43 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
-const categories = [
-  { value: "business-website", label: "Business Website" },
-  { value: "e-commerce", label: "E-commerce Website" },
-  { value: "saas", label: "SaaS Platform" },
-  { value: "lms", label: "Educational / LMS Platform" },
-  { value: "marketplace", label: "Marketplace Website" },
-  { value: "portfolio", label: "Portfolio Website" },
-  { value: "blog", label: "Blog / News Website" },
-  { value: "mobile", label: "Mobile App System" },
-  { value: "custom", label: "Custom Web Application" },
-];
-
-const subOptions: Record<string, { value: string; label: string }[]> = {
-  "business-website": [
-    { value: "corporate", label: "Corporate Website" },
-    { value: "company-profile", label: "Company Profile Website" },
-    { value: "startup", label: "Startup Website" },
-    { value: "landing-page", label: "Landing Page Website" },
-    { value: "personal-brand", label: "Personal Brand Website" },
-  ],
-  "e-commerce": [
-    { value: "single-vendor", label: "Single Vendor Store" },
-    { value: "multi-vendor", label: "Multi-vendor Marketplace" },
-    { value: "dropshipping", label: "Dropshipping Store" },
-    { value: "digital-products", label: "Digital Products Store" },
-    { value: "product-showcase", label: "Product Showcase Website" },
-  ],
-  saas: [
-    { value: "subscription-saas", label: "Subscription SaaS" },
-    { value: "ai-saas", label: "AI SaaS Tool" },
-    { value: "crm", label: "CRM System" },
-    { value: "dashboard", label: "Dashboard Platform" },
-    { value: "automation", label: "Automation Tool" },
-  ],
-  lms: [
-    { value: "online-course", label: "Online Course Platform" },
-    { value: "coaching", label: "Coaching Website" },
-    { value: "school-management", label: "School Management System" },
-    { value: "elearning", label: "E-learning Academy" },
-    { value: "membership-learning", label: "Membership Learning Platform" },
-  ],
-  marketplace: [
-    { value: "service-marketplace", label: "Service Marketplace" },
-    { value: "job-marketplace", label: "Job Marketplace" },
-    { value: "rental-marketplace", label: "Rental Marketplace" },
-    { value: "product-marketplace", label: "Product Marketplace" },
-    { value: "freelance", label: "Freelance Platform" },
-  ],
-  portfolio: [
-    { value: "dev-portfolio", label: "Developer Portfolio" },
-    { value: "designer-portfolio", label: "Designer Portfolio" },
-    { value: "freelancer-portfolio", label: "Freelancer Portfolio" },
-    { value: "personal-cv", label: "Personal CV Website" },
-  ],
-  blog: [
-    { value: "personal-blog", label: "Personal Blog" },
-    { value: "tech-blog", label: "Tech Blog" },
-    { value: "news-platform", label: "News Platform" },
-    { value: "magazine", label: "Magazine Website" },
-  ],
-  mobile: [
-    { value: "app-backend", label: "App Backend System" },
-    { value: "api-dev", label: "API Development" },
-    { value: "mobile-backend", label: "Mobile Backend Integration" },
-    { value: "full-app", label: "Full App + Web Admin Panel" },
-  ],
-  custom: [
-    { value: "ai-app", label: "AI Application" },
-    { value: "fintech", label: "Fintech System" },
-    { value: "admin-dashboard", label: "Admin Dashboard System" },
-    { value: "custom-automation", label: "Custom Automation Tool" },
-    { value: "enterprise", label: "Enterprise Solution" },
-  ],
+const serviceStructure: Record<string, { label: string; options: string[] }> = {
+  "business-website": { label: "Business Website", options: ["Corporate Website", "Company Profile Website", "Startup Website", "Landing Page Website", "Personal Brand Website"] },
+  "ecommerce-store": { label: "E-commerce Store", options: ["Single Vendor Store", "Multi-vendor Marketplace", "Dropshipping Store", "Digital Products Store", "Product Catalog Website"] },
+  "saas-platform": { label: "SaaS Platform", options: ["Subscription SaaS", "AI SaaS Tool", "CRM System", "Admin Dashboard System", "Automation Tool"] },
+  "educational-website": { label: "Educational Website", options: ["Online Learning Platform (LMS)", "School Website", "Coaching / Mentorship Platform", "Course Marketplace", "Exam / Quiz Platform", "Membership Learning System"] },
+  "marketplace-platform": { label: "Marketplace Platform", options: ["Service Marketplace", "Freelance Marketplace", "Job Marketplace", "Rental Marketplace", "Product Marketplace"] },
+  "portfolio-website": { label: "Portfolio Website", options: ["Developer Portfolio", "Designer Portfolio", "Freelancer Portfolio", "Personal CV Website"] },
+  "blog-news": { label: "Blog / News Website", options: ["Personal Blog", "Tech Blog", "News Platform", "Online Magazine", "Content Publishing Platform"] },
+  "mobile-app-system": { label: "Mobile App System", options: ["App Backend System", "API Development", "Mobile Backend Integration", "Full App + Web Admin Panel"] },
+  "custom-web-app": { label: "Custom Web Application", options: ["AI Application", "Fintech System", "Admin Dashboard System", "Custom Automation Tool", "Enterprise Solution"] },
+  "booking-system": { label: "Booking System", options: ["Appointment Booking System", "Hotel Booking System", "Restaurant Reservation System", "Event Booking Platform"] },
+  "social-platform": { label: "Social Platform", options: ["Community Platform", "Social Network Website", "Forum Platform", "Messaging Platform"] },
+  "real-estate": { label: "Real Estate Website", options: ["Property Listing Website", "Rental Marketplace", "Real Estate Agency Website"] },
+  "restaurant-food": { label: "Restaurant / Food Website", options: ["Restaurant Website", "Online Food Ordering System", "Menu Showcase Website"] },
+  "nonprofit-ngo": { label: "NGO / Non-Profit Website", options: ["Charity Website", "Church Website", "Donation Platform", "Community Outreach Website"] },
+  "landing-page": { label: "Landing Page", options: ["Product Landing Page", "Marketing Funnel Page", "Event Landing Page", "Sales Page"] },
+  "erp-system": { label: "ERP / Business System", options: ["Business Management System", "Inventory System", "HR Management System", "Finance Management System"] },
+  "ai-system": { label: "AI System", options: ["AI Chatbot System", "AI Content Generator", "AI Automation System", "AI SaaS Product"] },
+  "gaming-entertainment": { label: "Entertainment Website", options: ["Streaming Platform", "Video Platform", "Music Platform", "Gaming Platform"] },
 };
 
-const subServiceLabel: Record<string, string> = {
-  corporate: "Corporate Website",
-  "company-profile": "Company Profile Website",
-  startup: "Startup Website",
-  "landing-page": "Landing Page Website",
-  "personal-brand": "Personal Brand Website",
-  "single-vendor": "Single Vendor Store",
-  "multi-vendor": "Multi-vendor Marketplace",
-  dropshipping: "Dropshipping Store",
-  "digital-products": "Digital Products Store",
-  "product-showcase": "Product Showcase Website",
-  "subscription-saas": "Subscription SaaS",
-  "ai-saas": "AI SaaS Tool",
-  crm: "CRM System",
-  dashboard: "Dashboard Platform",
-  automation: "Automation Tool",
-  "online-course": "Online Course Platform",
-  coaching: "Coaching Website",
-  "school-management": "School Management System",
-  elearning: "E-learning Academy",
-  "membership-learning": "Membership Learning Platform",
-  "service-marketplace": "Service Marketplace",
-  "job-marketplace": "Job Marketplace",
-  "rental-marketplace": "Rental Marketplace",
-  "product-marketplace": "Product Marketplace",
-  freelance: "Freelance Platform",
-  "dev-portfolio": "Developer Portfolio",
-  "designer-portfolio": "Designer Portfolio",
-  "freelancer-portfolio": "Freelancer Portfolio",
-  "personal-cv": "Personal CV Website",
-  "personal-blog": "Personal Blog",
-  "tech-blog": "Tech Blog",
-  "news-platform": "News Platform",
-  magazine: "Magazine Website",
-  "app-backend": "App Backend System",
-  "api-dev": "API Development",
-  "mobile-backend": "Mobile Backend Integration",
-  "full-app": "Full App + Web Admin Panel",
-  "ai-app": "AI Application",
-  fintech: "Fintech System",
-  "admin-dashboard": "Admin Dashboard System",
-  "custom-automation": "Custom Automation Tool",
-  enterprise: "Enterprise Solution",
-};
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-const categoryLabel: Record<string, string> = {
-  "business-website": "Business Website",
-  "e-commerce": "E-commerce Website",
-  saas: "SaaS Platform",
-  lms: "Educational / LMS Platform",
-  marketplace: "Marketplace Website",
-  portfolio: "Portfolio Website",
-  blog: "Blog / News Website",
-  mobile: "Mobile App System",
-  custom: "Custom Web Application",
-};
+const categories = Object.entries(serviceStructure).map(([value, cat]) => ({ value, label: cat.label }));
+
+const subOptions: Record<string, { value: string; label: string }[]> = {};
+const subServiceLabel: Record<string, string> = {};
+const categoryLabel: Record<string, string> = {};
+
+for (const [catValue, cat] of Object.entries(serviceStructure)) {
+  categoryLabel[catValue] = cat.label;
+  subOptions[catValue] = cat.options.map((opt) => {
+    const val = slugify(opt);
+    subServiceLabel[val] = opt;
+    return { value: val, label: opt };
+  });
+}
 
 const staggerContainer = {
   hidden: { opacity: 0 },

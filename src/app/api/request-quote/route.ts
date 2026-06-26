@@ -4,63 +4,38 @@ import nodemailer from "nodemailer";
 const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "uthmanabdulwahab2019@gmail.com";
 const FROM_EMAIL = process.env.FROM_EMAIL || "admin@codemafia.ng";
 
-const categoryLabel: Record<string, string> = {
-  "business-website": "Business Website",
-  "e-commerce": "E-commerce Website",
-  saas: "SaaS Platform",
-  lms: "Educational / LMS Platform",
-  marketplace: "Marketplace Website",
-  portfolio: "Portfolio Website",
-  blog: "Blog / News Website",
-  mobile: "Mobile App System",
-  custom: "Custom Web Application",
-  "not-sure": "Not sure — recommend for me",
+const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+const serviceStructure: Record<string, { label: string; options: string[] }> = {
+  "business-website": { label: "Business Website", options: ["Corporate Website", "Company Profile Website", "Startup Website", "Landing Page Website", "Personal Brand Website"] },
+  "ecommerce-store": { label: "E-commerce Store", options: ["Single Vendor Store", "Multi-vendor Marketplace", "Dropshipping Store", "Digital Products Store", "Product Catalog Website"] },
+  "saas-platform": { label: "SaaS Platform", options: ["Subscription SaaS", "AI SaaS Tool", "CRM System", "Admin Dashboard System", "Automation Tool"] },
+  "educational-website": { label: "Educational Website", options: ["Online Learning Platform (LMS)", "School Website", "Coaching / Mentorship Platform", "Course Marketplace", "Exam / Quiz Platform", "Membership Learning System"] },
+  "marketplace-platform": { label: "Marketplace Platform", options: ["Service Marketplace", "Freelance Marketplace", "Job Marketplace", "Rental Marketplace", "Product Marketplace"] },
+  "portfolio-website": { label: "Portfolio Website", options: ["Developer Portfolio", "Designer Portfolio", "Freelancer Portfolio", "Personal CV Website"] },
+  "blog-news": { label: "Blog / News Website", options: ["Personal Blog", "Tech Blog", "News Platform", "Online Magazine", "Content Publishing Platform"] },
+  "mobile-app-system": { label: "Mobile App System", options: ["App Backend System", "API Development", "Mobile Backend Integration", "Full App + Web Admin Panel"] },
+  "custom-web-app": { label: "Custom Web Application", options: ["AI Application", "Fintech System", "Admin Dashboard System", "Custom Automation Tool", "Enterprise Solution"] },
+  "booking-system": { label: "Booking System", options: ["Appointment Booking System", "Hotel Booking System", "Restaurant Reservation System", "Event Booking Platform"] },
+  "social-platform": { label: "Social Platform", options: ["Community Platform", "Social Network Website", "Forum Platform", "Messaging Platform"] },
+  "real-estate": { label: "Real Estate Website", options: ["Property Listing Website", "Rental Marketplace", "Real Estate Agency Website"] },
+  "restaurant-food": { label: "Restaurant / Food Website", options: ["Restaurant Website", "Online Food Ordering System", "Menu Showcase Website"] },
+  "nonprofit-ngo": { label: "NGO / Non-Profit Website", options: ["Charity Website", "Church Website", "Donation Platform", "Community Outreach Website"] },
+  "landing-page": { label: "Landing Page", options: ["Product Landing Page", "Marketing Funnel Page", "Event Landing Page", "Sales Page"] },
+  "erp-system": { label: "ERP / Business System", options: ["Business Management System", "Inventory System", "HR Management System", "Finance Management System"] },
+  "ai-system": { label: "AI System", options: ["AI Chatbot System", "AI Content Generator", "AI Automation System", "AI SaaS Product"] },
+  "gaming-entertainment": { label: "Entertainment Website", options: ["Streaming Platform", "Video Platform", "Music Platform", "Gaming Platform"] },
 };
 
-const subServiceLabel: Record<string, string> = {
-  corporate: "Corporate Website",
-  "company-profile": "Company Profile Website",
-  startup: "Startup Website",
-  "landing-page": "Landing Page Website",
-  "personal-brand": "Personal Brand Website",
-  "single-vendor": "Single Vendor Store",
-  "multi-vendor": "Multi-vendor Marketplace",
-  dropshipping: "Dropshipping Store",
-  "digital-products": "Digital Products Store",
-  "product-showcase": "Product Showcase Website",
-  "subscription-saas": "Subscription SaaS",
-  "ai-saas": "AI SaaS Tool",
-  crm: "CRM System",
-  dashboard: "Dashboard Platform",
-  automation: "Automation Tool",
-  "online-course": "Online Course Platform",
-  coaching: "Coaching Website",
-  "school-management": "School Management System",
-  elearning: "E-learning Academy",
-  "membership-learning": "Membership Learning Platform",
-  "service-marketplace": "Service Marketplace",
-  "job-marketplace": "Job Marketplace",
-  "rental-marketplace": "Rental Marketplace",
-  "product-marketplace": "Product Marketplace",
-  freelance: "Freelance Platform",
-  "dev-portfolio": "Developer Portfolio",
-  "designer-portfolio": "Designer Portfolio",
-  "freelancer-portfolio": "Freelancer Portfolio",
-  "personal-cv": "Personal CV Website",
-  "personal-blog": "Personal Blog",
-  "tech-blog": "Tech Blog",
-  "news-platform": "News Platform",
-  magazine: "Magazine Website",
-  "app-backend": "App Backend System",
-  "api-dev": "API Development",
-  "mobile-backend": "Mobile Backend Integration",
-  "full-app": "Full App + Web Admin Panel",
-  "ai-app": "AI Application",
-  fintech: "Fintech System",
-  "admin-dashboard": "Admin Dashboard System",
-  "custom-automation": "Custom Automation Tool",
-  enterprise: "Enterprise Solution",
-};
+const categoryLabel: Record<string, string> = {};
+const subServiceLabel: Record<string, string> = {};
+for (const [catValue, cat] of Object.entries(serviceStructure)) {
+  categoryLabel[catValue] = cat.label;
+  for (const opt of cat.options) {
+    subServiceLabel[slugify(opt)] = opt;
+  }
+}
+categoryLabel["not-sure"] = "Not sure — recommend for me";
 
 export async function POST(req: NextRequest) {
   try {

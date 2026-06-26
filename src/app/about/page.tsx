@@ -244,9 +244,9 @@ export default function AboutPage() {
             viewport={{ once: true, margin: "-100px" }}
             className="grid md:grid-cols-3 gap-5 max-w-4xl mx-auto"
           >
-            {team.map((member) => (
+            {team.map((member, idx) => (
               <motion.div
-                key={member.name}
+                key={member.name + idx}
                 variants={cardVariants}
                 className="group relative rounded-2xl glass glass-hover overflow-hidden p-6 md:p-8 text-center"
               >

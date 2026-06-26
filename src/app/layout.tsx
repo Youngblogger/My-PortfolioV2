@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "software development",
   ],
   icons: {
-    icon: "/favicon.svg",
+    icon: "/Codemafia.png",
   },
   openGraph: {
     title: "CODEMAFIA | Software Engineering Academy",
@@ -46,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable}`}>
+    <html lang="en" className={`${inter.variable}`} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-background font-sans antialiased">
         <Nav />
         <main>{children}</main>
