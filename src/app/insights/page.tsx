@@ -42,12 +42,12 @@ export default function InsightsPage() {
 
   return (
     <>
-      <PageHeader
-        label="INSIGHTS"
-        title="Thoughts, Tutorials &"
-        highlight="Industry Knowledge"
-        description="Deep dives into software engineering, AI, career growth, and building technology products."
-      />
+        <PageHeader
+          label="BLOG"
+          title="Thoughts, Tutorials &"
+          highlight="Industry Knowledge"
+          description="Deep dives into software engineering, AI, career growth, and building technology products."
+        />
 
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent pointer-events-none" />
@@ -90,7 +90,7 @@ export default function InsightsPage() {
                   layout
                   className="group relative rounded-2xl glass glass-hover overflow-hidden"
                 >
-                  <Link href="#" className="block">
+                  <Link href={`/insights/${post.slug}`} className="block">
                     <div className={`absolute inset-0 bg-gradient-to-br ${post.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                     <div className="relative p-6 md:p-8">
                       <span className="inline-block text-xs font-semibold uppercase tracking-wider text-gold mb-3">

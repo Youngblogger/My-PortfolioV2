@@ -5,12 +5,11 @@ import Link from "next/link";
 import PageHeader from "@/components/pages/PageHeader";
 
 const services = [
-  { id: "e-commerce", title: "E-Commerce Website", description: "Online store system with product catalog, cart, checkout, payment integration, admin dashboard, and inventory management.", icon: "🛒", price: "₦350,000 – ₦3,000,000", gradient: "from-blue-500/10 to-cyan-500/10" },
-  { id: "lms", title: "LMS / Education Platform", description: "Learning management system with student dashboard, course system, video lessons, progress tracking, and certificates.", icon: "🎓", price: "₦400,000 – ₦3,500,000", gradient: "from-green-500/10 to-emerald-500/10" },
-  { id: "business-website", title: "Business Website", description: "Corporate website with landing page, service pages, contact system, CMS, and SEO optimization.", icon: "🏢", price: "₦250,000 – ₦800,000", gradient: "from-purple-500/10 to-violet-500/10" },
-  { id: "entertainment", title: "Entertainment Platform", description: "Media/streaming system with video/audio streaming, user profiles, content categories, and admin upload.", icon: "🎬", price: "₦500,000 – ₦4,000,000", gradient: "from-orange-500/10 to-amber-500/10" },
-  { id: "saas", title: "SaaS Platform", description: "Custom SaaS product with authentication, dashboard UI, API architecture, subscription system, and RBAC.", icon: "☁️", price: "Custom (₦3,000,000+)", gradient: "from-pink-500/10 to-rose-500/10" },
-  { id: "mvp", title: "Startup MVP Build", description: "MVP architecture, core feature development, rapid prototyping, and deployment setup for your startup idea.", icon: "🚀", price: "₦500,000 – ₦2,500,000", gradient: "from-yellow-500/10 to-orange-500/10" },
+  { id: "web-development", title: "Web Development", description: "Custom websites and web applications — from personal portfolios to complex portals and enterprise platforms.", icon: "🌐", price: "Starting ₦250,000", gradient: "from-blue-500/10 to-cyan-500/10" },
+  { id: "saas-development", title: "SaaS Development", description: "Scalable SaaS platforms, CRM systems, ERP solutions, subscription platforms, and internal business tools.", icon: "☁️", price: "Custom Quote", gradient: "from-purple-500/10 to-violet-500/10" },
+  { id: "mobile-apps", title: "Mobile App Development", description: "Native and cross-platform mobile applications for iOS and Android — from business apps to marketplace platforms.", icon: "📱", price: "Starting ₦500,000", gradient: "from-green-500/10 to-emerald-500/10" },
+  { id: "ui-ux-design", title: "UI/UX Design", description: "User-centered design — wireframes, prototypes, design systems, and user research for web and mobile products.", icon: "🎨", price: "Starting ₦150,000", gradient: "from-orange-500/10 to-amber-500/10" },
+  { id: "technical-consulting", title: "Technical Consulting", description: "Architecture reviews, code audits, scaling strategies, and technical roadmaps for your engineering team.", icon: "🔧", price: "Custom Quote", gradient: "from-pink-500/10 to-rose-500/10" },
 ];
 
 const containerVariants = {
@@ -33,12 +32,12 @@ const cardVariants = {
 export default function HirePage() {
   return (
     <>
-      <PageHeader
-        label="HIRE US"
-        title="Build Your Next Product"
-        highlight="With Us"
-        description="From concept to launch — we partner with startups and enterprises to build world-class digital products."
-      />
+        <PageHeader
+          label="SERVICES"
+          title="Build Your Next Product"
+          highlight="With Us"
+          description="From concept to launch — we partner with startups and enterprises to build world-class digital products."
+        />
 
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
@@ -117,7 +116,7 @@ export default function HirePage() {
               href="/hire/request-quote"
               className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
             >
-              Request a Custom Quote
+              Request Custom Quote
             </Link>
           </motion.div>
         </div>

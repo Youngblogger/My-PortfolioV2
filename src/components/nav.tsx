@@ -7,11 +7,11 @@ import { usePathname } from "next/navigation";
 
 const navLinks = [
   { label: "Academy", href: "/academy" },
-  { label: "Hire", href: "/hire" },
   { label: "Projects", href: "/projects" },
-  { label: "Insights", href: "/insights" },
-  { label: "Community", href: "/community" },
+  { label: "Services", href: "/hire" },
+  { label: "Blog", href: "/insights" },
   { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Nav() {
@@ -85,9 +85,15 @@ export default function Nav() {
               </Link>
             );
           })}
-          <div className="ml-4 pl-4 border-l border-white/5">
+          <div className="ml-4 pl-4 border-l border-white/5 flex items-center gap-3">
             <Link
-              href={isHome ? "#cta" : "/academy"}
+              href="/hire/request-quote"
+              className="px-5 py-2.5 rounded-lg border border-white/10 text-white font-semibold text-sm hover:bg-white/5 hover:border-white/20 transition-all duration-300"
+            >
+              Book Consultation
+            </Link>
+            <Link
+              href="/academy"
               className="px-5 py-2.5 rounded-lg bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
             >
               Enroll Now
@@ -140,13 +146,20 @@ export default function Nav() {
                   {link.label}
                 </motion.a>
               ))}
-              <div className="mt-3 pt-3 border-t border-white/5">
+              <div className="mt-3 pt-3 border-t border-white/5 flex flex-col gap-2">
                 <a
-                  href={isHome ? "#cta" : "/academy"}
+                  href="/academy"
                   onClick={() => setMobileOpen(false)}
                   className="block px-5 py-3 rounded-lg bg-gold-gradient text-background font-semibold text-sm text-center"
                 >
                   Enroll Now
+                </a>
+                <a
+                  href="/hire/request-quote"
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-5 py-3 rounded-lg border border-white/10 text-white font-semibold text-sm text-center hover:bg-white/5"
+                >
+                  Book Consultation
                 </a>
               </div>
             </div>

@@ -2,41 +2,42 @@ const footerSections = [
   {
     title: "Academy",
     links: [
-      { label: "Frontend Engineering", href: "#" },
-      { label: "Backend Engineering", href: "#" },
-      { label: "Full-Stack Development", href: "#" },
-      { label: "Mobile Development", href: "#" },
-      { label: "AI Engineering", href: "#" },
+      { label: "Frontend Engineering", href: "/academy/frontend" },
+      { label: "Backend Engineering", href: "/academy/backend" },
+      { label: "Full-Stack Development", href: "/academy/fullstack" },
+      { label: "Mobile Development", href: "/academy/mobile" },
+      { label: "AI Engineering", href: "/academy/ai" },
     ],
   },
   {
     title: "Projects",
     links: [
-      { label: "Marketplace Platform", href: "#" },
-      { label: "Learning Management System", href: "#" },
-      { label: "Fintech Dashboard", href: "#" },
-      { label: "Restaurant Platform", href: "#" },
-      { label: "AI Applications", href: "#" },
+      { label: "Marketplace Platform", href: "/projects/marketplace-platform" },
+      { label: "Learning Management System", href: "/projects/lms-platform" },
+      { label: "Fintech Dashboard", href: "/projects/fintech-dashboard" },
+      { label: "Restaurant Platform", href: "/projects/restaurant-platform" },
+      { label: "AI Applications", href: "/projects/ai-content-platform" },
     ],
   },
   {
     title: "Services",
     links: [
-      { label: "Web Development", href: "#" },
-      { label: "SaaS Development", href: "#" },
-      { label: "Mobile Apps", href: "#" },
-      { label: "UI/UX Design", href: "#" },
-      { label: "Technical Consulting", href: "#" },
+      { label: "Web Development", href: "/hire/web-development" },
+      { label: "SaaS Development", href: "/hire/saas-development" },
+      { label: "Mobile Apps", href: "/hire/mobile-apps" },
+      { label: "UI/UX Design", href: "/hire/ui-ux-design" },
+      { label: "Technical Consulting", href: "/hire/technical-consulting" },
+      { label: "Pricing", href: "/pricing" },
     ],
   },
   {
     title: "Connect",
     links: [
-      { label: "Blog", href: "#" },
-      { label: "Community", href: "#" },
-      { label: "About", href: "#" },
-      { label: "Contact", href: "#" },
-      { label: "Careers", href: "#" },
+      { label: "Blog", href: "/insights" },
+      { label: "Community", href: "/community" },
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+      { label: "Careers", href: "/careers" },
     ],
   },
 ];
@@ -62,16 +63,26 @@ export default function Footer() {
               world-class education and real-world project experience.
             </p>
             <div className="flex gap-3">
-              {["LinkedIn", "GitHub", "X", "YouTube"].map((social) => (
-                <a
-                  key={social}
-                  href="#"
-                  className="w-9 h-9 rounded-lg glass flex items-center justify-center text-xs text-muted hover:text-gold hover:border-gold/30 hover:shadow-[0_0_15px_rgba(212,175,55,0.06)] transition-all duration-300"
-                  aria-label={social}
-                >
-                  {social[0]}
-                </a>
-              ))}
+              {["LinkedIn", "GitHub", "X", "YouTube"].map((social) => {
+                const urls: Record<string, string> = {
+                  LinkedIn: "https://linkedin.com/company/codemafia",
+                  GitHub: "https://github.com/codemafia",
+                  X: "https://x.com/codemafia",
+                  YouTube: "https://youtube.com/@codemafia",
+                };
+                return (
+                  <a
+                    key={social}
+                    href={urls[social]}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-9 h-9 rounded-lg glass flex items-center justify-center text-xs text-muted hover:text-gold hover:border-gold/30 hover:shadow-[0_0_15px_rgba(212,175,55,0.06)] transition-all duration-300"
+                    aria-label={social}
+                  >
+                    {social[0]}
+                  </a>
+                );
+              })}
             </div>
           </div>
 
@@ -101,10 +112,10 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} CODEMAFIA. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs text-muted">
-            <a href="#" className="hover:text-white transition-colors">
+            <a href="/privacy" className="hover:text-white transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="hover:text-white transition-colors">
+            <a href="/terms" className="hover:text-white transition-colors">
               Terms of Service
             </a>
           </div>

@@ -315,6 +315,95 @@ export default function StackDetailPage() {
       </section>
 
       <section className="relative py-20 md:py-28 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent pointer-events-none" />
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+            className="text-center mb-16"
+          >
+            <span className="section-label">WHY CODEMAFIA</span>
+            <h2 className="section-heading mt-2">
+              Why Learn With <span className="text-gradient">Us</span>
+            </h2>
+          </motion.div>
+
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid md:grid-cols-3 gap-5"
+          >
+            {[
+              { icon: "👨‍🏫", title: "Industry Mentors", desc: "Learn from senior engineers who work at top companies and bring real-world experience to every lesson." },
+              { icon: "📋", title: "Structured Curriculum", desc: "A carefully designed path from fundamentals to production-ready skills. No more tutorial hell." },
+              { icon: "🚀", title: "Project-Based Learning", desc: "Build real projects throughout the course. Graduate with a portfolio that proves your skills." },
+              { icon: "👥", title: "Community Support", desc: "Join a community of passionate developers. Get help, share knowledge, and network with peers." },
+              { icon: "🎯", title: "Career Coaching", desc: "Resume review, interview prep, and job placement support to launch your career." },
+              { icon: "📜", title: "Industry Certification", desc: "Earn a recognized certificate upon completion that validates your expertise to employers." },
+            ].map((benefit) => (
+              <motion.div
+                key={benefit.title}
+                variants={fadeUp}
+                className="glass rounded-2xl p-6 md:p-8 text-center"
+              >
+                <div className="text-3xl mb-4">{benefit.icon}</div>
+                <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
+                <p className="text-muted text-sm leading-relaxed">{benefit.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="relative py-20 md:py-28 overflow-hidden">
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+            className="mb-12 text-center"
+          >
+            <span className="section-label">FAQ</span>
+            <h2 className="section-heading mt-2">
+              Frequently Asked
+              <br />
+              <span className="text-gradient">Questions</span>
+            </h2>
+          </motion.div>
+
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="max-w-3xl mx-auto space-y-4"
+          >
+            {[
+              { q: "Do I need prior coding experience?", a: "No. Our programs are designed for all levels. We have beginner-friendly tracks and advanced paths for experienced developers." },
+              { q: "How long does the program take?", a: `The ${stack.title} program runs for ${stack.duration}. You can learn at your own pace with lifetime access to all materials.` },
+              { q: "What kind of support will I receive?", a: "You'll have access to mentors, teaching assistants, and a vibrant community. Standard and Pro plans include 1-on-1 mentorship sessions." },
+              { q: "Is there job placement assistance?", a: "Yes. Our Pro Mentorship plan includes resume review, interview preparation, and job placement assistance with our partner companies." },
+              { q: "Can I get a refund if I'm not satisfied?", a: "Absolutely. We offer a 14-day money-back guarantee on all plans. If you're not satisfied, we'll refund your payment in full." },
+            ].map((faq) => (
+              <motion.div
+                key={faq.q}
+                variants={fadeUp}
+                className="glass rounded-2xl p-6 md:p-8"
+              >
+                <h3 className="text-white font-semibold text-base mb-3">{faq.q}</h3>
+                <p className="text-muted text-sm leading-relaxed">{faq.a}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <motion.div
