@@ -62,7 +62,7 @@ export default function RequestQuotePage() {
       if (!res.ok) throw new Error("Failed to send");
       setSubmitted(true);
     } catch {
-      setError("Something went wrong. Please try again or email us directly at project@codemafia.ng.");
+      setError("Something went wrong. Please try again or email us directly at admin@codemafia.ng.");
     } finally {
       setSending(false);
     }
@@ -97,7 +97,7 @@ export default function RequestQuotePage() {
             </p>
             <div className="mt-10 space-y-3">
               <p className="text-sm text-muted">
-                📧 Confirmation sent to <span className="text-white">project@codemafia.ng</span>
+                📧 Confirmation sent to <span className="text-white">admin@codemafia.ng</span>
               </p>
               <p className="text-sm text-muted">
                 🎯 Service: <span className="text-white">{services.find((s) => s.value === form.service)?.label || "Custom"}</span>

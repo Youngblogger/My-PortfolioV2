@@ -137,7 +137,7 @@ export default function EnrollPage() {
             </p>
             <div className="mt-10 space-y-3">
               <p className="text-sm text-muted">
-                📧 Confirmation sent to <span className="text-white">enroll@codemafia.ng</span>
+                📧 Confirmation sent to <span className="text-white">admin@codemafia.ng</span>
               </p>
               <p className="text-sm text-muted">
                 🗓 Preferred start: <span className="text-white">{form.startDay && form.startMonth && form.startYear ? `${form.startDay}/${form.startMonth}/${form.startYear}` : "Not specified"}</span>

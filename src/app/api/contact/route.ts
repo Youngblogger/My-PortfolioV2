@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 
 const CONTACT_EMAIL = process.env.CONTACT_EMAIL || "uthmanabdulwahab2019@gmail.com";
-const FROM_EMAIL = process.env.FROM_EMAIL || "project@codemafia.ng";
+const FROM_EMAIL = process.env.FROM_EMAIL || "admin@codemafia.ng";
 
 export async function POST(req: NextRequest) {
   try {
