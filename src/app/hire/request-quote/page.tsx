@@ -1,17 +1,140 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
-const services = [
-  { value: "e-commerce", label: "E-Commerce Website" },
-  { value: "lms", label: "LMS / Education Platform" },
+const categories = [
   { value: "business-website", label: "Business Website" },
-  { value: "entertainment", label: "Entertainment Platform" },
+  { value: "e-commerce", label: "E-commerce Website" },
   { value: "saas", label: "SaaS Platform" },
-  { value: "mvp", label: "Startup MVP Build" },
+  { value: "lms", label: "Educational / LMS Platform" },
+  { value: "marketplace", label: "Marketplace Website" },
+  { value: "portfolio", label: "Portfolio Website" },
+  { value: "blog", label: "Blog / News Website" },
+  { value: "mobile", label: "Mobile App System" },
+  { value: "custom", label: "Custom Web Application" },
 ];
+
+const subOptions: Record<string, { value: string; label: string }[]> = {
+  "business-website": [
+    { value: "corporate", label: "Corporate Website" },
+    { value: "company-profile", label: "Company Profile Website" },
+    { value: "startup", label: "Startup Website" },
+    { value: "landing-page", label: "Landing Page Website" },
+    { value: "personal-brand", label: "Personal Brand Website" },
+  ],
+  "e-commerce": [
+    { value: "single-vendor", label: "Single Vendor Store" },
+    { value: "multi-vendor", label: "Multi-vendor Marketplace" },
+    { value: "dropshipping", label: "Dropshipping Store" },
+    { value: "digital-products", label: "Digital Products Store" },
+    { value: "product-showcase", label: "Product Showcase Website" },
+  ],
+  saas: [
+    { value: "subscription-saas", label: "Subscription SaaS" },
+    { value: "ai-saas", label: "AI SaaS Tool" },
+    { value: "crm", label: "CRM System" },
+    { value: "dashboard", label: "Dashboard Platform" },
+    { value: "automation", label: "Automation Tool" },
+  ],
+  lms: [
+    { value: "online-course", label: "Online Course Platform" },
+    { value: "coaching", label: "Coaching Website" },
+    { value: "school-management", label: "School Management System" },
+    { value: "elearning", label: "E-learning Academy" },
+    { value: "membership-learning", label: "Membership Learning Platform" },
+  ],
+  marketplace: [
+    { value: "service-marketplace", label: "Service Marketplace" },
+    { value: "job-marketplace", label: "Job Marketplace" },
+    { value: "rental-marketplace", label: "Rental Marketplace" },
+    { value: "product-marketplace", label: "Product Marketplace" },
+    { value: "freelance", label: "Freelance Platform" },
+  ],
+  portfolio: [
+    { value: "dev-portfolio", label: "Developer Portfolio" },
+    { value: "designer-portfolio", label: "Designer Portfolio" },
+    { value: "freelancer-portfolio", label: "Freelancer Portfolio" },
+    { value: "personal-cv", label: "Personal CV Website" },
+  ],
+  blog: [
+    { value: "personal-blog", label: "Personal Blog" },
+    { value: "tech-blog", label: "Tech Blog" },
+    { value: "news-platform", label: "News Platform" },
+    { value: "magazine", label: "Magazine Website" },
+  ],
+  mobile: [
+    { value: "app-backend", label: "App Backend System" },
+    { value: "api-dev", label: "API Development" },
+    { value: "mobile-backend", label: "Mobile Backend Integration" },
+    { value: "full-app", label: "Full App + Web Admin Panel" },
+  ],
+  custom: [
+    { value: "ai-app", label: "AI Application" },
+    { value: "fintech", label: "Fintech System" },
+    { value: "admin-dashboard", label: "Admin Dashboard System" },
+    { value: "custom-automation", label: "Custom Automation Tool" },
+    { value: "enterprise", label: "Enterprise Solution" },
+  ],
+};
+
+const subServiceLabel: Record<string, string> = {
+  corporate: "Corporate Website",
+  "company-profile": "Company Profile Website",
+  startup: "Startup Website",
+  "landing-page": "Landing Page Website",
+  "personal-brand": "Personal Brand Website",
+  "single-vendor": "Single Vendor Store",
+  "multi-vendor": "Multi-vendor Marketplace",
+  dropshipping: "Dropshipping Store",
+  "digital-products": "Digital Products Store",
+  "product-showcase": "Product Showcase Website",
+  "subscription-saas": "Subscription SaaS",
+  "ai-saas": "AI SaaS Tool",
+  crm: "CRM System",
+  dashboard: "Dashboard Platform",
+  automation: "Automation Tool",
+  "online-course": "Online Course Platform",
+  coaching: "Coaching Website",
+  "school-management": "School Management System",
+  elearning: "E-learning Academy",
+  "membership-learning": "Membership Learning Platform",
+  "service-marketplace": "Service Marketplace",
+  "job-marketplace": "Job Marketplace",
+  "rental-marketplace": "Rental Marketplace",
+  "product-marketplace": "Product Marketplace",
+  freelance: "Freelance Platform",
+  "dev-portfolio": "Developer Portfolio",
+  "designer-portfolio": "Designer Portfolio",
+  "freelancer-portfolio": "Freelancer Portfolio",
+  "personal-cv": "Personal CV Website",
+  "personal-blog": "Personal Blog",
+  "tech-blog": "Tech Blog",
+  "news-platform": "News Platform",
+  magazine: "Magazine Website",
+  "app-backend": "App Backend System",
+  "api-dev": "API Development",
+  "mobile-backend": "Mobile Backend Integration",
+  "full-app": "Full App + Web Admin Panel",
+  "ai-app": "AI Application",
+  fintech: "Fintech System",
+  "admin-dashboard": "Admin Dashboard System",
+  "custom-automation": "Custom Automation Tool",
+  enterprise: "Enterprise Solution",
+};
+
+const categoryLabel: Record<string, string> = {
+  "business-website": "Business Website",
+  "e-commerce": "E-commerce Website",
+  saas: "SaaS Platform",
+  lms: "Educational / LMS Platform",
+  marketplace: "Marketplace Website",
+  portfolio: "Portfolio Website",
+  blog: "Blog / News Website",
+  mobile: "Mobile App System",
+  custom: "Custom Web Application",
+};
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -32,22 +155,27 @@ const fadeUp = {
 
 export default function RequestQuotePage() {
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
     service: "",
+    subService: "",
     budget: "",
     project: "",
     timeline: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    if (name === "service") {
+      setForm((prev) => ({ ...prev, service: value, subService: "" }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
-
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,7 +228,7 @@ export default function RequestQuotePage() {
                 📧 Confirmation sent to <span className="text-white">admin@codemafia.ng</span>
               </p>
               <p className="text-sm text-muted">
-                🎯 Service: <span className="text-white">{services.find((s) => s.value === form.service)?.label || "Custom"}</span>
+                🎯 Service: <span className="text-white">{categoryLabel[form.service] || form.service}{form.subService ? ` — ${subServiceLabel[form.subService] || form.subService}` : ""}</span>
               </p>
             </div>
             <Link
@@ -206,12 +334,53 @@ export default function RequestQuotePage() {
               onChange={handleChange}
               className={inputClasses}
             >
-              <option value="" disabled className="bg-surface">Select a service</option>
-              {services.map((s) => (
+              <option value="" disabled className="bg-surface">Select a service category</option>
+              <option value="not-sure" className="bg-surface">⭐ Not sure — recommend for me</option>
+              {categories.map((s) => (
                 <option key={s.value} value={s.value} className="bg-surface">{s.label}</option>
               ))}
             </select>
           </motion.div>
+
+          <AnimatePresence mode="wait">
+            {form.service && form.service !== "not-sure" && subOptions[form.service] && (
+              <motion.div
+                key={form.service}
+                variants={fadeUp}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+              >
+                <label htmlFor="subService" className={labelClasses}>Project Type</label>
+                <select
+                  id="subService"
+                  name="subService"
+                  required
+                  value={form.subService}
+                  onChange={handleChange}
+                  className={inputClasses}
+                >
+                  <option value="" disabled className="bg-surface">Select project type</option>
+                  {subOptions[form.service].map((s) => (
+                    <option key={s.value} value={s.value} className="bg-surface">{s.label}</option>
+                  ))}
+                </select>
+              </motion.div>
+            )}
+            {form.service === "not-sure" && (
+              <motion.div
+                key="not-sure"
+                variants={fadeUp}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="glass rounded-xl p-5 border border-gold/20 bg-gold/[0.03]"
+              >
+                <p className="text-sm text-gold font-medium mb-1">No worries — we&apos;ve got you covered!</p>
+                <p className="text-xs text-muted">Tell us about your idea in the project details below, and we&apos;ll recommend the best solution for you.</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <motion.div variants={fadeUp}>
             <label htmlFor="budget" className={labelClasses}>Budget Range</label>
