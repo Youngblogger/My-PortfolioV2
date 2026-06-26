@@ -132,7 +132,7 @@ export default function ContactPage() {
 
                 <div className="glass rounded-2xl p-6">
                   <h3 className="text-sm font-semibold text-gold uppercase tracking-wider mb-2">Location</h3>
-                  <p className="text-white/80">Kwara State, Nigeria</p>
+                  <p className="text-white/80">Lagos, Nigeria</p>
                 </div>
 
                 <div className="glass rounded-2xl p-6">
