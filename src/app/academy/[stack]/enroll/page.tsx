@@ -98,7 +98,7 @@ export default function EnrollPage() {
 
   if (!stack) {
     return (
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
+      <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 overflow-hidden">
         <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
           <h1 className="section-heading">Stack Not Found</h1>
           <p className="section-subtitle mt-4 mx-auto">The program you&apos;re looking for doesn&apos;t exist.</p>
@@ -112,7 +112,7 @@ export default function EnrollPage() {
 
   if (submitted) {
     return (
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 min-h-screen overflow-hidden">
+      <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 min-h-screen overflow-hidden">
         <div className="absolute inset-0">
           <div
             className="absolute inset-0 opacity-20"
@@ -209,7 +209,7 @@ export default function EnrollPage() {
           </motion.div>
         </motion.div>
       )}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
+      <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 overflow-hidden">
         <div className="absolute inset-0">
           <div
             className="absolute inset-0 opacity-20"

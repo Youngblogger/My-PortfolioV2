@@ -11,7 +11,7 @@ interface PageHeaderProps {
 
 export default function PageHeader({ label, title, highlight, description }: PageHeaderProps) {
   return (
-    <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
+    <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 overflow-hidden">
       <div className="absolute inset-0">
         <div
           className="absolute inset-0 opacity-20"

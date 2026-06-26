@@ -31,7 +31,7 @@ const fadeUp = {
 export default function TechnicalConsultingPage() {
   return (
     <>
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
+      <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 opacity-20"
             style={{ background: "radial-gradient(circle at 50% 50%, rgba(212,175,55,0.08) 0%, transparent 50%)" }}

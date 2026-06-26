@@ -51,7 +51,7 @@ export default function Footer() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-10">
           <div className="lg:col-span-1">
             <a href="/" className="flex items-center gap-2 group mb-4">
-              <img src="/Codemafia.png" alt="CODEMAFIA" className="h-28 w-auto sm:h-32 md:h-40" />
+              <img src="/CodemafiaLogo.png" alt="CODEMAFIA" className="h-14 w-auto sm:h-16 md:h-20" />
             </a>
             <p className="text-sm text-muted leading-relaxed mb-6">
               Building Africa&apos;s next generation of software engineers through
