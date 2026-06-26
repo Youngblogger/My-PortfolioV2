@@ -39,7 +39,9 @@ export default function EnrollPage() {
     email: "",
     level: "",
     goals: "",
-    startDate: "",
+    startDay: "",
+    startMonth: "",
+    startYear: "",
     paymentPlan: "",
     cohort: "",
   });
@@ -48,9 +50,46 @@ export default function EnrollPage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const [showDateModal, setShowDateModal] = useState(false);
+  const [showRequiredModal, setShowRequiredModal] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+
+    if (!form.name || !form.email || !form.level || !form.goals || !form.startDay || !form.startMonth || !form.startYear || !form.paymentPlan || !form.cohort) {
+      setShowRequiredModal(true);
+      return;
+    }
+
+    setSending(true);
+    setError("");
+
+    const selected = new Date(`${form.startYear}-${form.startMonth}-${form.startDay}`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selected < today) {
+      setShowDateModal(true);
+      setSending(false);
+      return;
+    }
+
+    try {
+      const startDate = `${form.startYear}-${form.startMonth}-${form.startDay}`;
+      const res = await fetch("/api/enroll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, startDate, stack: stack?.title || stack?.id }),
+      });
+      if (!res.ok) throw new Error("Failed to send");
+      window.scrollTo(0, 0);
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again or email us directly.");
+    } finally {
+      setSending(false);
+    }
   };
 
   const inputClasses = "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-muted text-sm focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-all duration-300";
@@ -98,10 +137,10 @@ export default function EnrollPage() {
             </p>
             <div className="mt-10 space-y-3">
               <p className="text-sm text-muted">
-                📧 Confirmation sent to <span className="text-white">{form.email}</span>
+                📧 Confirmation sent to <span className="text-white">enroll@codemafia.ng</span>
               </p>
               <p className="text-sm text-muted">
-                🗓 Preferred start: <span className="text-white">{form.startDate || "Not specified"}</span>
+                🗓 Preferred start: <span className="text-white">{form.startDay && form.startMonth && form.startYear ? `${form.startDay}/${form.startMonth}/${form.startYear}` : "Not specified"}</span>
               </p>
             </div>
             <Link
@@ -117,12 +156,65 @@ export default function EnrollPage() {
   }
 
   return (
-    <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
-      <div className="absolute inset-0">
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{ background: "radial-gradient(circle at 50% 50%, rgba(212,175,55,0.08) 0%, transparent 50%)" }}
-        />
+    <>
+      {showRequiredModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-6"
+          onClick={() => setShowRequiredModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+            className="glass rounded-2xl p-8 max-w-sm w-full text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-4xl mb-4">⚠️</div>
+            <h3 className="text-xl font-bold text-white mb-2">All Fields Required</h3>
+            <p className="text-muted text-sm mb-6">Please fill in all fields including the payment plan before submitting.</p>
+            <button
+              onClick={() => setShowRequiredModal(false)}
+              className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all duration-300"
+            >
+              Got it
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+      {showDateModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-6"
+          onClick={() => setShowDateModal(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
+            className="glass rounded-2xl p-8 max-w-sm w-full text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-4xl mb-4">📅</div>
+            <h3 className="text-xl font-bold text-white mb-2">Invalid Date</h3>
+            <p className="text-muted text-sm mb-6">Please select a future date for your enrollment.</p>
+            <button
+              onClick={() => setShowDateModal(false)}
+              className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all duration-300"
+            >
+              Got it
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+      <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
+        <div className="absolute inset-0">
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{ background: "radial-gradient(circle at 50% 50%, rgba(212,175,55,0.08) 0%, transparent 50%)" }}
+          />
       </div>
 
       <div className="relative z-10 max-w-3xl mx-auto px-6">
@@ -216,16 +308,45 @@ export default function EnrollPage() {
           </motion.div>
 
           <motion.div variants={fadeUp}>
-            <label htmlFor="startDate" className={labelClasses}>Preferred Start Date</label>
-            <input
-              id="startDate"
-              name="startDate"
-              type="date"
-              required
-              value={form.startDate}
-              onChange={handleChange}
-              className={inputClasses}
-            />
+            <label className={labelClasses}>Preferred Start Date</label>
+            <div className="grid grid-cols-3 gap-3">
+              <select
+                name="startDay"
+                required
+                value={form.startDay}
+                onChange={handleChange}
+                className={inputClasses}
+              >
+                <option value="" disabled className="bg-surface">Day</option>
+                {Array.from({ length: 31 }, (_, i) => (
+                  <option key={i + 1} value={String(i + 1).padStart(2, "0")} className="bg-surface">{i + 1}</option>
+                ))}
+              </select>
+              <select
+                name="startMonth"
+                required
+                value={form.startMonth}
+                onChange={handleChange}
+                className={inputClasses}
+              >
+                <option value="" disabled className="bg-surface">Month</option>
+                {["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].map((m, i) => (
+                  <option key={m} value={String(i + 1).padStart(2, "0")} className="bg-surface">{m}</option>
+                ))}
+              </select>
+              <select
+                name="startYear"
+                required
+                value={form.startYear}
+                onChange={handleChange}
+                className={inputClasses}
+              >
+                <option value="" disabled className="bg-surface">Year</option>
+                {Array.from({ length: 3 }, (_, i) => (
+                  <option key={i} value={String(2026 + i)} className="bg-surface">{2026 + i}</option>
+                ))}
+              </select>
+            </div>
           </motion.div>
 
           <motion.div variants={fadeUp}>
@@ -287,6 +408,7 @@ export default function EnrollPage() {
           </motion.div>
         </motion.form>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

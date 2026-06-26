@@ -98,7 +98,13 @@ export default function HirePage() {
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               Don&apos;t See What
               <br />
-              <span className="text-gradient">You&apos;re Looking For?</span>
+              <motion.span
+                className="text-gradient inline-block"
+                animate={{ opacity: [1, 0.2, 1] }}
+                transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
+              >
+                You&apos;re Looking For?
+              </motion.span>
             </h2>
             <p className="text-lg md:text-xl text-muted mt-6 max-w-2xl mx-auto leading-relaxed">
               Every product is unique. Tell us about your vision and we&apos;ll craft a custom solution tailored to your needs.
@@ -112,12 +118,17 @@ export default function HirePage() {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
             className="mt-10"
           >
-            <Link
-              href="/hire/request-quote"
-              className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+            <motion.div
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
             >
-              Request Custom Quote
-            </Link>
+              <Link
+                href="/hire/request-quote"
+                className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+              >
+                Request Custom Quote
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>

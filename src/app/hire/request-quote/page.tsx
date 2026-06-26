@@ -47,20 +47,25 @@ export default function RequestQuotePage() {
   };
 
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
+    setError("");
     try {
-      await fetch("/api/request-quote", {
+      const res = await fetch("/api/request-quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+      if (!res.ok) throw new Error("Failed to send");
+      setSubmitted(true);
     } catch {
-      // silently fail — form still shows success
+      setError("Something went wrong. Please try again or email us directly at project@codemafia.ng.");
+    } finally {
+      setSending(false);
     }
-    setSubmitted(true);
   };
 
   const inputClasses = "w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-muted text-sm focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-all duration-300";
@@ -186,7 +191,7 @@ export default function RequestQuotePage() {
               required
               value={form.phone}
               onChange={handleChange}
-              placeholder="+234 800 000 0000"
+              placeholder="+234 813 371 2756"
               className={inputClasses}
             />
           </motion.div>
@@ -259,12 +264,18 @@ export default function RequestQuotePage() {
             </select>
           </motion.div>
 
+          {error && (
+            <motion.div variants={fadeUp} className="text-red-400 text-sm text-center">
+              {error}
+            </motion.div>
+          )}
           <motion.div variants={fadeUp} className="pt-4">
             <button
               type="submit"
-              className="w-full px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+              disabled={sending}
+              className="w-full px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Submit Quote Request
+              {sending ? "Submitting..." : "Submit Quote Request"}
             </button>
           </motion.div>
         </motion.form>
