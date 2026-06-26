@@ -2,25 +2,30 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
-  { label: "Learn", href: "#learn" },
-  { label: "Build", href: "#build" },
-  { label: "Hire", href: "#hire" },
-  { label: "Insights", href: "#insights" },
-  { label: "Community", href: "#community" },
-  { label: "About", href: "#founder" },
+  { label: "Academy", href: "/academy" },
+  { label: "Hire", href: "/hire" },
+  { label: "Projects", href: "/projects" },
+  { label: "Insights", href: "/insights" },
+  { label: "Community", href: "/community" },
+  { label: "About", href: "/about" },
 ];
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   useEffect(() => {
+    if (!isHome) return;
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      const sections = navLinks.map((l) => l.href.slice(1));
+      const sections = ["learn", "build", "hire", "insights", "community", "founder"];
       for (let i = sections.length - 1; i >= 0; i--) {
         const el = document.getElementById(sections[i]);
         if (el && el.getBoundingClientRect().top <= 200) {
@@ -29,6 +34,13 @@ export default function Nav() {
         }
       }
     };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHome]);
+
+  useEffect(() => {
+    setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -42,46 +54,44 @@ export default function Nav() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2.5 group">
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
           <div className="w-8 h-8 rounded-lg bg-gold-gradient flex items-center justify-center">
             <span className="text-background font-bold text-sm">C</span>
           </div>
           <span className="text-white font-bold text-xl tracking-tight">
             CODEMAFIA
           </span>
-        </a>
+        </Link>
 
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => {
-            const isActive = activeSection === link.href.slice(1);
+            const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
             return (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className={`relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg ${
-                  isActive
-                    ? "text-white"
-                    : "text-muted hover:text-white"
+                  isActive ? "text-white" : "text-muted hover:text-white"
                 }`}
               >
                 {link.label}
                 {isActive && (
                   <motion.span
                     layoutId="nav-active"
-                    className="absolute inset-0 bg-white/5 rounded-lg -z-0"
+                    className="absolute inset-0 bg-white/5 rounded-lg"
                     transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   />
                 )}
-              </a>
+              </Link>
             );
           })}
           <div className="ml-4 pl-4 border-l border-white/5">
-            <a
-              href="#cta"
+            <Link
+              href={isHome ? "#cta" : "/academy"}
               className="px-5 py-2.5 rounded-lg bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
             >
               Enroll Now
-            </a>
+            </Link>
           </div>
         </div>
 
@@ -132,7 +142,7 @@ export default function Nav() {
               ))}
               <div className="mt-3 pt-3 border-t border-white/5">
                 <a
-                  href="#cta"
+                  href={isHome ? "#cta" : "/academy"}
                   onClick={() => setMobileOpen(false)}
                   className="block px-5 py-3 rounded-lg bg-gold-gradient text-background font-semibold text-sm text-center"
                 >
