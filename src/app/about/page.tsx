@@ -21,9 +21,9 @@ const values = [
 ];
 
 const team = [
-  { name: "Uthman Abdulwahab", role: "Founder & CEO", bio: "Full-stack developer, software engineer, and educator. Building the next generation of African tech talent." },
-  { name: "Team Member", role: "Role", bio: "Coming soon — we're building our core team." },
-  { name: "Team Member", role: "Role", bio: "Coming soon — we're building our core team." },
+  { name: "Uthman Abdulwahab", role: "Founder & Full-Stack Engineer", bio: "Full-stack developer, software engineer, and educator passionate about building scalable digital products, empowering aspiring developers, and helping businesses transform ideas into impactful technology solutions." },
+  { name: "Areas of Expertise", role: "", bio: "Full-Stack Web Development • SaaS Platforms & Web Applications • Marketplace Systems • Mobile App Backends • UI/UX Implementation • Technical Consulting — delivering modern, scalable, and user-focused software solutions across multiple industries." },
+  { name: "Mission & Vision", role: "", bio: "To build high-quality digital products while helping develop the next generation of African software engineers through practical learning, real-world projects, and technology-driven innovation." },
 ];
 
 const containerVariants = {
@@ -230,10 +230,10 @@ export default function AboutPage() {
             className="text-center mb-16"
           >
             <h2 className="section-heading">
-              Meet The <span className="text-gradient">Team</span>
+              Meet The <span className="text-gradient">Founder</span>
             </h2>
             <p className="section-subtitle mt-4 mx-auto">
-              The people building the CODEMAFIA ecosystem.
+              The builder behind the CODEMAFIA ecosystem — creating digital products, training future software engineers, and helping businesses bring ideas to life through technology.
             </p>
           </motion.div>
 
