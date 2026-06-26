@@ -21,7 +21,7 @@ const values = [
 ];
 
 const team = [
-  { name: "Uthman Abdulwahab", role: "Founder & Full-Stack Engineer", bio: "Full-stack developer, software engineer, and educator passionate about building scalable digital products, empowering aspiring developers, and helping businesses transform ideas into impactful technology solutions." },
+  { name: "UTHMAN ABDULWAHAB", role: "Founder & Full-Stack Engineer", bio: "Full-stack developer, software engineer, and educator passionate about building scalable digital products, empowering aspiring developers, and helping businesses transform ideas into impactful technology solutions." },
   { name: "Areas of Expertise", role: "", bio: "Full-Stack Web Development • SaaS Platforms & Web Applications • Marketplace Systems • Mobile App Backends • UI/UX Implementation • Technical Consulting — delivering modern, scalable, and user-focused software solutions across multiple industries." },
   { name: "Mission & Vision", role: "", bio: "To build high-quality digital products while helping develop the next generation of African software engineers through practical learning, real-world projects, and technology-driven innovation." },
 ];
@@ -102,7 +102,7 @@ export default function AboutPage() {
               <div>
                 <span className="section-label">Founder</span>
                 <h3 className="text-xl font-bold text-white mb-2">
-                  Uthman Abdulwahab
+                  UTHMAN ABDULWAHAB
                 </h3>
                 <p className="text-muted leading-relaxed">
                   Full-stack developer, software engineer, and educator with a passion

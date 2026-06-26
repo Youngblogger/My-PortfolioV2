@@ -124,6 +124,13 @@ export default function ContactPage() {
                 </div>
 
                 <div className="glass rounded-2xl p-6">
+                  <h3 className="text-sm font-semibold text-gold uppercase tracking-wider mb-2">WhatsApp</h3>
+                  <a href="https://wa.me/2348133712756" target="_blank" rel="noopener noreferrer" className="text-white hover:text-gold transition-colors">
+                    +234 813 371 2756
+                  </a>
+                </div>
+
+                <div className="glass rounded-2xl p-6">
                   <h3 className="text-sm font-semibold text-gold uppercase tracking-wider mb-2">Location</h3>
                   <p className="text-white/80">Kwara State, Nigeria</p>
                 </div>
