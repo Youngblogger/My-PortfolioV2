@@ -423,10 +423,10 @@ export default function Home() {
               Join Community
             </Link>
             <Link
-              href="/hire/request-quote"
+              href="/hire"
               className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
             >
-              Book Consultation
+              Hire Us
             </Link>
           </motion.div>
         </div>

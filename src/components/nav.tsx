@@ -87,10 +87,10 @@ export default function Nav() {
           })}
           <div className="ml-4 pl-4 border-l border-white/5 flex items-center gap-3">
             <Link
-              href="/hire/request-quote"
+              href="/hire"
               className="px-5 py-2.5 rounded-lg border border-white/10 text-white font-semibold text-sm hover:bg-white/5 hover:border-white/20 transition-all duration-300"
             >
-              Book Consultation
+              Hire Us
             </Link>
             <Link
               href="/academy"
@@ -155,11 +155,11 @@ export default function Nav() {
                   Enroll Now
                 </a>
                 <a
-                  href="/hire/request-quote"
+                  href="/hire"
                   onClick={() => setMobileOpen(false)}
                   className="block px-5 py-3 rounded-lg border border-white/10 text-white font-semibold text-sm text-center hover:bg-white/5"
                 >
-                  Book Consultation
+                  Hire Us
                 </a>
               </div>
             </div>

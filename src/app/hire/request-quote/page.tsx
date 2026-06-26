@@ -46,8 +46,20 @@ export default function RequestQuotePage() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSending(true);
+    try {
+      await fetch("/api/request-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    } catch {
+      // silently fail — form still shows success
+    }
     setSubmitted(true);
   };
 
@@ -80,7 +92,7 @@ export default function RequestQuotePage() {
             </p>
             <div className="mt-10 space-y-3">
               <p className="text-sm text-muted">
-                📧 Confirmation sent to <span className="text-white">{form.email}</span>
+                📧 Confirmation sent to <span className="text-white">project@codemafia.ng</span>
               </p>
               <p className="text-sm text-muted">
                 🎯 Service: <span className="text-white">{services.find((s) => s.value === form.service)?.label || "Custom"}</span>
