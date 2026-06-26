@@ -387,9 +387,8 @@ export default function StackDetailPage() {
               { q: "Do I need prior coding experience?", a: "No. Our programs are designed for all levels. We have beginner-friendly tracks and advanced paths for experienced developers." },
               { q: "How long does the program take?", a: `The ${stack.title} program runs for ${stack.duration}. You can learn at your own pace with lifetime access to all materials.` },
               { q: "What kind of support will I receive?", a: "You'll have access to mentors, teaching assistants, and a vibrant community. Standard and Pro plans include 1-on-1 mentorship sessions." },
-              { q: "Is there job placement assistance?", a: "Yes. Our Pro Mentorship plan includes resume review, interview preparation, and job placement assistance with our partner companies." },
-              { q: "Can I get a refund if I'm not satisfied?", a: "Absolutely. We offer a 14-day money-back guarantee on all plans. If you're not satisfied, we'll refund your payment in full." },
-            ].map((faq) => (
+               { q: "Is there job placement assistance?", a: "Yes. Our Pro Mentorship plan includes resume review, interview preparation, and job placement assistance with our partner companies." },
+             ].map((faq) => (
               <motion.div
                 key={faq.q}
                 variants={fadeUp}

@@ -12,7 +12,6 @@ const plans = [
 
 const faqs = [
   { q: "Can I switch plans later?", a: "Yes, you can upgrade your plan at any time. The difference in price will be prorated based on your current progress. Downgrading is available after your current cycle ends." },
-  { q: "Is there a money-back guarantee?", a: "Absolutely. We offer a 14-day money-back guarantee on all plans. If you're not satisfied, we'll refund your payment in full — no questions asked." },
   { q: "What payment methods are accepted?", a: "We accept all major credit/debit cards, bank transfers, and mobile money options. For the Pro Mentorship plan, we also offer flexible installment arrangements." },
   { q: "Do you offer scholarships?", a: "Yes, we have a limited number of merit-based and need-based scholarships each cohort. Applications open 6 weeks before each cohort start date." },
 ];

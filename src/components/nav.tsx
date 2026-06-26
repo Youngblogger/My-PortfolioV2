@@ -53,9 +53,9 @@ export default function Nav() {
           : "bg-transparent"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-4 h-20 flex items-start pt-2 justify-between">
-        <Link href="/" className="flex items-center gap-2.5 group shrink-0 self-start">
-          <img src="/CodemafiaLogo.png" alt="CODEMAFIA" className="w-24 sm:w-28 md:w-28 h-auto" />
+      <nav className="max-w-7xl mx-auto px-4 h-20 flex items-start pt-4 justify-between">
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0 self-start outline-none">
+          <img src="/CodemafiaLogo.png" alt="CODEMAFIA" className="w-28 sm:w-32 md:w-32 h-auto outline-none" />
         </Link>
 
         <div className="hidden md:flex items-center gap-1">

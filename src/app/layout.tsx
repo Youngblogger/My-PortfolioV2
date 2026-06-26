@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "software development",
   ],
   icons: {
-    icon: "/CodemafiaLogo.png",
+    icon: "/iconLogo.png",
   },
   openGraph: {
     title: "CODEMAFIA | Software Engineering Academy",
