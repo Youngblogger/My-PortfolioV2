@@ -485,7 +485,7 @@ export default function StackDetailPage() {
             className="mt-10"
           >
             <Link
-              href={`/academy/${stack.id}/enroll`}
+              href={`/academy/checkout/${stack.id}`}
               className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
             >
               Enroll Now

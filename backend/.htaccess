@@ -1,0 +1,12 @@
+RewriteEngine On
+
+# Redirect all requests to the public directory
+RewriteRule ^(.*)$ public/$1 [L]
+
+# Root-level CORS fallback (if public/.htaccess is not processed)
+<IfModule mod_headers.c>
+    SetEnvIf Origin "http://localhost:3000$" CORSHostAllowed=true
+    SetEnvIf Origin "https://codemafia\.ng$" CORSHostAllowed=true
+    SetEnvIf Origin "https://www\.codemafia\.ng$" CORSHostAllowed=true
+    Header always set Access-Control-Allow-Origin %{HTTP_ORIGIN}e env=CORSHostAllowed
+</IfModule>

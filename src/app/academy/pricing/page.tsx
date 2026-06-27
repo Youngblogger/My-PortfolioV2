@@ -105,7 +105,7 @@ export default function PricingPage() {
                   </ul>
 
                   <Link
-                    href="/academy/frontend/enroll"
+                    href="/academy/checkout/frontend"
                     className={`block w-full text-center px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 ${
                       plan.popular
                         ? "bg-gold-gradient text-background hover:shadow-gold"

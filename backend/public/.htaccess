@@ -1,0 +1,43 @@
+RewriteEngine On
+
+# Redirect Trailing Slashes If Not A Folder...
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+# Handle Front Controller — also handles OPTIONS preflight via Laravel's HandleCors middleware
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]
+
+# CORS Headers — set on ALL responses (including errors, 4xx, 5xx, OPTIONS)
+# Uses SetEnvIf to dynamically echo back the allowed origin instead of a fixed value
+<IfModule mod_headers.c>
+    # Allow specific origins only (no wildcard — supports_credentials requires explicit origin)
+    SetEnvIf Origin "http://localhost:3000$" CORSHostAllowed=true
+    SetEnvIf Origin "https://codemafia\.ng$" CORSHostAllowed=true
+    SetEnvIf Origin "https://www\.codemafia\.ng$" CORSHostAllowed=true
+
+    # Echo the request origin back as the allowed origin (only if it matched above)
+    Header always set Access-Control-Allow-Origin %{HTTP_ORIGIN}e env=CORSHostAllowed
+
+    # Standard CORS headers for all requests
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, X-CSRF-TOKEN"
+    Header always set Access-Control-Allow-Credentials "true"
+    Header always set Access-Control-Max-Age "86400"
+    Header always set Vary "Origin"
+
+    # Diagnostic header: indicates .htaccess was processed
+    Header always set X-CORS-Debug "htaccess-loaded"
+
+    # Security Headers
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Deny access to sensitive files
+<FilesMatch "\.(env|json|lock|log|md)$">
+    Require all denied
+</FilesMatch>
