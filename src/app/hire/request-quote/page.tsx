@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { api } from "@/lib/api";
 
 const serviceStructure: Record<string, { label: string; options: string[] }> = {
   "business-website": { label: "Business Website", options: ["Corporate Website", "Company Profile Website", "Startup Website", "Landing Page Website", "Personal Brand Website"] },
@@ -88,12 +89,7 @@ export default function RequestQuotePage() {
     setSending(true);
     setError("");
     try {
-      const res = await fetch("/api/request-quote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) throw new Error("Failed to send");
+      await api.sendQuoteRequest(form);
       setSubmitted(true);
     } catch {
       setError("Something went wrong. Please try again or email us directly at admin@codemafia.ng.");

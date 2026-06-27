@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import PageHeader from "@/components/pages/PageHeader";
+import { api } from "@/lib/api";
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -41,12 +42,7 @@ export default function ContactPage() {
     setSending(true);
     setError("");
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (!res.ok) throw new Error("Failed to send");
+      await api.sendContact(form);
       setSubmitted(true);
     } catch {
       setError("Something went wrong. Please try again or email us directly at admin@codemafia.ng.");

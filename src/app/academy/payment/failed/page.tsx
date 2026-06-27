@@ -56,11 +56,6 @@ function PaymentFailedContent() {
         </div>
 
         <div className="space-y-3">
-          {reference && (
-            <Link href={`/academy/checkout/${reference.split("-")[0]}`}>
-              <Button fullWidth>Retry Payment</Button>
-            </Link>
-          )}
           <Link href="/academy">
             <Button variant="outline" fullWidth>Back to Courses</Button>
           </Link>

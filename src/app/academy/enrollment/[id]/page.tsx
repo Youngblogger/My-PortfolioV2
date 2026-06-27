@@ -144,7 +144,7 @@ function EnrollmentDetail() {
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Link href={`/academy/${course?.slug || ""}`}>
+          <Link href={`/academy/${course?.stack_id || ""}`}>
             <Button>Continue Learning</Button>
           </Link>
           <Link href="/academy/dashboard">

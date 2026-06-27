@@ -174,6 +174,16 @@ export const api = {
   getReceipt: (id: string) =>
     apiRequest<ApiResponse & { receipt: ReceiptData }>(`/receipt?id=${id}`),
 
+  downloadReceiptPdf: async (id: string) => {
+    const token = await getToken();
+    const response = await fetch(`${API_BASE_URL}/receipt/pdf?id=${id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      credentials: "include",
+    });
+    if (!response.ok) throw new ApiError("Failed to download PDF", response.status);
+    return response.blob();
+  },
+
   // Contact
   sendContact: (data: ContactData) =>
     apiRequest<ApiResponse>("/contact", {
