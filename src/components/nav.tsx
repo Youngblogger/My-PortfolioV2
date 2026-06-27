@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
@@ -54,8 +55,14 @@ export default function Nav() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-4 h-20 flex items-start pt-4 justify-between">
-        <Link href="/" className="flex items-center gap-2.5 group shrink-0 self-start outline-none">
-          <img src="/CodemafiaLogo.png" alt="CODEMAFIA" className="w-28 sm:w-32 md:w-32 h-auto outline-none" />
+        <Link href="/" className="flex flex-col shrink-0 self-start outline-none">
+          <span className="flex items-center gap-2">
+            <span className="text-sm md:text-base font-semibold text-white/70">Academy</span>
+            <Image src="/CodemafiaLogo.png" alt="CODEMAFIA" width={128} height={32} className="w-28 sm:w-32 h-auto" unoptimized />
+          </span>
+          <span className="text-[10px] md:text-[11px] text-muted/50 leading-tight mt-0.5">
+            Building Africa&apos;s next generation of software engineers
+          </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-1">
