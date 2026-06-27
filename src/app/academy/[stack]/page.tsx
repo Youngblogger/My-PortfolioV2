@@ -79,8 +79,8 @@ export default function StackDetailPage() {
   const roadmap = roadmaps[stack.id] ?? [];
   const pricingTiers = [
     { name: "Starter", price: "₦150,000", features: ["Full course access", "Self-paced learning", "Community support"] },
-    { name: "Standard", price: "₦350,000", features: ["Everything in Starter", "Live sessions", "1-on-1 mentorship", "Code reviews"] },
-    { name: "Pro Mentorship", price: "₦650,000", features: ["Everything in Standard", "Dedicated mentor", "Job placement", "Lifetime access"] },
+    { name: "Standard", price: "₦250,000", features: ["Everything in Starter", "Live sessions", "1-on-1 mentorship", "Code reviews"] },
+    { name: "Pro Mentorship", price: "₦350,000", features: ["Everything in Standard", "Dedicated mentor", "Job placement", "Lifetime access"] },
   ];
 
   return (

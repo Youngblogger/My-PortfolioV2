@@ -6,8 +6,8 @@ import PageHeader from "@/components/pages/PageHeader";
 
 const plans = [
   { name: "Starter", price: "₦150,000", period: "one-time", description: "Perfect for self-motivated learners who want structured curriculum access.", features: ["Full course access", "Self-paced learning", "Project templates", "Community access", "Certificate of completion"], cta: "Get Started", popular: false },
-  { name: "Standard", price: "₦350,000", period: "one-time", description: "Best value for serious learners who want mentorship and live support.", features: ["Everything in Starter", "Weekly live sessions", "1-on-1 mentorship", "Code reviews", "Career guidance", "Priority support"], cta: "Most Popular", popular: true },
-  { name: "Pro Mentorship", price: "₦650,000", period: "one-time", description: "Full immersion with dedicated mentor, job placement support, and lifetime access.", features: ["Everything in Standard", "Dedicated mentor", "Resume & portfolio review", "Interview preparation", "Job placement assistance", "Lifetime access", "Alumni network"], cta: "Go Pro", popular: false },
+  { name: "Standard", price: "₦250,000", period: "one-time", description: "Best value for serious learners who want mentorship and live support.", features: ["Everything in Starter", "Weekly live sessions", "1-on-1 mentorship", "Code reviews", "Career guidance", "Priority support"], cta: "Most Popular", popular: true },
+  { name: "Pro Mentorship", price: "₦350,000", period: "one-time", description: "Full immersion with dedicated mentor, job placement support, and lifetime access.", features: ["Everything in Standard", "Dedicated mentor", "Resume & portfolio review", "Interview preparation", "Job placement assistance", "Lifetime access", "Alumni network"], cta: "Go Pro", popular: false },
 ];
 
 const faqs = [
