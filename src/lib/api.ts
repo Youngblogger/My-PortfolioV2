@@ -196,6 +196,44 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+
+  // Services
+  getServices: () =>
+    apiRequest<ApiResponse & { data: ServiceData[] }>("/services"),
+
+  getService: (slug: string) =>
+    apiRequest<ApiResponse & { data: ServiceDetailData }>(`/services/${slug}`),
+
+  getProjectType: (serviceSlug: string, projectSlug: string) =>
+    apiRequest<ApiResponse & { data: ProjectDetailData }>(`/services/${serviceSlug}/project-types/${projectSlug}`),
+
+  getAddOns: () =>
+    apiRequest<ApiResponse & { data: AddOnCategoryData[] }>("/add-ons"),
+
+  // Service Orders
+  createServiceQuote: (data: ServiceQuoteRequest) =>
+    apiRequest<ApiResponse & { data: ServiceQuoteResponse }>("/service-orders/quote", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  placeServiceOrder: (data: ServiceOrderRequest) =>
+    apiRequest<ApiResponse & { data: ServiceOrderResponse }>("/service-orders/place", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  verifyServicePayment: (reference: string, orderId: string) =>
+    apiRequest<ApiResponse & { data: ServicePaymentVerifyResponse }>("/service-orders/verify-payment", {
+      method: "POST",
+      body: JSON.stringify({ reference, order_id: orderId }),
+    }),
+
+  getServiceOrders: () =>
+    apiRequest<ApiResponse & { data: ServiceOrderListItem[] }>("/service-orders"),
+
+  getServiceOrder: (id: string) =>
+    apiRequest<ApiResponse & { data: ServiceOrderDetailData }>(`/service-orders/${id}`),
 };
 
 // Types
@@ -436,4 +474,177 @@ export interface QuoteData {
   budget: string;
   project: string;
   timeline: string;
+}
+
+export interface ServiceData {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  short_description: string | null;
+  icon: string;
+  image_url: string | null;
+  starting_price_ngn: number;
+  starting_price_usd: number;
+  estimated_delivery: string | null;
+  features: string[] | null;
+  project_types_count: number;
+}
+
+export interface ServiceDetailData extends ServiceData {
+  description: string | null;
+  cover_url: string | null;
+  project_types: ProjectTypeSummaryData[];
+}
+
+export interface ProjectTypeSummaryData {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string | null;
+  short_description: string | null;
+  icon: string | null;
+  image_url: string | null;
+  starting_price_ngn: number;
+  starting_price_usd: number;
+  estimated_timeline: string | null;
+  features: string[] | null;
+  technologies: string[] | null;
+}
+
+export interface ProjectDetailData extends ProjectTypeSummaryData {
+  description: string | null;
+  cover_url: string | null;
+  deliverables: string[] | null;
+  faqs: { q: string; a: string }[] | null;
+  portfolio_samples: string[] | null;
+  packages: PackageData[];
+  service: { id: string; slug: string; title: string };
+}
+
+export interface PackageData {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  price_ngn: number;
+  price_usd: number;
+  estimated_timeline: string | null;
+  support_period: string | null;
+  revision_count: number;
+  is_recommended: boolean;
+  features: string[] | null;
+}
+
+export interface AddOnCategoryData {
+  category: string;
+  items: AddOnItemData[];
+}
+
+export interface AddOnItemData {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  icon: string | null;
+  price_ngn: number;
+  price_usd: number;
+}
+
+export interface ServiceQuoteRequest {
+  service_id: string;
+  project_type_id: string;
+  package_id: string;
+  add_on_ids?: string[];
+}
+
+export interface ServiceQuoteResponse {
+  package: { id: string; name: string; price_ngn: number; price_usd: number };
+  add_ons: { id: string; name: string; price_ngn: number; price_usd: number }[];
+  package_price_ngn: number;
+  package_price_usd: number;
+  add_ons_total_ngn: number;
+  add_ons_total_usd: number;
+  total_ngn: number;
+  total_usd: number;
+}
+
+export interface ServiceOrderRequest {
+  service_id: string;
+  project_type_id: string;
+  package_id: string;
+  add_on_ids?: string[];
+  payment_gateway: string;
+  payment_type: "full" | "deposit";
+  billing: {
+    full_name: string;
+    email: string;
+    phone?: string;
+    country?: string;
+    state?: string;
+    city?: string;
+    address?: string;
+    company?: string;
+  };
+  project_name: string;
+  project_description?: string;
+  preferred_start_date?: string;
+  reference_links?: string[];
+}
+
+export interface ServiceOrderResponse {
+  order_id: string;
+  order_number: string;
+  reference: string;
+  authorization_url: string;
+  gateway: string;
+  amount_ngn: number;
+  amount_usd: number;
+  payment_type: string;
+}
+
+export interface ServicePaymentVerifyResponse {
+  order_id: string;
+  order_number: string;
+  invoice_number: string;
+  status: string;
+  payment_status: string;
+  amount_paid_ngn: number;
+  balance_ngn: number;
+  total_ngn: number;
+  payment_type: string;
+  project_name: string;
+}
+
+export interface ServiceOrderListItem {
+  id: string;
+  order_number: string;
+  service: string;
+  project: string;
+  package: string;
+  total_ngn: number;
+  total_usd: number;
+  status: string;
+  payment_status: string;
+  project_name: string | null;
+  created_at: string;
+}
+
+export interface ServiceOrderDetailData {
+  id: string;
+  order_number: string;
+  service: { title: string; slug: string };
+  projectType: { title: string; slug: string };
+  package: { name: string; slug: string };
+  total_ngn: number;
+  total_usd: number;
+  status: string;
+  payment_status: string;
+  billing_details: Record<string, unknown>;
+  metadata: Record<string, unknown>;
+  addOns: { id: string; name: string; price_ngn: number }[];
+  invoices: unknown[];
+  payments: unknown[];
+  milestones: unknown[];
+  created_at: string;
 }

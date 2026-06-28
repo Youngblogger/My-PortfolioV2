@@ -9,12 +9,14 @@ import { Badge } from "@/components/ui/Badge";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import { formatDate } from "@/lib/utils";
 import { api } from "@/lib/api";
-import type { EnrollmentData, CourseData, ProfileData } from "@/lib/api";
+import type { EnrollmentData, CourseData, ProfileData, ServiceOrderListItem } from "@/lib/api";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [enrollments, setEnrollments] = useState<EnrollmentData[]>([]);
+  const [serviceOrders, setServiceOrders] = useState<ServiceOrderListItem[]>([]);
+  const [activeTab, setActiveTab] = useState<"courses" | "projects">("courses");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,10 +30,14 @@ export default function DashboardPage() {
           return;
         }
 
-        const data = await api.getDashboard();
+        const [dashData, ordersData] = await Promise.all([
+          api.getDashboard(),
+          api.getServiceOrders().catch(() => ({ data: [] })),
+        ]);
         if (!mounted) return;
-        setProfile(data.profile);
-        setEnrollments(data.enrollments || []);
+        setProfile(dashData.profile);
+        setEnrollments(dashData.enrollments || []);
+        setServiceOrders(ordersData.data || []);
       } catch {
         router.push("/auth/login?redirect=/academy/dashboard");
       } finally {
@@ -54,11 +60,36 @@ export default function DashboardPage() {
             </h1>
             <p className="text-muted mt-1">Your learning journey continues here.</p>
           </div>
-          <Link href="/academy">
-            <Button variant="secondary">Browse Courses</Button>
-          </Link>
+          <div className="flex gap-3">
+            <Link href="/academy">
+              <Button variant="secondary">Browse Courses</Button>
+            </Link>
+            <Link href="/hire">
+              <Button variant="primary">Start a Project</Button>
+            </Link>
+          </div>
         </div>
 
+        {/* Tabs */}
+        <div className="flex gap-4 mb-8 border-b border-white/10 pb-4">
+          {[
+            { id: "courses" as const, label: "My Courses", count: enrollments.length },
+            { id: "projects" as const, label: "My Projects", count: serviceOrders.length },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`text-sm font-medium transition-colors ${
+                activeTab === tab.id ? "text-gold" : "text-muted hover:text-white"
+              }`}
+            >
+              {tab.label} ({tab.count})
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "courses" && (
+        <div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
             { label: "Enrolled Courses", value: enrollments.length.toString() },
@@ -130,6 +161,48 @@ export default function DashboardPage() {
               </motion.div>
             ))}
           </div>
+        )}
+        </div>
+        )}
+
+        {activeTab === "projects" && (
+        <div>
+        {serviceOrders.length === 0 ? (
+          <div className="glass rounded-2xl p-12 text-center">
+            <div className="text-4xl mb-4" aria-hidden="true">🚀</div>
+            <h3 className="text-lg font-bold text-white mb-2">No Projects Yet</h3>
+            <p className="text-muted text-sm mb-6">Start your first project with us.</p>
+            <Link href="/hire">
+              <Button>Start a Project</Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {serviceOrders.map((order) => (
+              <motion.div
+                key={order.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="glass rounded-2xl p-5 hover:border-gold/20 transition-all duration-300"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h3 className="text-white font-semibold">{order.project_name || order.project}</h3>
+                    <p className="text-xs text-muted mt-0.5">{order.service} — {order.project}</p>
+                  </div>
+                  <Badge variant={order.status === "active" ? "success" : order.status === "pending_payment" ? "gold" : "info"}>
+                    {order.status === "pending_payment" ? "Pending Payment" : order.status}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gold font-semibold">₦{order.total_ngn.toLocaleString()}</span>
+                  <span className="text-xs text-muted">{formatDate(order.created_at)}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+        </div>
         )}
 
         {profile && (

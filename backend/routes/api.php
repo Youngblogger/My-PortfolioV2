@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\ServiceOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,12 @@ Route::post('/auth/login', [AuthController::class, 'login'])->middleware('thrott
 Route::get('/courses', [CourseController::class, 'index']);
 Route::get('/courses/{slug}', [CourseController::class, 'show']);
 Route::get('/courses/stack/{stackId}', [CourseController::class, 'byStack']);
+
+// Services - Public
+Route::get('/services', [ServiceController::class, 'index']);
+Route::get('/services/{slug}', [ServiceController::class, 'show']);
+Route::get('/services/{serviceSlug}/project-types/{projectSlug}', [ServiceController::class, 'projectType']);
+Route::get('/add-ons', [ServiceController::class, 'addOns']);
 
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact');
 Route::post('/request-quote', [QuoteController::class, 'store'])->middleware('throttle:contact');
@@ -62,4 +70,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/receipt', [ReceiptController::class, 'show'])->middleware('throttle:api');
     Route::get('/receipt/pdf', [ReceiptController::class, 'pdf'])->middleware('throttle:api');
+
+    // Service Orders
+    Route::post('/service-orders/quote', [ServiceOrderController::class, 'createQuote'])->middleware('throttle:api');
+    Route::post('/service-orders/place', [ServiceOrderController::class, 'placeOrder'])->middleware('throttle:payments');
+    Route::post('/service-orders/verify-payment', [ServiceOrderController::class, 'verifyPayment'])->middleware('throttle:payments');
+    Route::get('/service-orders', [ServiceOrderController::class, 'myOrders'])->middleware('throttle:api');
+    Route::get('/service-orders/{id}', [ServiceOrderController::class, 'showOrder'])->middleware('throttle:api');
 });

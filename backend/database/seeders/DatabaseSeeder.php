@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             CourseSeeder::class,
             PricingTierSeeder::class,
             ModuleSeeder::class,
+            ServiceSeeder::class,
         ]);
     }
 }

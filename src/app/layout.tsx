@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
+import ClientLayout from "@/components/ClientLayout";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -49,7 +50,9 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable}`} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-background font-sans antialiased">
         <Nav />
-        <main>{children}</main>
+        <main>
+          <ClientLayout>{children}</ClientLayout>
+        </main>
         <Footer />
       </body>
     </html>
