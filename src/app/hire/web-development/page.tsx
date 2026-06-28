@@ -14,6 +14,8 @@ const types = [
   { title: "Real Estate Website", description: "Property listing platform with search filters, virtual tours, agent profiles, and inquiry management.", price: "₦500,000 – ₦1,500,000", icon: "🏠" },
   { title: "Membership Website", description: "Members-only platform with tiered access, billing integration, content gating, and community features.", price: "₦500,000 – ₦1,500,000", icon: "🔐" },
   { title: "Booking Website", description: "Appointment booking system with calendar sync, payment processing, reminders, and admin dashboard.", price: "₦400,000 – ₦1,000,000", icon: "📅" },
+  { title: "E-Commerce Website", description: "Online store with product management, shopping cart, secure checkout, payment gateway integration, and inventory tracking.", price: "₦600,000 – ₦2,500,000", icon: "🛒" },
+  { title: "Landing Page", description: "High-converting single-page website designed for product launches, marketing campaigns, or lead generation with analytics integration.", price: "₦150,000 – ₦400,000", icon: "🎯" },
 ];
 
 const staggerContainer = {
@@ -73,7 +75,7 @@ export default function WebDevelopmentPage() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+            className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-5"
           >
             {types.map((type) => (
               <motion.div
