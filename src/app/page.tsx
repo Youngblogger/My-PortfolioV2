@@ -7,8 +7,11 @@ import Tech from "@/components/tech";
 
 const learningPaths = [
   { id: "frontend", title: "Frontend Engineering", description: "Master React, Next.js, and modern frontend frameworks to build stunning user interfaces.", icon: "🖥", gradient: "from-blue-500/10 to-cyan-500/10" },
+  { id: "backend", title: "Backend Engineering", description: "Design scalable APIs, microservices, and serverless architectures.", icon: "⚙", gradient: "from-green-500/10 to-emerald-500/10" },
   { id: "fullstack", title: "Full-Stack Development", description: "Become a complete developer capable of building production-ready applications end-to-end.", icon: "🚀", gradient: "from-purple-500/10 to-violet-500/10" },
+  { id: "mobile", title: "Mobile Development", description: "Build cross-platform mobile apps for iOS and Android with React Native.", icon: "📱", gradient: "from-orange-500/10 to-amber-500/10" },
   { id: "ai", title: "AI Engineering", description: "Dive into machine learning, LLMs, and AI-powered applications that solve real problems.", icon: "🤖", gradient: "from-pink-500/10 to-rose-500/10" },
+  { id: "ui-ux", title: "UI/UX Design", description: "Design intuitive user interfaces and seamless experiences with modern design tools and frameworks.", icon: "🎨", gradient: "from-rose-500/10 to-pink-500/10" },
 ];
 
 const featuredProjects = [
@@ -22,6 +25,24 @@ const services = [
   { id: "saas-development", title: "SaaS Development", description: "Custom SaaS platforms, CRM systems, and subscription-based applications tailored to your business.", icon: "☁️", price: "Custom Quote" },
   { id: "mobile-apps", title: "Mobile Apps", description: "Native and cross-platform mobile applications for iOS and Android that users love.", icon: "📱", price: "Starting ₦500,000" },
 ];
+
+const ServiceIcon = ({ id }: { id: string }) => {
+  if (id === "web-development") return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+    </svg>
+  );
+  if (id === "saas-development") return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+    </svg>
+  );
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="5" y="2" width="14" height="20" rx="2" ry="2" /><line x1="12" y1="18" x2="12.01" y2="18" />
+    </svg>
+  );
+};
 
 const testimonials = [
   { name: "Chioma O.", role: "Frontend Engineering Graduate", text: "CODEMAFIA transformed my career. The structured curriculum and mentorship helped me land my first developer role within 3 months of graduating.", image: "CO" },
@@ -58,7 +79,7 @@ export default function Home() {
       <Hero />
 
       {/* Academy Overview */}
-      <section id="learn" className="relative py-24 md:py-32 overflow-hidden">
+      <section id="learn" className="relative py-24 md:py-32">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <motion.div
@@ -90,19 +111,21 @@ export default function Home() {
                 variants={cardVariants}
                 className="group relative rounded-2xl glass glass-hover overflow-hidden"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${program.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                <div className="relative p-6 md:p-8">
-                  <div className="text-3xl mb-4">{program.icon}</div>
-                  <h3 className="text-xl font-bold text-white mb-3">{program.title}</h3>
-                  <p className="text-muted text-sm leading-relaxed mb-6">{program.description}</p>
-                  <Link
-                    href={`/academy/${program.id}`}
-                    className="text-sm text-gold hover:text-white transition-colors duration-300 flex items-center gap-1 group/link"
-                  >
-                    View Program
-                    <span className="transition-transform duration-300 group-hover/link:translate-x-1">→</span>
-                  </Link>
-                </div>
+                <Link
+                  href={["frontend", "backend", "fullstack", "mobile", "ai"].includes(program.id) ? `/academy/${program.id}` : "/academy"}
+                  className="block relative p-6 md:p-8"
+                >
+                  <div className={`absolute inset-0 bg-gradient-to-br ${program.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                  <div className="relative">
+                    <div className="text-3xl mb-4">{program.icon}</div>
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gold transition-colors">{program.title}</h3>
+                    <p className="text-muted text-sm leading-relaxed mb-6">{program.description}</p>
+                    <span className="text-sm text-gold flex items-center gap-1 group/link">
+                      View Program
+                      <span className="transition-transform duration-300 group-hover/link:translate-x-1">→</span>
+                    </span>
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </motion.div>
@@ -214,23 +237,11 @@ export default function Home() {
           >
             <span className="section-label">SERVICES</span>
             <h2 className="section-heading">
-              Build Your Next <span className="text-gradient">Digital Product</span>
+              Ready to Build Your <span className="text-gradient">Website?</span>
             </h2>
             <p className="section-subtitle mt-4 mx-auto">
               From concept to launch — we partner with startups and enterprises to build world-class digital products.
             </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-            className="text-center mb-12"
-          >
-            <h3 className="text-2xl md:text-3xl font-bold text-white">
-              Ready to Build Your <span className="text-gradient">Website?</span>
-            </h3>
           </motion.div>
 
           <motion.div
@@ -248,24 +259,7 @@ export default function Home() {
               >
                 <Link href={`/hire/${service.id}`} className="relative block p-6 md:p-8">
                   <div className="mb-4">
-                    {service.id === "web-development" && (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="2" y1="12" x2="22" y2="12"/>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                      </svg>
-                    )}
-                    {service.id === "saas-development" && (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold">
-                        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
-                      </svg>
-                    )}
-                    {service.id === "mobile-apps" && (
-                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
-                        <line x1="12" y1="18" x2="12.01" y2="18"/>
-                      </svg>
-                    )}
+                    <ServiceIcon id={service.id} />
                   </div>
                   <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gold transition-colors">{service.title}</h3>
                   <p className="text-muted text-sm leading-relaxed mb-6">{service.description}</p>

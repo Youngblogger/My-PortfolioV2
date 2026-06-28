@@ -10,6 +10,10 @@ const stacks = [
   { id: "fullstack", title: "Full-Stack Development", description: "Become a complete developer. Master both frontend and backend to build production-ready applications end-to-end.", icon: "🚀", duration: "20 weeks", level: "All Levels", students: "3,200+", gradient: "from-purple-500/10 to-violet-500/10", skills: ["React", "Next.js", "Node.js", "TypeScript", "PostgreSQL"], outcomes: ["Full-Stack Developer", "Software Engineer", "Tech Lead"] },
   { id: "mobile", title: "Mobile Development", description: "Build cross-platform mobile apps with React Native and Flutter. Deploy to both iOS and Android stores.", icon: "📱", duration: "14 weeks", level: "Intermediate", students: "1,200+", gradient: "from-orange-500/10 to-amber-500/10", skills: ["React Native", "Flutter", "TypeScript", "Firebase", "App Store"], outcomes: ["Mobile Developer", "React Native Engineer", "Flutter Developer"] },
   { id: "ai", title: "AI Engineering", description: "Dive into machine learning, LLMs, and AI-powered applications. Build intelligent systems that solve real problems.", icon: "🤖", duration: "16 weeks", level: "Advanced", students: "1,500+", gradient: "from-pink-500/10 to-rose-500/10", skills: ["Python", "TensorFlow", "LangChain", "OpenAI", "Vector DBs"], outcomes: ["AI Engineer", "ML Engineer", "Data Scientist"] },
+  { id: "mern", title: "MERN Stack Development", description: "Master MongoDB, Express, React, and Node.js to build full-stack JavaScript applications from scratch.", icon: "📦", duration: "16 weeks", level: "Intermediate", students: "900+", gradient: "from-yellow-500/10 to-orange-500/10", skills: ["MongoDB", "Express", "React", "Node.js", "JWT"], outcomes: ["MERN Developer", "Full-Stack JS Engineer", "API Developer"] },
+  { id: "python-fullstack", title: "Python Full-Stack", description: "Build modern web applications with Django/Flask backends and React frontends — the Python way.", icon: "🐍", duration: "14 weeks", level: "Intermediate", students: "750+", gradient: "from-blue-600/10 to-indigo-500/10", skills: ["Python", "Django", "Flask", "React", "PostgreSQL"], outcomes: ["Python Developer", "Django Engineer", "Full-Stack Python Dev"] },
+  { id: "jamstack", title: "Jamstack Development", description: "Build blazing-fast sites with Next.js, headless CMS, and serverless functions for modern web experiences.", icon: "⚡", duration: "10 weeks", level: "Beginner to Intermediate", students: "600+", gradient: "from-cyan-500/10 to-teal-500/10", skills: ["Next.js", "Headless CMS", "Vercel", "GraphQL", "Tailwind CSS"], outcomes: ["Jamstack Developer", "Frontend Engineer", "CMS Specialist"] },
+  { id: "dotnet-fullstack", title: ".NET Full-Stack", description: "Build enterprise-grade applications with .NET Core, React, and Azure cloud services.", icon: "🔄", duration: "16 weeks", level: "Intermediate to Advanced", students: "500+", gradient: "from-violet-500/10 to-purple-600/10", skills: [".NET Core", "C#", "React", "Azure", "SQL Server"], outcomes: [".NET Developer", "Enterprise Engineer", "Cloud Developer"] },
 ];
 
 const containerVariants = {
@@ -105,7 +109,7 @@ export default function AcademyPage() {
                     </div>
 
                     <Link
-                      href={`/academy/${stack.id}`}
+                      href={["frontend", "backend", "fullstack", "mobile", "ai"].includes(stack.id) ? `/academy/${stack.id}` : "/academy"}
                       className="text-sm text-gold hover:text-white transition-colors duration-300 flex items-center gap-1 group/link"
                     >
                       View Program

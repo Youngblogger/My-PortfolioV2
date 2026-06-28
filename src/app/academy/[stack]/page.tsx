@@ -119,6 +119,52 @@ export default function StackDetailPage() {
         </div>
       </section>
 
+      {/* CTA moved to top */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gold/[0.02] to-transparent" />
+          <motion.div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)" }}
+            animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
+          >
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+              Ready to Master
+              <br />
+              <span className="text-gradient">{stack.title}?</span>
+            </h2>
+            <p className="text-lg md:text-xl text-muted mt-6 max-w-2xl mx-auto leading-relaxed">
+              Join thousands of successful developers who started their journey with CODEMAFIA Academy.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
+            className="mt-10"
+          >
+            <Link
+              href="/academy/pricing"
+              className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+            >
+              Enroll Now
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-6">
@@ -402,97 +448,6 @@ export default function StackDetailPage() {
         </div>
       </section>
 
-      <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-            className="mb-12 text-center"
-          >
-            <span className="section-label">PRICING</span>
-            <h2 className="section-heading mt-2">
-              Choose Your
-              <br />
-              <span className="text-gradient">Investment</span>
-            </h2>
-          </motion.div>
-
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-3 gap-5 max-w-5xl mx-auto"
-          >
-            {pricingTiers.map((tier) => (
-              <motion.div
-                key={tier.name}
-                variants={fadeUp}
-                className={`glass rounded-2xl p-6 md:p-8 ${tier.name === "Standard" ? "gold-border" : ""}`}
-              >
-                <h3 className="text-lg font-bold text-white mb-2">{tier.name}</h3>
-                <div className="text-3xl font-bold text-white mb-6">{tier.price}</div>
-                <ul className="space-y-2.5 mb-8">
-                  {tier.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-muted">
-                      <span className="text-gold shrink-0">✓</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="relative py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gold/[0.02] to-transparent" />
-          <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
-            style={{ background: "radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)" }}
-            animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
-          >
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Ready to Master
-              <br />
-              <span className="text-gradient">{stack.title}?</span>
-            </h2>
-            <p className="text-lg md:text-xl text-muted mt-6 max-w-2xl mx-auto leading-relaxed">
-              Join thousands of successful developers who started their journey with CODEMAFIA Academy.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
-            className="mt-10"
-          >
-            <Link
-              href={`/academy/checkout/${stack.id}`}
-              className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
-            >
-              Enroll Now
-            </Link>
-          </motion.div>
-        </div>
-      </section>
     </>
   );
 }
