@@ -222,6 +222,18 @@ export default function Home() {
           </motion.div>
 
           <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+            className="text-center mb-12"
+          >
+            <h3 className="text-2xl md:text-3xl font-bold text-white">
+              Ready to Build Your <span className="text-gradient">Website?</span>
+            </h3>
+          </motion.div>
+
+          <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -235,7 +247,26 @@ export default function Home() {
                 className="group relative rounded-2xl glass glass-hover overflow-hidden"
               >
                 <Link href={`/hire/${service.id}`} className="relative block p-6 md:p-8">
-                  <div className="text-3xl mb-4">{service.icon}</div>
+                  <div className="mb-4">
+                    {service.id === "web-development" && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                      </svg>
+                    )}
+                    {service.id === "saas-development" && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold">
+                        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                      </svg>
+                    )}
+                    {service.id === "mobile-apps" && (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gold">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18"/>
+                      </svg>
+                    )}
+                  </div>
                   <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gold transition-colors">{service.title}</h3>
                   <p className="text-muted text-sm leading-relaxed mb-6">{service.description}</p>
                   <div className="inline-block px-4 py-2 rounded-full glass text-sm text-gold font-semibold">
