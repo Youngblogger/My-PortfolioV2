@@ -60,7 +60,7 @@ export default function Nav() {
             <Image src="/CodemafiaLogo.png" alt="CODEMAFIA" width={128} height={32} className="w-28 sm:w-32 h-auto" unoptimized />
           </span>
           <span className="text-[10px] md:text-[11px] text-muted/50 leading-tight mt-0.5">
-            Learn the Skill. Build the Future.
+            Engineering Excellence. Inspiring Innovation.
           </span>
         </Link>
 

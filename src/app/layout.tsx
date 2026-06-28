@@ -26,9 +26,9 @@ export const metadata: Metadata = {
     icon: "/iconLogo.png",
   },
   openGraph: {
-    title: "CODEMAFIA | Learn the Skill. Build the Future.",
+  title: "CODEMAFIA | Engineering Excellence. Inspiring Innovation.",
     description:
-      "Learn the Skill. Build the Future. Master modern software development, build real-world products.",
+      "Engineering Excellence. Inspiring Innovation. Master modern software development, build real-world products.",
     type: "website",
     locale: "en_US",
   },
