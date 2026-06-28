@@ -54,11 +54,10 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <a href="/" className="flex flex-col mb-4">
               <span className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-white/70">Academy</span>
                 <Image src="/CodemafiaLogo.png" alt="CODEMAFIA" width={144} height={36} className="w-28 sm:w-32 md:w-36 h-auto" unoptimized />
               </span>
               <span className="text-[11px] text-muted/50 leading-tight mt-0.5">
-                Building Africa&apos;s next generation of software engineers
+                Learn the Skill. Build the Future.
               </span>
             </a>
             <div className="flex gap-3">

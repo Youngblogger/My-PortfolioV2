@@ -56,12 +56,11 @@ export default function Nav() {
     >
       <nav className="max-w-7xl mx-auto px-4 h-20 flex items-start pt-4 justify-between">
         <Link href="/" className="flex flex-col shrink-0 self-start outline-none">
-          <span className="flex items-center gap-2">
-            <span className="text-sm md:text-base font-semibold text-white/70">Academy</span>
+            <span className="flex items-center gap-2">
             <Image src="/CodemafiaLogo.png" alt="CODEMAFIA" width={128} height={32} className="w-28 sm:w-32 h-auto" unoptimized />
           </span>
           <span className="text-[10px] md:text-[11px] text-muted/50 leading-tight mt-0.5">
-            Building Africa&apos;s next generation of software engineers
+            Learn the Skill. Build the Future.
           </span>
         </Link>
 
@@ -90,7 +89,7 @@ export default function Nav() {
           <div className="ml-4 pl-4 border-l border-white/5 flex items-center gap-3">
             <Link
               href="/hire"
-              className="px-5 py-2.5 rounded-lg border border-white/10 text-white font-semibold text-sm hover:bg-white/5 hover:border-white/20 transition-all duration-300"
+              className="px-5 py-2.5 rounded-lg border border-white/10 text-white font-semibold text-sm hover:bg-white/5 hover:border-white/20 animate-blink-border"
             >
               Hire Us
             </Link>
@@ -159,7 +158,7 @@ export default function Nav() {
                 <a
                   href="/hire"
                   onClick={() => setMobileOpen(false)}
-                  className="block px-5 py-3 rounded-lg border border-white/10 text-white font-semibold text-sm text-center hover:bg-white/5"
+                  className="block px-5 py-3 rounded-lg border border-white/10 text-white font-semibold text-sm text-center hover:bg-white/5 animate-blink-border"
                 >
                   Hire Us
                 </a>

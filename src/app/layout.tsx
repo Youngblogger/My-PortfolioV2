@@ -11,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CODEMAFIA | Building Africa's Next Generation of Software Engineers",
+  title: "CODEMAFIA | Learn the Skill. Build the Future.",
   description:
-    "Learn modern software development, build real-world products, and work with industry professionals at CODEMAFIA Academy.",
+    "Learn modern software development, build real-world products, and work with industry professionals at CODEMAFIA.",
   keywords: [
     "CODEMAFIA",
     "software engineering",
@@ -26,9 +26,9 @@ export const metadata: Metadata = {
     icon: "/iconLogo.png",
   },
   openGraph: {
-    title: "CODEMAFIA | Software Engineering Academy",
+    title: "CODEMAFIA | Learn the Skill. Build the Future.",
     description:
-      "Building Africa's Next Generation of Software Engineers. Master modern software development, build real-world products.",
+      "Learn the Skill. Build the Future. Master modern software development, build real-world products.",
     type: "website",
     locale: "en_US",
   },

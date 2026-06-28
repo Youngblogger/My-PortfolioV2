@@ -8026,3 +8026,5 @@ Stack trace:
 [stacktrace]
 #0 {main}
 "} 
+[2026-06-27 23:07:38] local.ERROR: Payment gateway 'paystack' is not configured  
+[2026-06-27 23:08:22] local.ERROR: Payment gateway 'paystack' is not configured  
