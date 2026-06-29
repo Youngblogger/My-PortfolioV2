@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateOrderRequest extends FormRequest
 {
@@ -14,7 +15,7 @@ class CreateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'service_id' => ['required', 'exists:services,id'],
+            'service_id' => ['required', Rule::exists('services', 'id')->where('is_active', true)],
             'project_type_id' => ['required', 'exists:project_types,id'],
             'package_id' => ['required', 'exists:packages,id'],
             'add_on_ids' => ['nullable', 'array'],

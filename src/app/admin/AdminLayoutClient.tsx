@@ -9,6 +9,7 @@ import { api } from "@/lib/api";
 const sidebarLinks = [
   { href: "/admin", label: "Dashboard", icon: "📊" },
   { href: "/admin/orders", label: "Orders", icon: "📦" },
+  { href: "/admin/projects", label: "Projects", icon: "📁" },
   { href: "/admin/proposals", label: "Proposals", icon: "📄" },
   { href: "/admin/discovery-calls", label: "Discovery Calls", icon: "📞" },
   { href: "/admin/services", label: "Services", icon: "⚙️" },

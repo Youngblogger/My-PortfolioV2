@@ -2,25 +2,24 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class ServiceFile extends Model
+class InternalNote extends Model
 {
-    use HasUuids, HasFactory;
+    use HasFactory, HasUuids;
 
     protected $fillable = [
-        'service_order_id', 'user_id', 'name', 'path',
-        'type', 'size', 'category', 'description',
+        'service_order_id',
+        'user_id',
+        'content',
+        'edit_history',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'size' => 'integer',
-        ];
-    }
+    protected $casts = [
+        'edit_history' => 'array',
+    ];
 
     public function serviceOrder()
     {

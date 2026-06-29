@@ -14,6 +14,7 @@ class Milestone extends Model
         'service_order_id', 'title', 'description', 'milestone_type',
         'status', 'is_automatic', 'sort_order', 'due_date', 'completed_at',
         'deliverables', 'completion_notes', 'metadata',
+        'review_requested_at', 'review_status', 'review_feedback',
     ];
 
     protected function casts(): array

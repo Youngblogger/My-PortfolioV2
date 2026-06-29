@@ -13,6 +13,17 @@ const NOTIFICATION_ICONS: Record<string, string> = {
   message_received: "\uD83D\uDCAC",
   order_created: "\uD83D\uDCCB",
   meeting_scheduled: "\uD83D\uDCC5",
+  file_uploaded: "\uD83D\uDCC1",
+  new_discussion_message: "\uD83D\uDCAC",
+  milestone_review_requested: "\uD83D\uDCDD",
+  milestone_changes_requested: "\uD83D\uDD04",
+  milestone_review_approved: "\u2705",
+  delivery_available: "\uD83D\uDCE6",
+  project_completed: "\uD83C\uDF89",
+  review_submitted: "\u2B50",
+  milestone_completed: "\u2705",
+  milestone_delayed: "\u23F0",
+  milestone_blocked: "\u26D4",
 };
 
 function getIcon(type: string): string {

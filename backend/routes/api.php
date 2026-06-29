@@ -22,6 +22,9 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\VerificationController;
+use App\Http\Controllers\Api\ProjectFileController;
+use App\Http\Controllers\Api\ProjectMessageController;
+use App\Http\Controllers\Api\ProjectReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,9 +59,13 @@ Route::get('/services/{serviceSlug}/project-types', [ServiceController::class, '
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact');
 Route::post('/request-quote', [QuoteController::class, 'store'])->middleware('throttle:contact');
 
+// Payment webhook (public - called by payment gateway)
 Route::post('/payments/webhook/{gateway}', [WebhookController::class, 'handle'])
     ->where('gateway', 'paystack|flutterwave')
     ->withoutMiddleware(\Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class);
+
+// Payment callback (public - called by payment gateway redirect)
+Route::get('/service-orders/{id}/payment/callback', [ServiceOrderController::class, 'paymentCallback']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/user', [AuthController::class, 'user'])->middleware('throttle:api');
@@ -113,6 +120,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/discovery-calls', [DiscoveryCallController::class, 'store']);
     Route::get('/discovery-calls', [DiscoveryCallController::class, 'myCalls']);
 
+    // Project Collaboration — Files
+    Route::get('/service-orders/{id}/files', [ProjectFileController::class, 'index']);
+    Route::post('/service-orders/{id}/files', [ProjectFileController::class, 'upload']);
+    Route::get('/service-orders/{id}/files/{fileId}/download', [ProjectFileController::class, 'download']);
+    Route::delete('/service-orders/{id}/files/{fileId}', [ProjectFileController::class, 'destroy']);
+
+    // Project Collaboration — Messages
+    Route::get('/service-orders/{id}/messages', [ProjectMessageController::class, 'index']);
+    Route::post('/service-orders/{id}/messages', [ProjectMessageController::class, 'store']);
+
+    // Project Collaboration — Milestone Review
+    Route::post('/service-orders/{id}/milestones/{milestoneId}/approve', [ProjectReviewController::class, 'milestoneApprove']);
+    Route::post('/service-orders/{id}/milestones/{milestoneId}/request-changes', [ProjectReviewController::class, 'milestoneRequestChanges']);
+
+    // Project Collaboration — Delivery
+    Route::get('/service-orders/{id}/delivery', [ProjectFileController::class, 'deliveryIndex']);
+
+    // Project Collaboration — Review / Rating
+    Route::get('/service-orders/{id}/review', [ProjectReviewController::class, 'show']);
+    Route::post('/service-orders/{id}/review', [ProjectReviewController::class, 'submit']);
+
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
@@ -146,5 +174,44 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/project-types', [AdminController::class, 'createProjectType']);
         Route::post('/packages', [AdminController::class, 'createPackage']);
         Route::post('/add-ons', [AdminController::class, 'createAddOn']);
+
+        // ─── Project Workspace ───────────────────────────────────
+        Route::get('/projects', [AdminController::class, 'projects']);
+        Route::get('/projects/{id}', [AdminController::class, 'projectShow']);
+        Route::put('/projects/{id}', [AdminController::class, 'projectUpdate']);
+        Route::patch('/projects/{id}/status', [AdminController::class, 'projectChangeStatus']);
+        Route::get('/projects/{id}/activity', [AdminController::class, 'projectActivity']);
+
+        // Milestone actions
+        Route::post('/milestones/{milestoneId}/{action}', [AdminController::class, 'milestoneAction']);
+
+        // Internal Notes
+        Route::get('/projects/{projectId}/notes', [AdminController::class, 'listNotes']);
+        Route::post('/projects/{projectId}/notes', [AdminController::class, 'createNote']);
+        Route::put('/notes/{noteId}', [AdminController::class, 'updateNote']);
+        Route::delete('/notes/{noteId}', [AdminController::class, 'deleteNote']);
+
+        // Collaboration — Admin Files
+        Route::get('/projects/{id}/files', [ProjectFileController::class, 'index']);
+        Route::post('/projects/{id}/files', [ProjectFileController::class, 'upload']);
+        Route::delete('/projects/{id}/files/{fileId}', [ProjectFileController::class, 'destroy']);
+        Route::patch('/files/{fileId}', [ProjectFileController::class, 'update']);
+
+        // Collaboration — Admin Messages
+        Route::get('/projects/{id}/messages', [ProjectMessageController::class, 'index']);
+        Route::post('/projects/{id}/messages', [ProjectMessageController::class, 'store']);
+        Route::patch('/messages/{messageId}/pin', [ProjectMessageController::class, 'markImportant']);
+
+        // Collaboration — Milestone Review Request
+        Route::post('/milestones/{milestoneId}/request-review', [ProjectReviewController::class, 'requestReview']);
+
+        // Collaboration — Delivery Management
+        Route::get('/projects/{id}/delivery', [ProjectFileController::class, 'deliveryIndex']);
+        Route::post('/projects/{id}/delivery', [AdminController::class, 'addDeliveryItem']);
+        Route::delete('/projects/{id}/delivery/{fileId}', [AdminController::class, 'removeDeliveryItem']);
+
+        // Collaboration — Review Moderation
+        Route::get('/reviews', [ProjectReviewController::class, 'adminList']);
+        Route::patch('/reviews/{reviewId}', [ProjectReviewController::class, 'moderate']);
     });
 });

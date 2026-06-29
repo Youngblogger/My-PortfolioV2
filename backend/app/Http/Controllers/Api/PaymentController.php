@@ -84,6 +84,11 @@ class PaymentController extends Controller
             ], 422);
         }
 
+        $transaction = Transaction::where('transaction_reference', $request->reference)->first();
+        if ($transaction && $transaction->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
         try {
             $result = $this->checkoutService->verifyAndComplete(
                 $request->reference,

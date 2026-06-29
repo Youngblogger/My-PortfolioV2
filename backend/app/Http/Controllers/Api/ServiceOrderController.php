@@ -13,12 +13,11 @@ use App\Models\ServiceActivityLog;
 use App\Models\Milestone;
 use App\Models\AddOn;
 use App\Models\Package;
-use App\Models\Service;
-use App\Models\ProjectType;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Payments\PaymentService;
 
@@ -95,6 +94,14 @@ class ServiceOrderController extends Controller
             $totalNgn = $packagePriceNgn + $addOnsTotalNgn;
             $totalUsd = $packagePriceUsd + $addOnsTotalUsd;
 
+            Log::info('Payment initialization started', [
+                'service_id' => $request->service_id,
+                'package_id' => $request->package_id,
+                'add_on_count' => count($addOns),
+                'gateway' => $request->payment_gateway,
+                'amount_ngn' => $totalNgn,
+            ]);
+
             $depositPercentage = $request->payment_type === 'deposit' ? 50 : 100;
             $amountDueNgn = ($totalNgn * $depositPercentage) / 100;
             $amountDueUsd = ($totalUsd * $depositPercentage) / 100;
@@ -137,26 +144,36 @@ class ServiceOrderController extends Controller
                 ]);
             }
 
+            $reference = 'SVC-' . strtoupper(uniqid());
+
             $payment = $this->paymentService->initializePayment(
                 $request->payment_gateway,
                 [
                     'email' => $request->billing['email'] ?? $request->user()->email,
                     'amount' => $amountDueNgn,
                     'currency' => 'NGN',
-                    'reference' => 'SVC-' . strtoupper(uniqid()),
+                    'reference' => $reference,
                     'metadata' => [
                         'order_id' => $order->id,
                         'order_number' => $order->order_number,
                         'payment_type' => $request->payment_type,
                         'customer_name' => $request->billing['full_name'] ?? $request->user()->name,
                     ],
-                    'callback_url' => config('app.frontend_url') . '/hire/order/' . $order->id . '/success',
+                    'callback_url' => config('app.url') . '/api/v1/service-orders/' . $order->id . '/payment/callback',
                 ]
             );
 
             $order->update([
                 'transaction_reference' => $payment['reference'],
                 'payment_status' => 'processing',
+            ]);
+
+            Log::info('Payment initialized successfully', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'reference' => $payment['reference'],
+                'authorization_url' => $payment['authorization_url'],
+                'gateway' => $request->payment_gateway,
             ]);
 
             ServiceActivityLog::create([
@@ -183,6 +200,11 @@ class ServiceOrderController extends Controller
             ]);
         } catch (\RuntimeException $e) {
             DB::rollBack();
+            Log::error('Payment initialization failed', [
+                'error' => $e->getMessage(),
+                'service_id' => $request->service_id,
+                'gateway' => $request->payment_gateway,
+            ]);
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -198,22 +220,32 @@ class ServiceOrderController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::warning('Payment verification validation failed', ['errors' => $validator->errors()->toArray()]);
             return response()->json([
                 'success' => false,
                 'error' => $validator->errors()->first(),
             ], 422);
         }
 
+        Log::info('Payment verification request', [
+            'order_id' => $request->order_id,
+            'reference' => $request->reference,
+        ]);
+
         try {
             $order = ServiceOrder::with(['service', 'projectType', 'package', 'addOns', 'user.profile'])
                 ->findOrFail($request->order_id);
 
             if ($order->user_id !== $request->user()->id) {
+                Log::warning('Payment verification unauthorized', [
+                    'order_id' => $request->order_id,
+                    'user_id' => $request->user()->id,
+                ]);
                 return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
             }
 
-            // Prevent duplicate processing
             if ($order->payment_status === 'paid' || $order->payment_status === 'completed') {
+                Log::info('Payment verification - duplicate request', ['order_id' => $request->order_id]);
                 $existingInvoice = $order->invoices()->latest()->first();
                 $existingReceipt = $order->receipts()->latest()->first();
                 return response()->json([
@@ -238,191 +270,48 @@ class ServiceOrderController extends Controller
 
             $verification = $this->paymentService->verifyPayment($order->payment_gateway, $request->reference);
 
-            if ($verification['status'] === 'success') {
-                DB::beginTransaction();
+            Log::info('Payment verification result', [
+                'order_id' => $request->order_id,
+                'reference' => $request->reference,
+                'status' => $verification['status'],
+            ]);
 
-                $now = now();
+            if ($verification['status'] === 'success' || $verification['status'] === 'completed') {
+                $this->processVerifiedPayment($order, $request->reference, $verification);
+
+                $order->refresh();
+                $invoice = $order->invoices()->latest()->first();
+                $receipt = $order->receipts()->latest()->first();
                 $metadata = $order->metadata ?? [];
                 $paymentType = $metadata['payment_type'] ?? 'full';
-                $amountPaidNgn = $paymentType === 'deposit' ? $order->total_ngn / 2 : $order->total_ngn;
-                $amountPaidUsd = $paymentType === 'deposit' ? $order->total_usd / 2 : $order->total_usd;
-                $balanceNgn = $order->total_ngn - $amountPaidNgn;
-                $balanceUsd = $order->total_usd - $amountPaidUsd;
                 $projectName = $metadata['project_name'] ?? $order->projectType->title;
-
-                // 1. Update order with payment and project info
-                $projectNumber = 'PRJ-' . strtoupper(substr(uniqid(), -8));
-
-                $order->update([
-                    'payment_status' => $balanceNgn > 0 ? 'partially_paid' : 'paid',
-                    'status' => 'active',
-                    'project_number' => $projectNumber,
-                    'project_status' => 'pending_review',
-                    'project_created_at' => $now,
-                ]);
-
-                // 2. Create invoice
-                $invoiceNumber = 'INV-SVC-' . strtoupper(substr(uniqid(), -8));
-
-                $invoice = ServiceInvoice::create([
-                    'invoice_number' => $invoiceNumber,
-                    'service_order_id' => $order->id,
-                    'user_id' => $request->user()->id,
-                    'status' => $balanceNgn > 0 ? 'partially_paid' : 'paid',
-                    'subtotal_ngn' => $order->total_ngn,
-                    'subtotal_usd' => $order->total_usd,
-                    'total_ngn' => $order->total_ngn,
-                    'total_usd' => $order->total_usd,
-                    'amount_paid_ngn' => $amountPaidNgn,
-                    'amount_paid_usd' => $amountPaidUsd,
-                    'balance_ngn' => $balanceNgn,
-                    'balance_usd' => $balanceUsd,
-                    'payment_type' => $paymentType,
-                    'paid_at' => $now,
-                ]);
-
-                // 3. Create payment record
-                $payment = ServicePayment::create([
-                    'service_order_id' => $order->id,
-                    'service_invoice_id' => $invoice->id,
-                    'user_id' => $request->user()->id,
-                    'reference' => $request->reference,
-                    'gateway' => $order->payment_gateway,
-                    'amount_ngn' => $amountPaidNgn,
-                    'amount_usd' => $amountPaidUsd,
-                    'currency' => 'NGN',
-                    'status' => 'completed',
-                    'payment_type' => $paymentType,
-                    'gateway_response' => $verification,
-                    'paid_at' => $now,
-                ]);
-
-                // 4. Create receipt
-                $receiptNumber = 'RCT-SVC-' . strtoupper(substr(uniqid(), -8));
-
-                ServiceReceipt::create([
-                    'receipt_number' => $receiptNumber,
-                    'service_order_id' => $order->id,
-                    'service_invoice_id' => $invoice->id,
-                    'service_payment_id' => $payment->id,
-                    'user_id' => $request->user()->id,
-                    'amount_ngn' => $amountPaidNgn,
-                    'amount_usd' => $amountPaidUsd,
-                    'currency' => 'NGN',
-                    'payment_gateway' => $order->payment_gateway,
-                    'payment_type' => $paymentType,
-                    'status' => 'completed',
-                    'receipt_data' => [
-                        'order_number' => $order->order_number,
-                        'project_number' => $projectNumber,
-                        'service' => $order->service?->title,
-                        'project_type' => $order->projectType?->title,
-                        'package' => $order->package?->name,
-                        'project_name' => $projectName,
-                        'payment_reference' => $request->reference,
-                    ],
-                ]);
-
-                // 5. Create full 11-milestone project timeline
-                $this->createProjectTimeline($order, $now, $balanceNgn);
-
-                // 6. Activity logs
-                ServiceActivityLog::create([
-                    'service_order_id' => $order->id,
-                    'user_id' => $request->user()->id,
-                    'action' => 'payment_verified',
-                    'description' => 'Payment of ' . number_format($amountPaidNgn, 2) . ' NGN verified successfully.',
-                    'metadata' => ['gateway' => $order->payment_gateway, 'reference' => $request->reference],
-                ]);
-
-                ServiceActivityLog::create([
-                    'service_order_id' => $order->id,
-                    'user_id' => $request->user()->id,
-                    'action' => 'invoice_generated',
-                    'description' => 'Invoice ' . $invoiceNumber . ' generated.',
-                ]);
-
-                ServiceActivityLog::create([
-                    'service_order_id' => $order->id,
-                    'user_id' => $request->user()->id,
-                    'action' => 'receipt_generated',
-                    'description' => 'Receipt ' . $receiptNumber . ' generated.',
-                ]);
-
-                ServiceActivityLog::create([
-                    'service_order_id' => $order->id,
-                    'user_id' => $request->user()->id,
-                    'action' => 'project_created',
-                    'description' => 'Project ' . $projectNumber . ' created and workspace provisioned.',
-                    'metadata' => ['project_number' => $projectNumber],
-                ]);
-
-                ServiceActivityLog::create([
-                    'service_order_id' => $order->id,
-                    'user_id' => $request->user()->id,
-                    'action' => 'timeline_initialized',
-                    'description' => 'Project timeline with 11 milestones initialized.',
-                ]);
-
-                // 7. Client notification
-                Notification::create([
-                    'user_id' => $order->user_id,
-                    'service_order_id' => $order->id,
-                    'type' => 'payment_received',
-                    'title' => 'Payment Confirmed!',
-                    'body' => 'Your payment of ' . number_format($amountPaidNgn, 2) . ' NGN has been received. Project ' . $projectNumber . ' is now being prepared.',
-                    'action_url' => '/hire/project/' . $order->id,
-                    'action_text' => 'View Project Workspace',
-                    'channel' => 'in_app',
-                ]);
-
-                Notification::create([
-                    'user_id' => $order->user_id,
-                    'service_order_id' => $order->id,
-                    'type' => 'project_created',
-                    'title' => 'Project Workspace Ready',
-                    'body' => 'Your project workspace for ' . $projectName . ' is ready. Track progress, milestones, and team activity.',
-                    'action_url' => '/hire/project/' . $order->id,
-                    'action_text' => 'Open Workspace',
-                    'channel' => 'in_app',
-                ]);
-
-                // 8. Admin notifications
-                $admins = User::whereHas('profile', fn ($q) => $q->where('role', 'admin'))->get();
-                foreach ($admins as $admin) {
-                    Notification::create([
-                        'user_id' => $admin->id,
-                        'service_order_id' => $order->id,
-                        'type' => 'new_project',
-                        'title' => 'New Project: ' . $projectName,
-                        'body' => $projectName . ' — ' . number_format($amountPaidNgn, 2) . ' NGN paid. Review and assign team.',
-                        'action_url' => '/admin/orders/' . $order->id,
-                        'action_text' => 'View Order',
-                        'channel' => 'in_app',
-                    ]);
-                }
-
-                DB::commit();
+                $balanceNgn = $order->total_ngn - ($paymentType === 'deposit' ? $order->total_ngn / 2 : $order->total_ngn);
 
                 return response()->json([
                     'success' => true,
                     'data' => [
                         'order_id' => $order->id,
                         'order_number' => $order->order_number,
-                        'project_number' => $projectNumber,
-                        'project_status' => 'pending_review',
-                        'invoice_number' => $invoiceNumber,
-                        'receipt_number' => $receiptNumber,
-                        'status' => 'active',
-                        'payment_status' => $balanceNgn > 0 ? 'partially_paid' : 'paid',
-                        'amount_paid_ngn' => (float) $amountPaidNgn,
-                        'balance_ngn' => (float) $balanceNgn,
+                        'project_number' => $order->project_number,
+                        'project_status' => $order->project_status,
+                        'invoice_number' => $invoice?->invoice_number,
+                        'receipt_number' => $receipt?->receipt_number,
+                        'status' => $order->status,
+                        'payment_status' => $order->payment_status,
+                        'amount_paid_ngn' => (float) ($invoice?->amount_paid_ngn ?? $order->total_ngn),
+                        'balance_ngn' => (float) ($balanceNgn),
                         'total_ngn' => (float) $order->total_ngn,
                         'payment_type' => $paymentType,
                         'project_name' => $projectName,
+                        'created_at' => $order->created_at->toIso8601String(),
                     ],
                 ]);
             }
+
+            Log::warning('Payment verification unsuccessful', [
+                'order_id' => $request->order_id,
+                'status' => $verification['status'],
+            ]);
 
             return response()->json([
                 'success' => false,
@@ -431,10 +320,283 @@ class ServiceOrderController extends Controller
             ], 400);
         } catch (\RuntimeException $e) {
             DB::rollBack();
+            Log::error('Payment verification failed', [
+                'order_id' => $request->order_id,
+                'reference' => $request->reference,
+                'error' => $e->getMessage(),
+            ]);
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
             ], 400);
+        }
+    }
+
+    public function paymentCallback(Request $request, string $id)
+    {
+        Log::info('Payment callback received', [
+            'order_id' => $id,
+            'query_params' => $request->all(),
+        ]);
+
+        try {
+            $order = ServiceOrder::findOrFail($id);
+
+            $reference = $request->query('reference') ?? $request->query('trxref');
+
+            if (!$reference) {
+                Log::warning('Payment callback missing reference', ['order_id' => $id]);
+                $frontendUrl = config('app.frontend_url') . '/hire/order/' . $id . '/success?error=missing_reference';
+                return redirect()->away($frontendUrl);
+            }
+
+            Log::info('Payment callback verifying', [
+                'order_id' => $id,
+                'reference' => $reference,
+                'order_status' => $order->payment_status,
+            ]);
+
+            if ($order->payment_status === 'paid' || $order->payment_status === 'completed') {
+                Log::info('Payment callback - already paid', ['order_id' => $id]);
+                $frontendUrl = config('app.frontend_url') . '/hire/order/' . $id . '/success?reference=' . $reference;
+                return redirect()->away($frontendUrl);
+            }
+
+            $verification = $this->paymentService->verifyPayment($order->payment_gateway, $reference);
+
+            Log::info('Payment callback verification result', [
+                'order_id' => $id,
+                'reference' => $reference,
+                'status' => $verification['status'],
+            ]);
+
+            if ($verification['status'] === 'completed') {
+                $this->processVerifiedPayment($order, $reference, $verification);
+
+                $frontendUrl = config('app.frontend_url') . '/hire/order/' . $id . '/success?reference=' . $reference;
+                Log::info('Payment callback redirecting to success', [
+                    'order_id' => $id,
+                    'redirect_url' => $frontendUrl,
+                ]);
+                return redirect()->away($frontendUrl);
+            }
+
+            if ($verification['status'] === 'failed') {
+                $order->update(['payment_status' => 'failed']);
+                $frontendUrl = config('app.frontend_url') . '/hire/order/' . $id . '/success?error=payment_failed';
+                Log::warning('Payment callback - payment failed', ['order_id' => $id]);
+                return redirect()->away($frontendUrl);
+            }
+
+            $frontendUrl = config('app.frontend_url') . '/hire/order/' . $id . '/success?error=verification_pending';
+            Log::info('Payment callback - verification pending', ['order_id' => $id]);
+            return redirect()->away($frontendUrl);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::error('Payment callback - order not found', ['order_id' => $id]);
+            $frontendUrl = config('app.frontend_url') . '/hire/order/' . $id . '/success?error=order_not_found';
+            return redirect()->away($frontendUrl);
+        } catch (\RuntimeException $e) {
+            Log::error('Payment callback error', [
+                'order_id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+            $frontendUrl = config('app.frontend_url') . '/hire/order/' . $id . '/success?error=verification_failed';
+            return redirect()->away($frontendUrl);
+        }
+    }
+
+    public function processVerifiedPayment(ServiceOrder $order, string $reference, array $verification): void
+    {
+        DB::beginTransaction();
+        try {
+            // Lock the order row to prevent race conditions with webhook
+            $locked = ServiceOrder::where('id', $order->id)->lockForUpdate()->first();
+
+            if (!$locked || $locked->payment_status === 'paid' || $locked->payment_status === 'completed') {
+                DB::rollBack();
+                Log::info('processVerifiedPayment: skipped (already paid)', ['order_id' => $order->id]);
+                return;
+            }
+
+            $order = $locked;
+            $now = now();
+            $metadata = $order->metadata ?? [];
+            $paymentType = $metadata['payment_type'] ?? 'full';
+            $amountPaidNgn = $paymentType === 'deposit' ? $order->total_ngn / 2 : $order->total_ngn;
+            $amountPaidUsd = $paymentType === 'deposit' ? $order->total_usd / 2 : $order->total_usd;
+            $balanceNgn = $order->total_ngn - $amountPaidNgn;
+            $balanceUsd = $order->total_usd - $amountPaidUsd;
+            $projectName = $metadata['project_name'] ?? $order->projectType->title;
+
+            $projectNumber = 'PRJ-' . strtoupper(substr(uniqid(), -8));
+
+            $order->update([
+                'payment_status' => $balanceNgn > 0 ? 'partially_paid' : 'paid',
+                'status' => 'active',
+                'project_number' => $projectNumber,
+                'project_status' => 'pending_review',
+                'project_created_at' => $now,
+            ]);
+
+            $invoiceNumber = 'INV-SVC-' . strtoupper(substr(uniqid(), -8));
+            $invoice = ServiceInvoice::create([
+                'invoice_number' => $invoiceNumber,
+                'service_order_id' => $order->id,
+                'user_id' => $order->user_id,
+                'status' => $balanceNgn > 0 ? 'partially_paid' : 'paid',
+                'subtotal_ngn' => $order->total_ngn,
+                'subtotal_usd' => $order->total_usd,
+                'total_ngn' => $order->total_ngn,
+                'total_usd' => $order->total_usd,
+                'amount_paid_ngn' => $amountPaidNgn,
+                'amount_paid_usd' => $amountPaidUsd,
+                'balance_ngn' => $balanceNgn,
+                'balance_usd' => $balanceUsd,
+                'payment_type' => $paymentType,
+                'paid_at' => $now,
+            ]);
+
+            $payment = ServicePayment::create([
+                'service_order_id' => $order->id,
+                'service_invoice_id' => $invoice->id,
+                'user_id' => $order->user_id,
+                'reference' => $reference,
+                'gateway' => $order->payment_gateway,
+                'amount_ngn' => $amountPaidNgn,
+                'amount_usd' => $amountPaidUsd,
+                'currency' => 'NGN',
+                'status' => 'completed',
+                'payment_type' => $paymentType,
+                'gateway_response' => $verification,
+                'paid_at' => $now,
+            ]);
+
+            $receiptNumber = 'RCT-SVC-' . strtoupper(substr(uniqid(), -8));
+            ServiceReceipt::create([
+                'receipt_number' => $receiptNumber,
+                'service_order_id' => $order->id,
+                'service_invoice_id' => $invoice->id,
+                'service_payment_id' => $payment->id,
+                'user_id' => $order->user_id,
+                'amount_ngn' => $amountPaidNgn,
+                'amount_usd' => $amountPaidUsd,
+                'currency' => 'NGN',
+                'payment_gateway' => $order->payment_gateway,
+                'payment_type' => $paymentType,
+                'status' => 'completed',
+                'receipt_data' => [
+                    'order_number' => $order->order_number,
+                    'project_number' => $projectNumber,
+                    'service' => $order->service?->title,
+                    'project_type' => $order->projectType?->title,
+                    'package' => $order->package?->name,
+                    'project_name' => $projectName,
+                    'payment_reference' => $reference,
+                ],
+            ]);
+
+            $this->createProjectTimeline($order, $now, $balanceNgn);
+            $this->logPaymentActivity($order, $reference, $amountPaidNgn, $invoiceNumber, $receiptNumber, $projectNumber, $projectName);
+            $this->sendPaymentNotifications($order, $projectName, $projectNumber, $amountPaidNgn);
+
+            DB::commit();
+
+            Log::info('Payment processed successfully', [
+                'order_id' => $order->id,
+                'reference' => $reference,
+                'project_number' => $projectNumber,
+                'invoice_number' => $invoiceNumber,
+                'receipt_number' => $receiptNumber,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Payment processing failed', [
+                'order_id' => $order->id,
+                'reference' => $reference,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    private function logPaymentActivity(ServiceOrder $order, string $reference, float $amountPaidNgn, string $invoiceNumber, string $receiptNumber, string $projectNumber, string $projectName): void
+    {
+        ServiceActivityLog::create([
+            'service_order_id' => $order->id,
+            'user_id' => $order->user_id,
+            'action' => 'payment_verified',
+            'description' => 'Payment of ' . number_format($amountPaidNgn, 2) . ' NGN verified successfully.',
+            'metadata' => ['gateway' => $order->payment_gateway, 'reference' => $reference],
+        ]);
+
+        ServiceActivityLog::create([
+            'service_order_id' => $order->id,
+            'user_id' => $order->user_id,
+            'action' => 'invoice_generated',
+            'description' => 'Invoice ' . $invoiceNumber . ' generated.',
+        ]);
+
+        ServiceActivityLog::create([
+            'service_order_id' => $order->id,
+            'user_id' => $order->user_id,
+            'action' => 'receipt_generated',
+            'description' => 'Receipt ' . $receiptNumber . ' generated.',
+        ]);
+
+        ServiceActivityLog::create([
+            'service_order_id' => $order->id,
+            'user_id' => $order->user_id,
+            'action' => 'project_created',
+            'description' => 'Project ' . $projectNumber . ' created and workspace provisioned.',
+            'metadata' => ['project_number' => $projectNumber],
+        ]);
+
+        ServiceActivityLog::create([
+            'service_order_id' => $order->id,
+            'user_id' => $order->user_id,
+            'action' => 'timeline_initialized',
+            'description' => 'Project timeline with 11 milestones initialized.',
+        ]);
+    }
+
+    private function sendPaymentNotifications(ServiceOrder $order, string $projectName, string $projectNumber, float $amountPaidNgn): void
+    {
+        Notification::create([
+            'user_id' => $order->user_id,
+            'service_order_id' => $order->id,
+            'type' => 'payment_received',
+            'title' => 'Payment Confirmed!',
+            'body' => 'Your payment of ' . number_format($amountPaidNgn, 2) . ' NGN has been received. Project ' . $projectNumber . ' is now being prepared.',
+            'action_url' => '/hire/project/' . $order->id,
+            'action_text' => 'View Project Workspace',
+            'channel' => 'in_app',
+        ]);
+
+        Notification::create([
+            'user_id' => $order->user_id,
+            'service_order_id' => $order->id,
+            'type' => 'project_created',
+            'title' => 'Project Workspace Ready',
+            'body' => 'Your project workspace for ' . $projectName . ' is ready. Track progress, milestones, and team activity.',
+            'action_url' => '/hire/project/' . $order->id,
+            'action_text' => 'Open Workspace',
+            'channel' => 'in_app',
+        ]);
+
+        $admins = User::whereHas('profile', fn ($q) => $q->where('role', 'admin'))->get();
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'service_order_id' => $order->id,
+                'type' => 'new_project',
+                'title' => 'New Project: ' . $projectName,
+                'body' => $projectName . ' — ' . number_format($amountPaidNgn, 2) . ' NGN paid. Review and assign team.',
+                'action_url' => '/admin/orders/' . $order->id,
+                'action_text' => 'View Order',
+                'channel' => 'in_app',
+            ]);
         }
     }
 

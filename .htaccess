@@ -1,0 +1,53 @@
+RewriteEngine On
+
+# ============================================
+# CODEMAFIA PRODUCTION — Apache .htaccess
+# Place this file in the Apache DocumentRoot
+# (the directory that serves https://codemafia.ng)
+# ============================================
+# This file + proxy.php handle all routing:
+#   - Static files → served directly
+#   - API routes (/api/v1/*) → proxied to Laravel (:8000) via proxy.php
+#   - All other routes → proxied to Next.js (:3000) via proxy.php
+# ============================================
+# Requirements:
+#   - mod_rewrite enabled (required)
+#   - PHP with curl extension (for proxy.php)
+#   - Next.js running on 127.0.0.1:3000
+#   - Laravel running on 127.0.0.1:8000
+# ============================================
+
+# --- 1. If proxy.php doesn't exist, skip (let Apache handle normally) ---
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{DOCUMENT_ROOT}/proxy.php -f
+
+# --- 2. Static assets — serve directly ---
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# --- 3. Everything else → proxy.php ---
+RewriteRule ^(.*)$ proxy.php [QSA,L]
+
+# ============================================
+# CORS + Security Headers
+# ============================================
+<IfModule mod_headers.c>
+    SetEnvIf Origin "http://localhost:3000$" CORSHostAllowed=true
+    SetEnvIf Origin "https://codemafia\.ng$" CORSHostAllowed=true
+    SetEnvIf Origin "https://www\.codemafia\.ng$" CORSHostAllowed=true
+    Header always set Access-Control-Allow-Origin %{HTTP_ORIGIN}e env=CORSHostAllowed
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, X-CSRF-TOKEN"
+    Header always set Access-Control-Allow-Credentials "true"
+    Header always set Access-Control-Max-Age "86400"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Vary "Origin"
+</IfModule>
+
+# --- Deny access to sensitive files ---
+<FilesMatch "\.(env|json|lock|log|md)$">
+    Require all denied
+</FilesMatch>

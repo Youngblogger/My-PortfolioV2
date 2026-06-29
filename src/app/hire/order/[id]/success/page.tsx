@@ -28,30 +28,79 @@ const STATUS_STAGES = [
   "Completed",
 ];
 
+const ERROR_MESSAGES: Record<string, { title: string; message: string }> = {
+  missing_reference: {
+    title: "Missing Payment Reference",
+    message: "No payment reference was provided. This could mean the payment was not completed or you accessed this page directly.",
+  },
+  payment_failed: {
+    title: "Payment Failed",
+    message: "The payment was not successful. Please try again or contact support if the issue persists.",
+  },
+  verification_pending: {
+    title: "Verification Pending",
+    message: "Your payment is still being processed. This usually takes a few moments. Please check your dashboard or refresh this page.",
+  },
+  verification_failed: {
+    title: "Verification Failed",
+    message: "We couldn't verify your payment at this time. Please contact support with your order number.",
+  },
+  order_not_found: {
+    title: "Order Not Found",
+    message: "We couldn't find an order matching this reference. Please check the URL or contact support.",
+  },
+  no_reference: {
+    title: "Verifying Payment",
+    message: "Waiting for payment confirmation...",
+  },
+};
+
+type ErrorKey = keyof typeof ERROR_MESSAGES;
+
 function OrderSuccessContent() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<ServicePaymentVerifyResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<ErrorKey | null>(null);
   const { reset } = useBooking();
 
   useEffect(() => {
     if (!id) return;
 
-    const reference = searchParams.get("reference");
-    if (reference) {
-      api.verifyServicePayment(reference, id).then((res) => {
-        setStatus(res.data);
-        setLoading(false);
-        reset();
-      }).catch((err) => {
-        setError(err?.message || "Failed to verify payment");
-        setLoading(false);
-      });
-    } else {
+    const reference = searchParams.get("reference") || searchParams.get("trxref");
+    const errorParam = searchParams.get("error") as ErrorKey | null;
+
+    if (errorParam && ERROR_MESSAGES[errorParam]) {
+      setErrorKey(errorParam);
       setLoading(false);
+      return;
     }
+
+    if (!reference) {
+      setErrorKey("no_reference");
+      setLoading(false);
+      return;
+    }
+
+    api.verifyServicePayment(reference, id).then((res) => {
+      setStatus(res.data);
+      setLoading(false);
+      reset();
+    }).catch((err) => {
+      const msg = err?.message || "";
+      if (msg.includes("already") || msg.includes("duplicate")) {
+        setError("This payment has already been processed. Check your dashboard for details.");
+      } else if (msg.includes("expired")) {
+        setError("This payment reference has expired. Please initiate a new payment.");
+      } else if (msg.includes("cancelled") || msg.includes("cancel")) {
+        setError("This payment was cancelled. Please try again when ready.");
+      } else {
+        setError(msg || "Failed to verify payment. Please contact support.");
+      }
+      setLoading(false);
+    });
   }, [id, searchParams, reset]);
 
   if (loading) {
@@ -60,14 +109,59 @@ function OrderSuccessContent() {
         <div className="glass rounded-2xl p-8 animate-pulse space-y-4">
           <div className="h-8 w-48 bg-white/10 rounded" />
           <div className="h-4 w-64 bg-white/10 rounded" />
+          <div className="h-4 w-48 bg-white/10 rounded" />
         </div>
       </div>
     );
   }
 
+  if (errorKey) {
+    const err = ERROR_MESSAGES[errorKey];
+    return (
+      <section className="relative pt-20 pb-20 min-h-screen flex items-center">
+        <div className="relative z-10 max-w-lg mx-auto px-6 text-center">
+          <div className={`glass rounded-2xl p-8 ${errorKey === "payment_failed" || errorKey === "verification_failed" ? "border-red-500/20" : "border-yellow-500/20"}`}>
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+              errorKey === "payment_failed" || errorKey === "verification_failed" || errorKey === "order_not_found"
+                ? "bg-red-500/10" : "bg-yellow-500/10"
+            }`}>
+              <svg className={`w-8 h-8 ${errorKey === "payment_failed" || errorKey === "verification_failed" || errorKey === "order_not_found" ? "text-red-400" : "text-yellow-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-white mb-2">{err.title}</h2>
+            <p className="text-muted text-sm mb-6">{err.message}</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {(errorKey === "payment_failed" || errorKey === "verification_pending") && (
+                <Link
+                  href="/hire/checkout"
+                  className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all"
+                >
+                  Try Again
+                </Link>
+              )}
+              <Link
+                href="/dashboard"
+                className="px-6 py-3 rounded-xl glass text-white font-bold text-sm hover:bg-white/10 transition-all"
+              >
+                Go to Dashboard
+              </Link>
+              <Link
+                href="/contact"
+                className="px-6 py-3 rounded-xl glass text-white font-bold text-sm hover:bg-white/10 transition-all"
+              >
+                Contact Support
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (error) {
     return (
-      <section className="relative pt-20 pb-20 overflow-hidden min-h-screen flex items-center">
+      <section className="relative pt-20 pb-20 min-h-screen flex items-center">
         <div className="relative z-10 max-w-lg mx-auto px-6 text-center">
           <div className="glass rounded-2xl p-8">
             <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
@@ -75,25 +169,49 @@ function OrderSuccessContent() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-white mb-2">Verification In Progress</h2>
+            <h2 className="text-xl font-bold text-white mb-2">Verification Error</h2>
             <p className="text-muted text-sm mb-6">{error}</p>
-            <p className="text-xs text-muted">Your payment may still be processing. Check your dashboard or contact support.</p>
-            <Link href="/dashboard" className="inline-block mt-6 px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all">
-              Go to Dashboard
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href="/dashboard"
+                className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all"
+              >
+                Go to Dashboard
+              </Link>
+              <Link
+                href="/contact"
+                className="px-6 py-3 rounded-xl glass text-white font-bold text-sm hover:bg-white/10 transition-all"
+              >
+                Contact Support
+              </Link>
+            </div>
           </div>
         </div>
       </section>
     );
   }
 
-  const paid = status?.payment_status === "paid" || status?.payment_status === "partially_paid";
-  const isDeposit = status?.payment_type === "deposit";
-  const projectStatusLabel = PROJECT_STATUS_LABELS[status?.project_status || ""] || status?.project_status || "Pending Review";
-  const estimatedKickoff = status?.created_at
-    ? new Date(new Date(status.created_at).getTime() + 3 * 24 * 60 * 60 * 1000)
-    : null;
+  if (!status) {
+    return (
+      <section className="relative pt-20 pb-20 min-h-screen flex items-center justify-center">
+        <div className="glass rounded-2xl p-8 text-center max-w-md mx-auto">
+          <div className="text-4xl mb-4" aria-hidden="true">&#128270;</div>
+          <h2 className="text-xl font-bold text-white mb-2">No Payment Data</h2>
+          <p className="text-muted text-sm mb-6">No payment information is available for this page.</p>
+          <Link
+            href="/dashboard"
+            className="inline-block px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all"
+          >
+            Back to Dashboard
+          </Link>
+        </div>
+      </section>
+    );
+  }
 
+  const paid = status.payment_status === "paid" || status.payment_status === "partially_paid";
+  const isDeposit = status.payment_type === "deposit";
+  const projectStatusLabel = PROJECT_STATUS_LABELS[status.project_status || ""] || status.project_status || "Pending Review";
   const currentStageIdx = paid ? 1 : 0;
 
   return (
@@ -114,16 +232,24 @@ function OrderSuccessContent() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center mx-auto mb-8">
-            <motion.svg
-              className="w-12 h-12 text-gold"
-              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1, delay: 0.3, ease: "easeInOut" }}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </motion.svg>
+          <div className={`w-24 h-24 rounded-full bg-gradient-to-br flex items-center justify-center mx-auto mb-8 ${
+            paid ? "from-gold/20 to-gold/5" : "from-yellow-500/20 to-yellow-500/5"
+          }`}>
+            {paid ? (
+              <motion.svg
+                className="w-12 h-12 text-gold"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 1, delay: 0.3, ease: "easeInOut" }}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </motion.svg>
+            ) : (
+              <svg className="w-12 h-12 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            )}
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold mb-3">
@@ -136,13 +262,13 @@ function OrderSuccessContent() {
                 : "Your project is confirmed! Your workspace is being provisioned."
               : "Your order has been received. Complete payment to start the project."}
           </p>
-          {status?.project_number && (
+          {status.project_number && (
             <p className="text-sm text-muted">
               Project: <span className="text-white font-mono">{status.project_number}</span>
             </p>
           )}
           <p className="text-sm text-muted">
-            Order: <span className="text-white font-mono">{status?.order_number}</span>
+            Order: <span className="text-white font-mono">{status.order_number}</span>
           </p>
         </motion.div>
 
@@ -170,7 +296,7 @@ function OrderSuccessContent() {
                             : "bg-white/5 text-muted border border-white/5"
                       }`}
                     >
-                      {isCompleted && <span className="text-green-400">✓</span>}
+                      {isCompleted && <span className="text-green-400">&#10003;</span>}
                       {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />}
                       {stage}
                     </div>
@@ -195,7 +321,9 @@ function OrderSuccessContent() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
               <div>
                 <span className="text-xs text-muted">Amount Paid</span>
-                <p className="text-gold font-bold mt-0.5">₦{Number(status.amount_paid_ngn).toLocaleString()}</p>
+                <p className="text-gold font-bold mt-0.5">
+                  {status.amount_paid_ngn ? `₦${Number(status.amount_paid_ngn).toLocaleString()}` : "—"}
+                </p>
               </div>
               {Number(status.balance_ngn) > 0 && (
                 <div>
@@ -205,22 +333,14 @@ function OrderSuccessContent() {
               )}
               <div>
                 <span className="text-xs text-muted">Payment Status</span>
-                <p className={`font-bold mt-0.5 capitalize ${status.payment_status === "paid" ? "text-green-400" : "text-yellow-400"}`}>
-                  {status.payment_status === "partially_paid" ? "Deposit Paid" : status.payment_status}
+                <p className={`font-bold mt-0.5 capitalize ${status.payment_status === "paid" ? "text-green-400" : status.payment_status === "partially_paid" ? "text-yellow-400" : "text-muted"}`}>
+                  {status.payment_status === "partially_paid" ? "Deposit Paid" : status.payment_status?.replace(/_/g, " ")}
                 </p>
               </div>
               <div>
                 <span className="text-xs text-muted">Project Status</span>
                 <p className="text-white font-bold mt-0.5">{projectStatusLabel}</p>
               </div>
-              {estimatedKickoff && paid && (
-                <div>
-                  <span className="text-xs text-muted">Est. Kickoff</span>
-                  <p className="text-white font-bold mt-0.5">
-                    {estimatedKickoff.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                  </p>
-                </div>
-              )}
               {status.invoice_number && (
                 <div>
                   <span className="text-xs text-muted">Invoice</span>
@@ -258,7 +378,7 @@ function OrderSuccessContent() {
                     item.done ? "bg-gold/20" : "bg-white/5"
                   }`}>
                     {item.done ? (
-                      <span className="text-gold text-xs">✓</span>
+                      <span className="text-gold text-xs">&#10003;</span>
                     ) : (
                       <span className="text-muted text-xs">{item.step}</span>
                     )}
@@ -283,7 +403,7 @@ function OrderSuccessContent() {
                 href={`/hire/project/${id}`}
                 className="px-8 py-3.5 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
               >
-                Go to Project Workspace →
+                Go to Project Workspace &rarr;
               </Link>
               <Link
                 href="/dashboard"
@@ -293,12 +413,20 @@ function OrderSuccessContent() {
               </Link>
             </>
           ) : (
-            <Link
-              href="/dashboard"
-              className="px-8 py-3.5 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
-            >
-              Go to Dashboard
-            </Link>
+            <>
+              <Link
+                href="/hire/checkout"
+                className="px-8 py-3.5 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all"
+              >
+                Complete Payment
+              </Link>
+              <Link
+                href="/dashboard"
+                className="px-8 py-3.5 rounded-xl glass text-white font-bold text-sm hover:bg-white/10 transition-all duration-300"
+              >
+                Dashboard
+              </Link>
+            </>
           )}
         </motion.div>
 

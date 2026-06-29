@@ -47,7 +47,7 @@ class ProposalController extends Controller
             'serviceOrder.milestones', 'serviceOrder.teamAssignments.teamMember.user',
         ])->findOrFail($id);
 
-        if ($proposal->user_id !== $request->user()->id && !$request->user()->profile?->role === 'admin') {
+        if ($proposal->user_id !== $request->user()->id && $request->user()->profile?->role !== 'admin') {
             return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
         }
 

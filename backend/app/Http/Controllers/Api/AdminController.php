@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\UpdateServiceRequest;
+use App\Http\Requests\Api\UpdateProjectRequest;
+use App\Http\Requests\Api\ChangeProjectStatusRequest;
+use App\Http\Requests\Api\MilestoneActionRequest;
+use App\Http\Requests\Api\StoreNoteRequest;
 use App\Models\ServiceOrder;
 use App\Models\Service;
 use App\Models\ProjectType;
@@ -17,12 +21,25 @@ use App\Models\ServiceActivityLog;
 use App\Models\Notification;
 use App\Models\RequirementQuestion;
 use App\Models\Milestone;
+use App\Services\MilestoneService;
+use App\Services\ProjectManagementService;
+use App\Services\FileService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
+    private ProjectManagementService $projectService;
+    private MilestoneService $milestoneService;
+    private FileService $fileService;
+
+    public function __construct()
+    {
+        $this->projectService = new ProjectManagementService();
+        $this->milestoneService = new MilestoneService();
+        $this->fileService = new FileService();
+    }
     public function dashboard()
     {
         $stats = [
@@ -462,5 +479,276 @@ class AdminController extends Controller
 
         $q = RequirementQuestion::create($request->all());
         return response()->json(['success' => true, 'data' => $q]);
+    }
+
+    // ─── Project Workspace Endpoints ─────────────────────────────────
+
+    public function projects(Request $request)
+    {
+        $projects = $this->projectService->listProjects($request);
+        return response()->json(['success' => true, 'data' => $projects]);
+    }
+
+    public function projectShow(string $id)
+    {
+        $project = $this->projectService->getProjectDetails($id);
+        $progress = $this->projectService->calculateProgress($project);
+        $metadata = $project->metadata ?? [];
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $project->id,
+                'order_number' => $project->order_number,
+                'project_number' => $project->project_number,
+                'project_name' => $metadata['project_name'] ?? $project->projectType?->title,
+                'status' => $project->status,
+                'project_status' => $project->project_status,
+                'payment_status' => $project->payment_status,
+                'priority' => $metadata['priority'] ?? 'normal',
+                'total_ngn' => (float) $project->total_ngn,
+                'amount_paid_ngn' => (float) $project->payments()->whereIn('status', ['success', 'completed'])->sum('amount_ngn'),
+                'balance_ngn' => (float) ($project->total_ngn - $project->payments()->whereIn('status', ['success', 'completed'])->sum('amount_ngn')),
+                'created_at' => $project->created_at,
+                'project_created_at' => $project->project_created_at,
+                'kickoff_at' => $project->kickoff_at,
+                'completed_at' => $project->completed_at,
+                'estimated_completion' => $project->estimated_completion,
+                'notes' => $project->notes,
+                'client' => $project->user?->profile ? [
+                    'id' => $project->user->id,
+                    'full_name' => $project->user->profile->full_name,
+                    'email' => $project->user->email,
+                    'phone' => $project->user->profile->phone,
+                    'avatar_url' => $project->user->profile->avatar_url,
+                    'company' => $project->user->profile->company,
+                ] : null,
+                'service' => $project->service ? [
+                    'id' => $project->service->id,
+                    'title' => $project->service->title,
+                    'slug' => $project->service->slug,
+                ] : null,
+                'projectType' => $project->projectType ? [
+                    'id' => $project->projectType->id,
+                    'title' => $project->projectType->title,
+                ] : null,
+                'package' => $project->package ? [
+                    'id' => $project->package->id,
+                    'name' => $project->package->name,
+                ] : null,
+                'addOns' => $project->addOns->map(fn ($a) => [
+                    'id' => $a->id,
+                    'name' => $a->name,
+                    'price_ngn' => (float) $a->price_ngn,
+                ]),
+                'milestones' => $project->milestones->map(fn ($m) => [
+                    'id' => $m->id,
+                    'title' => $m->title,
+                    'description' => $m->description,
+                    'milestone_type' => $m->milestone_type,
+                    'status' => $m->status,
+                    'sort_order' => $m->sort_order,
+                    'due_date' => $m->due_date?->toIso8601String(),
+                    'completed_at' => $m->completed_at?->toIso8601String(),
+                    'deliverables' => $m->deliverables,
+                    'completion_notes' => $m->completion_notes,
+                ]),
+                'progress' => $progress,
+                'invoices' => $project->invoices->map(fn ($i) => [
+                    'id' => $i->id,
+                    'invoice_number' => $i->invoice_number,
+                    'status' => $i->status,
+                    'total_ngn' => (float) $i->total_ngn,
+                    'amount_paid_ngn' => (float) $i->amount_paid_ngn,
+                    'balance_ngn' => (float) $i->balance_ngn,
+                    'payment_type' => $i->payment_type,
+                    'paid_at' => $i->paid_at?->toIso8601String(),
+                    'created_at' => $i->created_at,
+                ]),
+                'payments' => $project->payments->map(fn ($p) => [
+                    'id' => $p->id,
+                    'reference' => $p->reference,
+                    'gateway' => $p->gateway,
+                    'amount_ngn' => (float) $p->amount_ngn,
+                    'status' => $p->status,
+                    'payment_type' => $p->payment_type,
+                    'paid_at' => $p->paid_at?->toIso8601String(),
+                    'created_at' => $p->created_at,
+                ]),
+                'receipts' => $project->receipts->map(fn ($r) => [
+                    'id' => $r->id,
+                    'receipt_number' => $r->receipt_number,
+                    'amount_ngn' => (float) $r->amount_ngn,
+                    'currency' => $r->currency,
+                    'payment_gateway' => $r->payment_gateway,
+                    'status' => $r->status,
+                    'created_at' => $r->created_at,
+                ]),
+                'activityLogs' => $project->activityLogs->map(fn ($l) => [
+                    'id' => $l->id,
+                    'action' => $l->action,
+                    'description' => $l->description,
+                    'metadata' => $l->metadata,
+                    'created_at' => $l->created_at,
+                    'user' => $l->user?->profile ? [
+                        'full_name' => $l->user->profile->full_name,
+                    ] : null,
+                ]),
+                'projectManager' => $project->projectManager?->profile ? [
+                    'full_name' => $project->projectManager->profile->full_name,
+                ] : null,
+                'internalNotes' => $project->internalNotes->map(fn ($n) => [
+                    'id' => $n->id,
+                    'content' => $n->content,
+                    'edit_history' => $n->edit_history,
+                    'created_at' => $n->created_at,
+                    'updated_at' => $n->updated_at,
+                    'user' => $n->user?->profile ? [
+                        'full_name' => $n->user->profile->full_name,
+                    ] : null,
+                ]),
+                'team_assignments' => [], // placeholder for future
+            ],
+        ]);
+    }
+
+    public function projectUpdate(UpdateProjectRequest $request, string $id)
+    {
+        try {
+            $project = $this->projectService->updateProject($id, $request->validated());
+            return response()->json(['success' => true, 'data' => ['project_status' => $project->project_status]]);
+        } catch (\RuntimeException $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function projectChangeStatus(ChangeProjectStatusRequest $request, string $id)
+    {
+        try {
+            $project = $this->projectService->changeStatus($id, $request->status, $request->reason);
+            return response()->json(['success' => true, 'data' => ['project_status' => $project->project_status]]);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 422);
+        } catch (\RuntimeException $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function milestoneAction(MilestoneActionRequest $request, string $milestoneId, string $action)
+    {
+        $validActions = ['start', 'complete', 'reopen', 'delay', 'cancel', 'block'];
+        if (!in_array($action, $validActions)) {
+            return response()->json(['success' => false, 'error' => "Invalid action: {$action}"], 422);
+        }
+
+        try {
+            $milestone = Milestone::with('serviceOrder')->findOrFail($milestoneId);
+            $milestone = $this->milestoneService->transition($milestone, $action, $request->notes);
+            return response()->json(['success' => true, 'data' => $milestone]);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 422);
+        } catch (\RuntimeException $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 400);
+        }
+    }
+
+    // ─── Internal Notes ──────────────────────────────────────────────
+
+    public function listNotes(string $projectId)
+    {
+        $project = ServiceOrder::findOrFail($projectId);
+        $notes = $project->internalNotes()->with('user.profile')->orderBy('created_at', 'desc')->get()
+            ->map(fn ($n) => [
+                'id' => $n->id,
+                'content' => $n->content,
+                'edit_history' => $n->edit_history,
+                'created_at' => $n->created_at,
+                'updated_at' => $n->updated_at,
+                'user' => $n->user?->profile ? [
+                    'full_name' => $n->user->profile->full_name,
+                ] : null,
+            ]);
+        return response()->json(['success' => true, 'data' => $notes]);
+    }
+
+    public function createNote(StoreNoteRequest $request, string $projectId)
+    {
+        $serviceOrder = ServiceOrder::findOrFail($projectId);
+        $note = $this->projectService->addNote($projectId, $request->content);
+        return response()->json(['success' => true, 'data' => $note], 201);
+    }
+
+    public function updateNote(StoreNoteRequest $request, string $noteId)
+    {
+        $note = $this->projectService->updateNote($noteId, $request->content);
+        return response()->json(['success' => true, 'data' => $note]);
+    }
+
+    public function deleteNote(string $noteId)
+    {
+        $this->projectService->deleteNote($noteId);
+        return response()->json(['success' => true]);
+    }
+
+    // ─── Delivery Items ─────────────────────────────────────────────
+
+    public function addDeliveryItem(Request $request, string $id)
+    {
+        $order = ServiceOrder::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:255'],
+            'type' => ['required', 'string', 'in:file,url,text,credentials'],
+            'description' => ['nullable', 'string', 'max:5000'],
+            'file' => ['nullable', 'file', 'max:102400'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'error' => $validator->errors()->first()], 422);
+        }
+
+        if ($request->type === 'file' && !$request->hasFile('file')) {
+            return response()->json(['success' => false, 'error' => 'File is required for type "file".'], 422);
+        }
+
+        try {
+            $item = $this->fileService->storeDeliveryItem(
+                $order,
+                $request->name,
+                $request->type,
+                $request->description,
+                $request->file('file')
+            );
+
+            return response()->json(['success' => true, 'data' => $item], 201);
+        } catch (\RuntimeException $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function removeDeliveryItem(Request $request, string $id, string $fileId)
+    {
+        $file = \App\Models\ServiceFile::where('service_order_id', $id)
+            ->where('category', 'delivery')
+            ->findOrFail($fileId);
+
+        try {
+            $this->fileService->deleteFile($file);
+            return response()->json(['success' => true]);
+        } catch (\RuntimeException $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 400);
+        }
+    }
+
+    // ─── Activity ────────────────────────────────────────────────────
+
+    public function projectActivity(string $id)
+    {
+        $project = ServiceOrder::findOrFail($id);
+        $logs = ServiceActivityLog::with('user.profile')
+            ->where('service_order_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(50);
+        return response()->json(['success' => true, 'data' => $logs]);
     }
 }

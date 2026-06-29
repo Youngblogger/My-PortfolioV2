@@ -20,6 +20,7 @@ class ServiceOrder extends Model
         'payment_status', 'payment_method', 'payment_gateway',
         'transaction_reference', 'notes', 'billing_details', 'metadata',
         'requirements_reviewed_at', 'kickoff_at', 'project_created_at', 'completed_at',
+        'estimated_completion',
     ];
 
     protected function casts(): array
@@ -37,6 +38,7 @@ class ServiceOrder extends Model
             'total_usd' => 'decimal:2',
             'billing_details' => 'array',
             'metadata' => 'array',
+            'estimated_completion' => 'date',
         ];
     }
 
@@ -108,6 +110,16 @@ class ServiceOrder extends Model
     public function projectManager()
     {
         return $this->belongsTo(User::class, 'project_manager_id');
+    }
+
+    public function internalNotes()
+    {
+        return $this->hasMany(InternalNote::class);
+    }
+
+    public function review()
+    {
+        return $this->hasOne(ProjectReview::class);
     }
 
     public function scopeByProjectStatus($query, $status)

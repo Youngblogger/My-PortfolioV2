@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\CreateDiscoveryCallRequest;
 use App\Models\DiscoveryCall;
-use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class DiscoveryCallController extends Controller

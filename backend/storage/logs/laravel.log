@@ -8839,3 +8839,110 @@ Stack trace:
 #40 {main}
 "} 
 [2026-06-29 11:34:30] production.ERROR: Payment gateway 'paystack' is not configured  
+[2026-06-29 13:45:48] production.INFO: Payment initialization started {"service_id":"019f1009-cf1b-7184-b4a1-8681893a0cc0","package_id":"019f1009-cf85-72c6-8095-947fa2cd4800","add_on_count":0,"gateway":"paystack","amount_ngn":750000.0} 
+[2026-06-29 13:45:52] production.INFO: Payment initialized successfully {"order_id":"019f136a-1b3b-7029-9d38-648799bdd39b","order_number":"SVC-8FC99359","reference":"SVC-6A4268FCB49AC","authorization_url":"https://checkout.paystack.com/fbqtw4z3yn1w4qe","gateway":"paystack"} 
+[2026-06-29 13:48:16] production.INFO: Payment initialization started {"service_id":"019f1009-cf1b-7184-b4a1-8681893a0cc0","package_id":"019f1009-cf85-72c6-8095-947fa2cd4800","add_on_count":0,"gateway":"paystack","amount_ngn":750000.0} 
+[2026-06-29 13:48:19] production.INFO: Payment initialized successfully {"order_id":"019f136c-5c37-7340-9cc9-082a1d7979e7","order_number":"SVC-9905A2F5","reference":"SVC-6A4269906D8D1","authorization_url":"https://checkout.paystack.com/x1cazl24qe6f8b5","gateway":"paystack"} 
+[2026-06-29 14:05:24] production.INFO: Payment initialization started {"service_id":"019f1009-cf1b-7184-b4a1-8681893a0cc0","package_id":"019f1009-cf85-72c6-8095-947fa2cd4800","add_on_count":0,"gateway":"paystack","amount_ngn":750000.0} 
+[2026-06-29 14:05:28] production.INFO: Payment initialized successfully {"order_id":"019f137c-0e09-7358-bd9a-ab271809519f","order_number":"SVC-D94E26C1","reference":"SVC-6A426D9501B5E","authorization_url":"https://checkout.paystack.com/njbpx82svr7bap6","gateway":"paystack"} 
+[2026-06-29 14:12:19] production.ERROR: Command "test" is not defined.
+
+Did you mean one of these?
+    make:test
+    schedule:test {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"test\" is not defined.
+
+Did you mean one of these?
+    make:test
+    schedule:test at C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/symfony/console/Application.php:759)
+[stacktrace]
+#0 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/symfony/console/Application.php(298): Symfony/Component/Console/Application->find('test')
+#1 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#2 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#3 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/artisan(12): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#4 {main}
+"} 
+[2026-06-29 14:15:49] production.INFO: Payment initialization started {"service_id":"019f1009-cf1b-7184-b4a1-8681893a0cc0","package_id":"019f1009-cf85-72c6-8095-947fa2cd4800","add_on_count":0,"gateway":"paystack","amount_ngn":750000.0} 
+[2026-06-29 14:15:52] production.INFO: Payment initialized successfully {"order_id":"019f1385-969f-7159-a8af-e4d1d82baf36","order_number":"SVC-005AD06F","reference":"SVC-6A427005C32F9","authorization_url":"https://checkout.paystack.com/1px77mzp3njucti","gateway":"paystack"} 
+[2026-06-29 14:30:00] production.INFO: Payment callback received {"order_id":"test-id","query_params":{"trxref":"TEST","reference":"TEST"}} 
+[2026-06-29 14:30:00] production.ERROR: Payment callback - order not found {"order_id":"test-id"} 
+[2026-06-29 14:31:39] production.INFO: Payment initialization started {"service_id":"019f1009-cf1b-7184-b4a1-8681893a0cc0","package_id":"019f1009-cf73-7225-b862-75ca354e0c13","add_on_count":1,"gateway":"paystack","amount_ngn":550000.0} 
+[2026-06-29 14:31:44] production.INFO: Payment initialized successfully {"order_id":"019f1394-158b-7176-a0c1-04d745425108","order_number":"SVC-3BBBA6F8","reference":"SVC-6A4273BBC6760","authorization_url":"https://checkout.paystack.com/hpdut2pxxyvxg4b","gateway":"paystack"} 
+[2026-06-29 14:36:56] production.INFO: Payment initialization started {"service_id":"019f1009-cf1b-7184-b4a1-8681893a0cc0","package_id":"019f1009-cf85-72c6-8095-947fa2cd4800","add_on_count":0,"gateway":"paystack","amount_ngn":750000.0} 
+[2026-06-29 14:37:02] production.INFO: Payment initialized successfully {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","order_number":"SVC-4F8E4541","reference":"SVC-6A4274F904159","authorization_url":"https://checkout.paystack.com/tbciqol69ptu9bd","gateway":"paystack"} 
+[2026-06-29 14:37:29] production.INFO: Payment callback received {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","query_params":{"trxref":"SVC-6A4274F904159","reference":"SVC-6A4274F904159"}} 
+[2026-06-29 14:37:29] production.INFO: Payment callback verifying {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","reference":"SVC-6A4274F904159","order_status":"processing"} 
+[2026-06-29 14:37:31] production.INFO: Payment callback verification result {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","reference":"SVC-6A4274F904159","status":"completed"} 
+[2026-06-29 14:37:32] production.INFO: Payment processed successfully {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","reference":"SVC-6A4274F904159","project_number":"PRJ-51BDA772","invoice_number":"INV-SVC-51BDD659","receipt_number":"RCT-SVC-51BEAAE5"} 
+[2026-06-29 14:37:32] production.INFO: Payment callback redirecting to success {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","redirect_url":"http://localhost:3000/hire/order/019f1398-ecb2-7332-b972-408fda229d1d/success?reference=SVC-6A4274F904159"} 
+[2026-06-29 14:37:43] production.INFO: Payment verification request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","reference":"SVC-6A4274F904159"} 
+[2026-06-29 14:37:43] production.INFO: Payment verification - duplicate request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d"} 
+[2026-06-29 14:39:06] production.INFO: Payment verification request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","reference":"SVC-6A4274F904159"} 
+[2026-06-29 14:39:06] production.INFO: Payment verification - duplicate request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d"} 
+[2026-06-29 14:39:08] production.INFO: Payment verification request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","reference":"SVC-6A4274F904159"} 
+[2026-06-29 14:39:08] production.INFO: Payment verification - duplicate request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d"} 
+[2026-06-29 14:39:17] production.INFO: Payment verification request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","reference":"SVC-6A4274F904159"} 
+[2026-06-29 14:39:17] production.INFO: Payment verification - duplicate request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d"} 
+[2026-06-29 14:39:18] production.INFO: Payment verification request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d","reference":"SVC-6A4274F904159"} 
+[2026-06-29 14:39:18] production.INFO: Payment verification - duplicate request {"order_id":"019f1398-ecb2-7332-b972-408fda229d1d"} 
+[2026-06-29 16:19:11] production.ERROR: Call to undefined relationship [internalNotes] on model [App\Models\ServiceOrder]. {"userId":"019f0af9-0a1f-723d-9279-c04c896acd10","exception":"[object] (Illuminate\\Database\\Eloquent\\RelationNotFoundException(code: 0): Call to undefined relationship [internalNotes] on model [App\\Models\\ServiceOrder]. at C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/RelationNotFoundException.php:35)
+[stacktrace]
+#0 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(969): Illuminate/Database/Eloquent/RelationNotFoundException::make(Object(App/Models/ServiceOrder), 'internalNotes')
+#1 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Relations/Relation.php(119): Illuminate/Database/Eloquent/Builder->Illuminate/Database/Eloquent/{closure}()
+#2 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(965): Illuminate/Database/Eloquent/Relations/Relation::noConstraints(Object(Closure))
+#3 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(939): Illuminate/Database/Eloquent/Builder->getRelation('internalNotes')
+#4 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(919): Illuminate/Database/Eloquent/Builder->eagerLoadRelation(Array, 'internalNotes', Object(Closure))
+#5 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(885): Illuminate/Database/Eloquent/Builder->eagerLoadRelations(Array)
+#6 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(366): Illuminate/Database/Eloquent/Builder->get(Array)
+#7 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(568): Illuminate/Database/Eloquent/Builder->first(Array)
+#8 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(615): Illuminate/Database/Eloquent/Builder->find('019f1398-ecb2-7...', Array)
+#9 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/app/Services/ProjectManagementService.php(106): Illuminate/Database/Eloquent/Builder->findOrFail('019f1398-ecb2-7...')
+#10 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/app/Http/Controllers/Api/AdminController.php(492): App/Services/ProjectManagementService->getProjectDetails('019f1398-ecb2-7...')
+#11 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): App/Http/Controllers/Api/AdminController->projectShow('019f1398-ecb2-7...')
+#12 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Route.php(265): Illuminate/Routing/ControllerDispatcher->dispatch(Object(Illuminate/Routing/Route), Object(App/Http/Controllers/Api/AdminController), 'projectShow')
+#13 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Route.php(211): Illuminate/Routing/Route->runController()
+#14 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate/Routing/Route->run()
+#15 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate/Routing/Router->Illuminate/Routing/{closure}(Object(Illuminate/Http/Request))
+#16 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/app/Http/Middleware/AdminMiddleware.php(19): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#17 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): App/Http/Middleware/AdminMiddleware->handle(Object(Illuminate/Http/Request), Object(Closure))
+#18 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#19 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Routing/Middleware/SubstituteBindings->handle(Object(Illuminate/Http/Request), Object(Closure))
+#20 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(166): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#21 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(129): Illuminate/Routing/Middleware/ThrottleRequests->handleRequest(Object(Illuminate/Http/Request), Object(Closure), Array)
+#22 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(90): Illuminate/Routing/Middleware/ThrottleRequests->handleRequestUsingNamedLimiter(Object(Illuminate/Http/Request), Object(Closure), 'api', Object(Closure))
+#23 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Routing/Middleware/ThrottleRequests->handle(Object(Illuminate/Http/Request), Object(Closure), 'api')
+#24 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(63): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#25 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Auth/Middleware/Authenticate->handle(Object(Illuminate/Http/Request), Object(Closure), 'sanctum')
+#26 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/app/Http/Middleware/ForceJsonResponse.php(13): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#27 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): App/Http/Middleware/ForceJsonResponse->handle(Object(Illuminate/Http/Request), Object(Closure))
+#28 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#29 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate/Pipeline/Pipeline->then(Object(Closure))
+#30 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate/Routing/Router->runRouteWithinStack(Object(Illuminate/Routing/Route), Object(Illuminate/Http/Request))
+#31 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate/Routing/Router->runRoute(Object(Illuminate/Http/Request), Object(Illuminate/Routing/Route))
+#32 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate/Routing/Router->dispatchToRoute(Object(Illuminate/Http/Request))
+#33 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate/Routing/Router->dispatch(Object(Illuminate/Http/Request))
+#34 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate/Foundation/Http/Kernel->Illuminate/Foundation/Http/{closure}(Object(Illuminate/Http/Request))
+#35 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#36 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate/Foundation/Http/Middleware/TransformsRequest->handle(Object(Illuminate/Http/Request), Object(Closure))
+#37 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull->handle(Object(Illuminate/Http/Request), Object(Closure))
+#38 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#39 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate/Foundation/Http/Middleware/TransformsRequest->handle(Object(Illuminate/Http/Request), Object(Closure))
+#40 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Foundation/Http/Middleware/TrimStrings->handle(Object(Illuminate/Http/Request), Object(Closure))
+#41 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#42 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Http/Middleware/ValidatePostSize->handle(Object(Illuminate/Http/Request), Object(Closure))
+#43 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(109): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#44 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance->handle(Object(Illuminate/Http/Request), Object(Closure))
+#45 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(74): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#46 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Http/Middleware/HandleCors->handle(Object(Illuminate/Http/Request), Object(Closure))
+#47 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#48 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Http/Middleware/TrustProxies->handle(Object(Illuminate/Http/Request), Object(Closure))
+#49 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#50 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks->handle(Object(Illuminate/Http/Request), Object(Closure))
+#51 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(26): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#52 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate/Http/Middleware/ValidatePathEncoding->handle(Object(Illuminate/Http/Request), Object(Closure))
+#53 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate/Pipeline/Pipeline->Illuminate/Pipeline/{closure}(Object(Illuminate/Http/Request))
+#54 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate/Pipeline/Pipeline->then(Object(Closure))
+#55 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate/Foundation/Http/Kernel->sendRequestThroughRouter(Object(Illuminate/Http/Request))
+#56 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/public/index.php(17): Illuminate/Foundation/Http/Kernel->handle(Object(Illuminate/Http/Request))
+#57 C:/Users/USER/OneDrive/Desktop/portfolio V3/backend/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://Users//USER//O...')
+#58 {main}
+"} 

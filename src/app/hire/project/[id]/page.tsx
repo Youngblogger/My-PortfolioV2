@@ -4,12 +4,12 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { api, type WorkspaceDataResponse, type WorkspaceMilestoneData, type WorkspaceActivityLogData } from "@/lib/api";
+import { api, type WorkspaceDataResponse, type WorkspaceMilestoneData, type WorkspaceActivityLogData, type ServiceFileData, type ServiceMessageData, type ProjectReviewData } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
-import { formatDate, formatCurrency } from "@/lib/utils";
+import { formatDate, formatCurrency, formatFileSize } from "@/lib/utils";
 
-const TABS = ["Overview", "Timeline", "Team", "Files", "Messages", "Payments", "Activity"] as const;
+const TABS = ["Overview", "Timeline", "Team", "Files", "Messages", "Payments", "Review", "Delivery", "Activity"] as const;
 
 const PROJECT_STATUS_LABELS: Record<string, string> = {
   pending_review: "Pending Review",
@@ -270,6 +270,8 @@ export default function ProjectWorkspacePage() {
                   {tab === "Files" && <FilesSection />}
                   {tab === "Messages" && <MessagesSection />}
                   {tab === "Payments" && <PaymentsSection />}
+                  {tab === "Review" && <ReviewSection />}
+                  {tab === "Delivery" && <DeliverySection />}
                   {tab === "Activity" && <ActivitySection />}
                 </motion.div>
               </div>
@@ -537,6 +539,20 @@ export default function ProjectWorkspacePage() {
                       {milestone.completion_notes && (
                         <p className="text-xs text-white/40 mt-1 italic">&ldquo;{milestone.completion_notes}&rdquo;</p>
                       )}
+                      {milestone.review_status && (
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                            milestone.review_status === "approved" ? "bg-green-500/10 text-green-400" :
+                            milestone.review_status === "changes_requested" ? "bg-red-500/10 text-red-400" :
+                            "bg-gold/10 text-gold"
+                          }`}>
+                            Review: {milestone.review_status.replace(/_/g, " ")}
+                          </span>
+                        </div>
+                      )}
+                      {milestone.review_feedback && (
+                        <p className="text-xs text-gold/70 mt-1 italic">Feedback: &ldquo;{milestone.review_feedback}&rdquo;</p>
+                      )}
                       {milestone.deliverables && milestone.deliverables.length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-2">
                           {milestone.deliverables.map((d, i) => (
@@ -599,25 +615,542 @@ export default function ProjectWorkspacePage() {
   }
 
   function FilesSection() {
+    const [files, setFiles] = useState<ServiceFileData[]>([]);
+    const [loadingFiles, setLoadingFiles] = useState(true);
+    const [uploading, setUploading] = useState(false);
+    const [category, setCategory] = useState("");
+    const [sort, setSort] = useState<"newest" | "oldest">("newest");
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const fileCategories = [
+      { value: "", label: "All Files" },
+      { value: "client_files", label: "Client Files" },
+      { value: "design", label: "Design Files" },
+      { value: "development", label: "Development Files" },
+      { value: "testing", label: "Testing Files" },
+      { value: "final_deliverables", label: "Final Deliverables" },
+      { value: "other", label: "Other" },
+    ];
+
+    const fetchFiles = async () => {
+      setLoadingFiles(true);
+      try {
+        const res = await api.getProjectFiles(w.id, category || undefined, sort);
+        setFiles(res.data);
+      } catch {} finally {
+        setLoadingFiles(false);
+      }
+    };
+
+    useEffect(() => { fetchFiles(); }, [w.id, category, sort]);
+
+    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploading(true);
+      try {
+        await api.uploadProjectFile(w.id, file, "client_files");
+        fetchFiles();
+      } catch {} finally {
+        setUploading(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    };
+
+    const handleDownload = async (file: ServiceFileData) => {
+      try {
+        const res = await api.downloadProjectFile(w.id, file.id);
+        const blob = await (res as unknown as Response).blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch {}
+    };
+
+    const handleDelete = async (fileId: string) => {
+      if (!confirm("Delete this file?")) return;
+      try {
+        await api.deleteProjectFile(w.id, fileId);
+        setFiles((prev) => prev.filter((f) => f.id !== fileId));
+      } catch {}
+    };
+
     return (
-      <div className="glass rounded-2xl p-12 text-center">
-        <div className="text-4xl mb-4" aria-hidden="true">&#128193;</div>
-        <h3 className="text-lg font-bold text-white mb-2">Project Files</h3>
-        <p className="text-muted text-sm">
-          Files and documents shared for this project will appear here once available.
-        </p>
+      <div className="glass rounded-2xl p-6 md:p-8">
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Project Files</h3>
+          <div className="flex items-center gap-3">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as "newest" | "oldest")}
+              className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-gold/50"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+            <input ref={fileInputRef} type="file" onChange={handleUpload} className="hidden" />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="text-xs px-3 py-1.5 rounded-lg bg-gold/10 text-gold border border-gold/20 hover:bg-gold/20 transition-all"
+            >
+              {uploading ? "Uploading..." : "Upload File"}
+            </button>
+          </div>
+        </div>
+
+        {/* Category Filters */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {fileCategories.map((cat) => (
+            <button
+              key={cat.value}
+              onClick={() => setCategory(cat.value)}
+              className={`text-xs px-3 py-1.5 rounded-full border transition-all ${
+                category === cat.value
+                  ? "bg-gold/10 text-gold border-gold/30"
+                  : "bg-white/5 text-muted border-white/10 hover:text-white"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {loadingFiles ? (
+          <p className="text-sm text-muted">Loading files...</p>
+        ) : files.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="text-4xl mb-3 opacity-30">📁</div>
+            <p className="text-sm text-muted">No files yet. Upload your project requirements, brand assets, or any supporting documents.</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {files.map((file) => (
+              <div key={file.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group">
+                <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center shrink-0 text-sm">📎</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white truncate">{file.name}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted mt-0.5">
+                    <span className="px-1.5 py-0.5 rounded text-[10px] border bg-white/5">{file.category.replace(/_/g, " ")}</span>
+                    <span>{formatFileSize(file.size)}</span>
+                    <span>{formatDate(file.created_at)}</span>
+                  </div>
+                </div>
+                <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => handleDownload(file)} className="text-xs px-2 py-1 rounded bg-white/5 text-muted hover:text-white">Download</button>
+                  {file.category !== "delivery" && (
+                    <button onClick={() => handleDelete(file.id)} className="text-xs px-2 py-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20">Delete</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className="text-xs text-muted/50 mt-4">Files you upload are sent directly to your project team. Maximum file size: 100MB.</p>
       </div>
     );
   }
 
   function MessagesSection() {
+    const [msgs, setMsgs] = useState<ServiceMessageData[]>([]);
+    const [loadingMsgs, setLoadingMsgs] = useState(true);
+    const [text, setText] = useState("");
+    const [sending, setSending] = useState(false);
+    const bottomRef = useRef<HTMLDivElement>(null);
+
+    const fetchMessages = async () => {
+      setLoadingMsgs(true);
+      try {
+        const res = await api.getProjectMessages(w.id);
+        setMsgs(res.data);
+      } catch {} finally {
+        setLoadingMsgs(false);
+      }
+    };
+
+    useEffect(() => { fetchMessages(); }, []);
+
+    useEffect(() => {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [msgs]);
+
+    const handleSend = async () => {
+      if (!text.trim()) return;
+      setSending(true);
+      try {
+        const res = await api.sendProjectMessage(w.id, text);
+        setMsgs((prev) => [...prev, res.data]);
+        setText("");
+      } catch {} finally {
+        setSending(false);
+      }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    };
+
     return (
-      <div className="glass rounded-2xl p-12 text-center">
-        <div className="text-4xl mb-4" aria-hidden="true">&#128172;</div>
-        <h3 className="text-lg font-bold text-white mb-2">Messages</h3>
-        <p className="text-muted text-sm">
-          Direct messages and project communication will be available here soon.
-        </p>
+      <div className="glass rounded-2xl p-6 md:p-8 flex flex-col h-[500px]">
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4 shrink-0">Project Discussion</h3>
+        <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
+          {loadingMsgs ? (
+            <p className="text-sm text-muted">Loading messages...</p>
+          ) : msgs.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-3 opacity-30">💬</div>
+              <p className="text-sm text-muted">No messages yet. Start a conversation with your project team.</p>
+            </div>
+          ) : (
+            msgs.map((msg) => (
+              <div key={msg.id} className={`flex gap-3 ${msg.user?.is_admin ? "" : "flex-row-reverse"}`}>
+                <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center shrink-0 text-xs font-bold text-gold">
+                  {msg.user?.full_name?.charAt(0) || "?"}
+                </div>
+                <div className={`max-w-[75%] ${msg.user?.is_admin ? "" : "items-end"} flex flex-col`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-medium text-white/80">{msg.user?.full_name || "Unknown"}</span>
+                    {msg.is_important && <span className="text-[10px] text-gold">📌</span>}
+                    <span className="text-[10px] text-muted">{formatDate(msg.created_at)}</span>
+                  </div>
+                  <div className={`rounded-2xl px-4 py-2.5 text-sm ${msg.user?.is_admin ? "bg-gold/10 text-white rounded-tl-sm" : "bg-white/10 text-white/90 rounded-tr-sm"}`}>
+                    {msg.message}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+          <div ref={bottomRef} />
+        </div>
+        <div className="flex gap-2 shrink-0">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Type a message... (Enter to send)"
+            rows={1}
+            className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-muted focus:outline-none focus:border-gold/50 resize-none"
+          />
+          <button
+            onClick={handleSend}
+            disabled={!text.trim() || sending}
+            className="px-4 py-2 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all disabled:opacity-50"
+          >
+            {sending ? "..." : "Send"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  function ReviewSection() {
+    const pendingReview = milestones.filter((m) => m.review_status === "pending");
+    const completedMs = milestones.filter((m) => m.status === "completed");
+    const isCompleted = w.project_status === "completed";
+    const [existingReview, setExistingReview] = useState<ProjectReviewData | null>(null);
+    const [reviewLoading, setReviewLoading] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [reviewText, setReviewText] = useState("");
+    const [allowShowcase, setAllowShowcase] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (isCompleted) {
+        (async () => {
+          setReviewLoading(true);
+          try {
+            const res = await api.getProjectReview(w.id);
+            setExistingReview(res.data);
+          } catch {
+            setExistingReview(null);
+          } finally {
+            setReviewLoading(false);
+          }
+        })();
+      }
+    }, [isCompleted, w.id]);
+
+    const handleApprove = async (milestoneId: string) => {
+      setActionLoading(milestoneId);
+      try {
+        await api.approveMilestone(w.id, milestoneId);
+        setTimeout(() => window.location.reload(), 500);
+      } catch (err) {
+        console.error("Approve failed:", err);
+      } finally {
+        setActionLoading(null);
+      }
+    };
+
+    const handleRequestChanges = async (milestoneId: string) => {
+      const feedback = prompt("Describe the changes you'd like to request:");
+      if (!feedback?.trim()) return;
+      setActionLoading(milestoneId);
+      try {
+        await api.requestMilestoneChanges(w.id, milestoneId, feedback);
+        setTimeout(() => window.location.reload(), 500);
+      } catch (err) {
+        console.error("Request changes failed:", err);
+      } finally {
+        setActionLoading(null);
+      }
+    };
+
+    const handleSubmitReview = async () => {
+      if (rating === 0) return;
+      setSubmitting(true);
+      try {
+        const res = await api.submitProjectReview(w.id, { rating, review: reviewText || undefined, allow_showcase: allowShowcase });
+        setExistingReview(res.data);
+        setSubmitted(true);
+      } catch (err) {
+        console.error("Submit review failed:", err);
+      } finally {
+        setSubmitting(false);
+      }
+    };
+
+    return (
+      <div className="space-y-6">
+        {isCompleted && (
+          <div className="glass rounded-2xl p-6 md:p-8 border border-green-500/20">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="text-2xl">🎉</span>
+              <h3 className="text-lg font-bold text-white">Project Completed</h3>
+            </div>
+            <p className="text-sm text-muted">
+              This project was completed on {w.completed_at ? formatDate(w.completed_at) : "recently"}.
+            </p>
+            <div className="flex flex-wrap gap-3 mt-4">
+              {w.invoices.length > 0 && (
+                <button
+                  onClick={async () => {
+                    const inv = w.invoices[0];
+                    try {
+                      const res = await api.downloadServiceInvoice(w.id, inv.id);
+                      const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: "application/json" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a"); a.href = url; a.download = `invoice-${inv.invoice_number}.json`; a.click();
+                      URL.revokeObjectURL(url);
+                    } catch {}
+                  }}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-gold/10 text-gold border border-gold/20 hover:bg-gold/20 transition-all"
+                >
+                  Download Invoice
+                </button>
+              )}
+              {w.receipts.length > 0 && (
+                <button
+                  onClick={async () => {
+                    const rec = w.receipts[0];
+                    try {
+                      const res = await api.downloadServiceReceipt(w.id, rec.id);
+                      const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: "application/json" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a"); a.href = url; a.download = `receipt-${rec.receipt_number}.json`; a.click();
+                      URL.revokeObjectURL(url);
+                    } catch {}
+                  }}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-gold/10 text-gold border border-gold/20 hover:bg-gold/20 transition-all"
+                >
+                  Download Receipt
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Milestone Review */}
+        {pendingReview.length > 0 && (
+          <div className="glass rounded-2xl p-6 md:p-8 border border-gold/20">
+            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Ready for Review</h3>
+            <div className="space-y-4">
+              {pendingReview.map((ms) => (
+                <div key={ms.id} className="bg-white/5 rounded-xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-lg">📋</span>
+                    <p className="text-sm font-semibold text-white">{ms.title}</p>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-gold/10 text-gold border border-gold/20">Pending Review</span>
+                  </div>
+                  {ms.description && <p className="text-xs text-muted/70 mb-3">{ms.description}</p>}
+                  {ms.deliverables && ms.deliverables.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {ms.deliverables.map((d, i) => (
+                        <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-gold/5 text-gold border border-gold/10">{d}</span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleApprove(ms.id)}
+                      disabled={actionLoading === ms.id}
+                      className="text-xs px-4 py-2 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 transition-all disabled:opacity-50"
+                    >
+                      {actionLoading === ms.id ? "..." : "Approve"}
+                    </button>
+                    <button
+                      onClick={() => handleRequestChanges(ms.id)}
+                      disabled={actionLoading === ms.id}
+                      className="text-xs px-4 py-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all disabled:opacity-50"
+                    >
+                      Request Changes
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {pendingReview.length === 0 && !isCompleted && (
+          <div className="glass rounded-2xl p-6 md:p-8">
+            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Reviews</h3>
+            <div className="text-center py-8">
+              <div className="text-4xl mb-3 opacity-30">📋</div>
+              <p className="text-sm text-muted">No milestones pending review. You'll be notified when your project team requests a review.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Rating & Review */}
+        {isCompleted && !reviewLoading && (
+          <div className="glass rounded-2xl p-6 md:p-8">
+            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Submit Your Review</h3>
+            {existingReview || submitted ? (
+              <div className="text-center py-6">
+                <div className="text-4xl mb-3">⭐</div>
+                <p className="text-sm text-white font-semibold">Thank you for your review!</p>
+                {existingReview && (
+                  <div className="mt-3">
+                    <div className="flex justify-center gap-1 mb-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span key={star} className={`text-lg ${star <= existingReview.rating ? "text-gold" : "text-white/20"}`}>★</span>
+                      ))}
+                    </div>
+                    {existingReview.review && <p className="text-sm text-muted max-w-md mx-auto">{existingReview.review}</p>}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <p className="text-sm text-muted mb-3">Rate your experience with this project</p>
+                  <div className="flex justify-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setRating(star)}
+                        className={`text-3xl transition-all hover:scale-110 ${star <= rating ? "text-gold" : "text-white/20"}`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <textarea
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  placeholder="Share your experience with this project (optional)..."
+                  rows={3}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white placeholder:text-muted focus:outline-none focus:border-gold/50 resize-none"
+                />
+                <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={allowShowcase}
+                    onChange={(e) => setAllowShowcase(e.target.checked)}
+                    className="rounded bg-white/5 border-white/10"
+                  />
+                  Allow CODEMAFIA to showcase this project in our portfolio
+                </label>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleSubmitReview}
+                    disabled={rating === 0 || submitting}
+                    className="px-6 py-2 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all disabled:opacity-50"
+                  >
+                    {submitting ? "Submitting..." : "Submit Review"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function DeliverySection() {
+    const [items, setItems] = useState<ServiceFileData[]>([]);
+    const [loadingItems, setLoadingItems] = useState(true);
+
+    useEffect(() => {
+      (async () => {
+        try {
+          const res = await api.getProjectDeliveryItems(w.id);
+          setItems(res.data);
+        } catch {} finally {
+          setLoadingItems(false);
+        }
+      })();
+    }, []);
+
+    const handleDownload = async (item: ServiceFileData) => {
+      if (!item.has_file) return;
+      try {
+        const res = await api.downloadProjectFile(w.id, item.id);
+        const blob = await (res as unknown as Response).blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = item.name;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch {}
+    };
+
+    return (
+      <div className="glass rounded-2xl p-6 md:p-8">
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Final Deliverables</h3>
+        {loadingItems ? (
+          <p className="text-sm text-muted">Loading delivery items...</p>
+        ) : items.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="text-4xl mb-3 opacity-30">📦</div>
+            <p className="text-sm text-muted">No final deliverables published yet. They will appear here once your project team publishes them.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {items.map((item) => (
+              <div key={item.id} className="flex items-center gap-4 p-4 rounded-xl bg-green-500/5 border border-green-500/10">
+                <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0 text-lg">
+                  {item.has_file ? "📦" : "🔗"}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-white">{item.name}</p>
+                  {item.description && <p className="text-xs text-muted/70 mt-0.5">{item.description}</p>}
+                  <p className="text-xs text-muted mt-1">{formatDate(item.created_at)}</p>
+                </div>
+                {item.has_file && (
+                  <button
+                    onClick={() => handleDownload(item)}
+                    className="text-xs px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 hover:bg-green-500/20 transition-all"
+                  >
+                    Download
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -816,9 +1349,14 @@ export default function ProjectWorkspacePage() {
                   )}
                   <p className="text-xs text-muted mt-0.5">{formatDate(entry.created_at)}</p>
                   {entry.metadata && Object.keys(entry.metadata).length > 0 && (
-                    <pre className="text-[10px] text-muted/40 mt-1 bg-white/5 p-2 rounded-lg overflow-x-auto max-w-md">
-                      {JSON.stringify(entry.metadata, null, 1)}
-                    </pre>
+                    <div className="text-[10px] text-muted/40 mt-1 bg-white/5 p-2 rounded-lg max-w-md space-y-0.5">
+                      {Object.entries(entry.metadata).map(([key, val]) => (
+                        <div key={key} className="flex gap-2">
+                          <span className="capitalize shrink-0">{key.replace(/_/g, " ")}:</span>
+                          <span className="truncate">{String(val)}</span>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>

@@ -523,6 +523,248 @@ export const api = {
       method: "POST",
       body: JSON.stringify(data),
     }),
+
+  // ─── Project Workspace API ───────────────────────────────────
+
+  getAdminProjects: (params?: {
+    status?: string;
+    priority?: string;
+    search?: string;
+    sort?: string;
+    order?: string;
+    per_page?: number;
+    page?: number;
+    date_from?: string;
+    date_to?: string;
+  }) => {
+    const p = new URLSearchParams();
+    if (params?.status) p.set("status", params.status);
+    if (params?.priority) p.set("priority", params.priority);
+    if (params?.search) p.set("search", params.search);
+    if (params?.sort) p.set("sort", params.sort);
+    if (params?.order) p.set("order", params.order);
+    if (params?.per_page) p.set("per_page", String(params.per_page));
+    if (params?.page) p.set("page", String(params.page));
+    if (params?.date_from) p.set("date_from", params.date_from);
+    if (params?.date_to) p.set("date_to", params.date_to);
+    const qs = p.toString();
+    return apiRequest<ApiResponse & { data: AdminProjectListData }>(
+      `/admin/projects${qs ? `?${qs}` : ""}`
+    );
+  },
+
+  getAdminProject: (id: string) =>
+    apiRequest<ApiResponse & { data: AdminProjectDetailData }>(`/admin/projects/${id}`),
+
+  updateAdminProject: (id: string, data: {
+    priority?: string;
+    internal_due_date?: string;
+    estimated_completion?: string;
+    notes?: string;
+  }) =>
+    apiRequest<ApiResponse & { data: { project_status: string } }>(`/admin/projects/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  changeProjectStatus: (id: string, status: string, reason?: string) =>
+    apiRequest<ApiResponse & { data: { project_status: string } }>(
+      `/admin/projects/${id}/status`,
+      { method: "PATCH", body: JSON.stringify({ status, reason }) }
+    ),
+
+  milestoneAction: (milestoneId: string, action: string, notes?: string) =>
+    apiRequest<ApiResponse & { data: unknown }>(
+      `/admin/milestones/${milestoneId}/${action}`,
+      { method: "POST", body: JSON.stringify({ notes }) }
+    ),
+
+  getProjectActivity: (id: string) =>
+    apiRequest<ApiResponse & { data: { data: WorkspaceActivityLogData[]; current_page: number; last_page: number; total: number } }>(
+      `/admin/projects/${id}/activity`
+    ),
+
+  getProjectNotes: (projectId: string) =>
+    apiRequest<ApiResponse & { data: AdminNoteData[] }>(`/admin/projects/${projectId}/notes`),
+
+  createProjectNote: (projectId: string, content: string) =>
+    apiRequest<ApiResponse & { data: AdminNoteData }>(`/admin/projects/${projectId}/notes`, {
+      method: "POST",
+      body: JSON.stringify({ content }),
+    }),
+
+  updateProjectNote: (noteId: string, content: string) =>
+    apiRequest<ApiResponse & { data: AdminNoteData }>(`/admin/notes/${noteId}`, {
+      method: "PUT",
+      body: JSON.stringify({ content }),
+    }),
+
+  deleteProjectNote: (noteId: string) =>
+    apiRequest<ApiResponse>(`/admin/notes/${noteId}`, { method: "DELETE" }),
+
+  // ─── Collaboration — Files ─────────────────────────────────
+  getProjectFiles: (id: string, category?: string, sort?: string) => {
+    const p = new URLSearchParams();
+    if (category) p.set("category", category);
+    if (sort) p.set("sort", sort);
+    const qs = p.toString();
+    return apiRequest<ApiResponse & { data: ServiceFileData[] }>(
+      `/service-orders/${id}/files${qs ? `?${qs}` : ""}`
+    );
+  },
+
+  uploadProjectFile: (id: string, file: File, category?: string, description?: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (category) formData.append("category", category);
+    if (description) formData.append("description", description);
+    return apiRequest<ApiResponse & { data: ServiceFileData }>(
+      `/service-orders/${id}/files`,
+      { method: "POST", body: formData }
+    );
+  },
+
+  downloadProjectFile: async (id: string, fileId: string) => {
+    const token = await getToken();
+    const response = await fetch(`${API_BASE_URL}/service-orders/${id}/files/${fileId}/download`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      credentials: "include",
+    });
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new ApiError(errData.error || "Download failed", response.status);
+    }
+    return response;
+  },
+
+  deleteProjectFile: (id: string, fileId: string) =>
+    apiRequest<ApiResponse>(`/service-orders/${id}/files/${fileId}`, { method: "DELETE" }),
+
+  updateFileDescription: (fileId: string, description: string) =>
+    apiRequest<ApiResponse & { data: ServiceFileData }>(`/admin/files/${fileId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ description }),
+    }),
+
+  // Admin file upload (separate endpoint under admin group)
+  adminUploadProjectFile: (id: string, file: File, category?: string, description?: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (category) formData.append("category", category);
+    if (description) formData.append("description", description);
+    return apiRequest<ApiResponse & { data: ServiceFileData }>(
+      `/admin/projects/${id}/files`,
+      { method: "POST", body: formData }
+    );
+  },
+
+  adminDeleteProjectFile: (id: string, fileId: string) =>
+    apiRequest<ApiResponse>(`/admin/projects/${id}/files/${fileId}`, { method: "DELETE" }),
+
+  adminGetProjectFiles: (id: string, category?: string, sort?: string) => {
+    const p = new URLSearchParams();
+    if (category) p.set("category", category);
+    if (sort) p.set("sort", sort);
+    const qs = p.toString();
+    return apiRequest<ApiResponse & { data: ServiceFileData[] }>(
+      `/admin/projects/${id}/files${qs ? `?${qs}` : ""}`
+    );
+  },
+
+  // ─── Collaboration — Messages ──────────────────────────────
+  getProjectMessages: (id: string) =>
+    apiRequest<ApiResponse & { data: ServiceMessageData[] }>(
+      `/service-orders/${id}/messages`
+    ),
+
+  sendProjectMessage: (id: string, message: string, attachments?: string[]) =>
+    apiRequest<ApiResponse & { data: ServiceMessageData }>(
+      `/service-orders/${id}/messages`,
+      { method: "POST", body: JSON.stringify({ message, attachments }) }
+    ),
+
+  adminSendProjectMessage: (id: string, message: string, attachments?: string[]) =>
+    apiRequest<ApiResponse & { data: ServiceMessageData }>(
+      `/admin/projects/${id}/messages`,
+      { method: "POST", body: JSON.stringify({ message, attachments }) }
+    ),
+
+  adminGetProjectMessages: (id: string) =>
+    apiRequest<ApiResponse & { data: ServiceMessageData[] }>(
+      `/admin/projects/${id}/messages`
+    ),
+
+  pinMessage: (messageId: string) =>
+    apiRequest<ApiResponse & { data: { is_important: boolean } }>(
+      `/admin/messages/${messageId}/pin`,
+      { method: "PATCH" }
+    ),
+
+  // ─── Collaboration — Milestone Review ──────────────────────
+  approveMilestone: (orderId: string, milestoneId: string) =>
+    apiRequest<ApiResponse & { data: { review_status: string; project_status: string } }>(
+      `/service-orders/${orderId}/milestones/${milestoneId}/approve`,
+      { method: "POST" }
+    ),
+
+  requestMilestoneChanges: (orderId: string, milestoneId: string, feedback: string) =>
+    apiRequest<ApiResponse & { data: { review_status: string } }>(
+      `/service-orders/${orderId}/milestones/${milestoneId}/request-changes`,
+      { method: "POST", body: JSON.stringify({ feedback }) }
+    ),
+
+  requestMilestoneReview: (milestoneId: string) =>
+    apiRequest<ApiResponse & { data: { review_status: string; review_requested_at: string } }>(
+      `/admin/milestones/${milestoneId}/request-review`,
+      { method: "POST" }
+    ),
+
+  // ─── Collaboration — Delivery ──────────────────────────────
+  getProjectDeliveryItems: (id: string) =>
+    apiRequest<ApiResponse & { data: ServiceFileData[] }>(
+      `/service-orders/${id}/delivery`
+    ),
+
+  adminGetProjectDeliveryItems: (id: string) =>
+    apiRequest<ApiResponse & { data: ServiceFileData[] }>(
+      `/admin/projects/${id}/delivery`
+    ),
+
+  addDeliveryItem: (id: string, data: { name: string; type: string; description?: string; file?: File }) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("type", data.type);
+    if (data.description) formData.append("description", data.description);
+    if (data.file) formData.append("file", data.file);
+    return apiRequest<ApiResponse & { data: ServiceFileData }>(
+      `/admin/projects/${id}/delivery`,
+      { method: "POST", body: formData }
+    );
+  },
+
+  removeDeliveryItem: (id: string, fileId: string) =>
+    apiRequest<ApiResponse>(`/admin/projects/${id}/delivery/${fileId}`, { method: "DELETE" }),
+
+  // ─── Collaboration — Review/Rating ─────────────────────────
+  getProjectReview: (orderId: string) =>
+    apiRequest<ApiResponse & { data: ProjectReviewData }>(
+      `/service-orders/${orderId}/review`
+    ),
+
+  submitProjectReview: (orderId: string, data: { rating: number; review?: string; allow_showcase?: boolean }) =>
+    apiRequest<ApiResponse & { data: ProjectReviewData }>(
+      `/service-orders/${orderId}/review`,
+      { method: "POST", body: JSON.stringify(data) }
+    ),
+
+  adminGetReviews: () =>
+    apiRequest<ApiResponse & { data: { data: ProjectReviewData[] } }>("/admin/reviews"),
+
+  moderateReview: (reviewId: string, data: { is_visible: boolean; is_featured?: boolean }) =>
+    apiRequest<ApiResponse & { data: ProjectReviewData }>(`/admin/reviews/${reviewId}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
 };
 
 // Types
@@ -1135,6 +1377,9 @@ export interface WorkspaceMilestoneData {
   deliverables: string[] | null;
   completion_notes: string | null;
   created_at: string;
+  review_requested_at: string | null;
+  review_status: string | null;
+  review_feedback: string | null;
 }
 
 export interface WorkspaceInvoiceData {
@@ -1211,8 +1456,8 @@ export interface WorkspaceDataResponse {
   receipts: WorkspaceReceiptData[];
   activityLogs: WorkspaceActivityLogData[];
   projectManager: WorkspaceProjectManagerData | null;
-  messages: unknown[];
-  files: unknown[];
+  messages: ServiceMessageData[];
+  files: ServiceFileData[];
 }
 
 export interface MilestonesResponseData {
@@ -1253,4 +1498,164 @@ export interface ReceiptDownloadData {
     package: string;
     billing_details: Record<string, unknown>;
   };
+}
+
+// ─── Admin Project Workspace Types ─────────────────────────────────
+
+export interface AdminProjectListItem {
+  id: string;
+  order_number: string;
+  project_number: string | null;
+  project_name: string;
+  client: string;
+  service: string;
+  project_type: string;
+  package_name: string;
+  status: string;
+  project_status: string;
+  payment_status: string;
+  priority: string;
+  current_milestone: string | null;
+  progress: number;
+  total_ngn: number;
+  amount_paid_ngn: number;
+  created_at: string;
+  updated_at: string;
+  project_created_at: string | null;
+  kickoff_at: string | null;
+  completed_at: string | null;
+}
+
+export interface AdminProjectListData {
+  data: AdminProjectListItem[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export interface AdminNoteData {
+  id: string;
+  content: string;
+  edit_history: { content: string; edited_at: string; edited_by: string }[] | null;
+  created_at: string;
+  updated_at: string;
+  user: { full_name: string } | null;
+}
+
+export interface AdminMilestoneData {
+  id: string;
+  title: string;
+  description: string | null;
+  milestone_type: string | null;
+  status: string;
+  sort_order: number;
+  due_date: string | null;
+  completed_at: string | null;
+  deliverables: string[] | null;
+  completion_notes: string | null;
+  review_requested_at: string | null;
+  review_status: string | null;
+  review_feedback: string | null;
+}
+
+export interface AdminClientData {
+  id: string;
+  full_name: string | null;
+  email: string;
+  phone: string | null;
+  avatar_url: string | null;
+  company: string | null;
+}
+
+export interface AdminProjectDetailData {
+  id: string;
+  order_number: string;
+  project_number: string | null;
+  project_name: string;
+  status: string;
+  project_status: string;
+  payment_status: string;
+  priority: string;
+  total_ngn: number;
+  amount_paid_ngn: number;
+  balance_ngn: number;
+  created_at: string;
+  project_created_at: string | null;
+  kickoff_at: string | null;
+  completed_at: string | null;
+  estimated_completion: string | null;
+  notes: string | null;
+  client: AdminClientData | null;
+  service: { id: string; title: string; slug: string } | null;
+  projectType: { id: string; title: string } | null;
+  package: { id: string; name: string } | null;
+  addOns: { id: string; name: string; price_ngn: number }[];
+  milestones: AdminMilestoneData[];
+  progress: { progress: number; completed: number; total: number; current_milestone: string | null; current_milestone_id: string | null };
+  invoices: WorkspaceInvoiceData[];
+  payments: WorkspacePaymentData[];
+  receipts: WorkspaceReceiptData[];
+  activityLogs: WorkspaceActivityLogData[];
+  projectManager: { full_name: string } | null;
+  internalNotes: AdminNoteData[];
+  team_assignments: unknown[];
+}
+
+// ─── Collaboration Types ────────────────────────────────────────────
+
+export interface ServiceFileData {
+  id: string;
+  name: string;
+  type: string | null;
+  size: number;
+  category: string;
+  description: string | null;
+  is_delivery: boolean;
+  has_file?: boolean;
+  created_at: string;
+  user: { full_name: string | null; avatar_url: string | null } | null;
+}
+
+export interface ServiceMessageData {
+  id: string;
+  message: string;
+  type: string;
+  is_important: boolean;
+  attachments: string[] | null;
+  created_at: string;
+  user: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    is_admin: boolean;
+  } | null;
+}
+
+export interface ProjectReviewData {
+  id: string;
+  rating: number;
+  review: string | null;
+  is_visible: boolean;
+  is_featured: boolean;
+  created_at: string;
+  user?: { full_name: string | null } | null;
+}
+
+export interface DeliveryItemData {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  description: string | null;
+  has_file: boolean;
+  created_at: string;
+  user: { full_name: string | null } | null;
+}
+
+// Extend AdminMilestoneData with review fields
+export interface AdminMilestoneReviewData extends AdminMilestoneData {
+  review_requested_at: string | null;
+  review_status: string | null;
+  review_feedback: string | null;
 }
