@@ -91,6 +91,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/service-orders', [ServiceOrderController::class, 'myOrders'])->middleware('throttle:api');
     Route::get('/service-orders/{id}', [ServiceOrderController::class, 'showOrder'])->middleware('throttle:api');
 
+    // Workspace endpoints
+    Route::get('/service-orders/{id}/workspace', [ServiceOrderController::class, 'workspace'])->middleware('throttle:api');
+    Route::get('/service-orders/{id}/milestones', [ServiceOrderController::class, 'milestones'])->middleware('throttle:api');
+    Route::get('/service-orders/{id}/activity', [ServiceOrderController::class, 'activityLog'])->middleware('throttle:api');
+    Route::get('/service-orders/{id}/invoice/{invoiceId}', [ServiceOrderController::class, 'downloadInvoice'])->middleware('throttle:api');
+    Route::get('/service-orders/{id}/receipt/{receiptId}', [ServiceOrderController::class, 'downloadReceipt'])->middleware('throttle:api');
+
     // Requirements
     Route::get('/services/{serviceSlug}/requirements/questions', [RequirementController::class, 'questions']);
     Route::post('/requirements/responses', [RequirementController::class, 'store']);
@@ -117,6 +124,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
         Route::get('/orders', [AdminController::class, 'orders']);
         Route::patch('/orders/{id}/status', [AdminController::class, 'updateOrderStatus']);
+
+        Route::post('/orders/{orderId}/review-requirements', [AdminController::class, 'reviewRequirements']);
+        Route::post('/orders/{orderId}/kickoff', [AdminController::class, 'kickoffProject']);
+        Route::patch('/milestones/{milestoneId}', [AdminController::class, 'updateMilestone']);
 
         Route::post('/orders/{orderId}/assign-team', [AdminController::class, 'assignTeam']);
         Route::post('/team-assignments/{assignmentId}/unassign', [AdminController::class, 'unassignTeam']);

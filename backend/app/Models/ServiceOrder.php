@@ -11,13 +11,15 @@ class ServiceOrder extends Model
     use HasUuids, HasFactory;
 
     protected $fillable = [
-        'order_number', 'user_id', 'service_id', 'project_type_id', 'package_id',
-        'status', 'package_price_ngn', 'package_price_usd',
+        'order_number', 'project_number', 'user_id', 'service_id', 'project_type_id', 'package_id',
+        'status', 'project_status', 'project_manager_id',
+        'package_price_ngn', 'package_price_usd',
         'add_ons_total_ngn', 'add_ons_total_usd',
         'discount_ngn', 'discount_usd', 'tax_ngn', 'tax_usd',
         'total_ngn', 'total_usd', 'currency',
         'payment_status', 'payment_method', 'payment_gateway',
         'transaction_reference', 'notes', 'billing_details', 'metadata',
+        'requirements_reviewed_at', 'kickoff_at', 'project_created_at', 'completed_at',
     ];
 
     protected function casts(): array
@@ -96,5 +98,20 @@ class ServiceOrder extends Model
     public function activityLogs()
     {
         return $this->hasMany(ServiceActivityLog::class);
+    }
+
+    public function receipts()
+    {
+        return $this->hasMany(ServiceReceipt::class);
+    }
+
+    public function projectManager()
+    {
+        return $this->belongsTo(User::class, 'project_manager_id');
+    }
+
+    public function scopeByProjectStatus($query, $status)
+    {
+        return $query->where('project_status', $status);
     }
 }

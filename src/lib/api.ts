@@ -308,6 +308,22 @@ export const api = {
   getServiceOrder: (id: string) =>
     apiRequest<ApiResponse & { data: ServiceOrderDetailData }>(`/service-orders/${id}`),
 
+  // Workspace
+  getServiceOrderWorkspace: (id: string) =>
+    apiRequest<ApiResponse & { data: WorkspaceDataResponse }>(`/service-orders/${id}/workspace`),
+
+  getServiceOrderMilestones: (id: string) =>
+    apiRequest<ApiResponse & { data: MilestonesResponseData }>(`/service-orders/${id}/milestones`),
+
+  getServiceOrderActivity: (id: string) =>
+    apiRequest<ApiResponse & { data: PaginatedActivityData }>(`/service-orders/${id}/activity`),
+
+  downloadServiceInvoice: (id: string, invoiceId: string) =>
+    apiRequest<ApiResponse & { data: InvoiceDownloadData }>(`/service-orders/${id}/invoice/${invoiceId}`),
+
+  downloadServiceReceipt: (id: string, receiptId: string) =>
+    apiRequest<ApiResponse & { data: ReceiptDownloadData }>(`/service-orders/${id}/receipt/${receiptId}`),
+
   // Requirements
   getRequirementQuestions: (serviceSlug: string) =>
     apiRequest<ApiResponse & { data: RequirementQuestionData[] }>(`/services/${serviceSlug}/requirements/questions`),
@@ -384,6 +400,22 @@ export const api = {
     apiRequest<ApiResponse & { data: { status: string } }>(`/admin/orders/${id}/status`, {
       method: "PATCH",
       body: JSON.stringify({ status }),
+    }),
+
+  reviewRequirements: (orderId: string) =>
+    apiRequest<ApiResponse & { data: { project_status: string } }>(`/admin/orders/${orderId}/review-requirements`, {
+      method: "POST",
+    }),
+
+  kickoffProject: (orderId: string) =>
+    apiRequest<ApiResponse & { data: { project_status: string } }>(`/admin/orders/${orderId}/kickoff`, {
+      method: "POST",
+    }),
+
+  updateMilestone: (milestoneId: string, status: string, completionNotes?: string) =>
+    apiRequest<ApiResponse & { data: unknown }>(`/admin/milestones/${milestoneId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status, completion_notes: completionNotes }),
     }),
 
   assignTeamMember: (orderId: string, teamMemberId: string, role: string) =>
@@ -864,7 +896,10 @@ export interface ServiceOrderResponse {
 export interface ServicePaymentVerifyResponse {
   order_id: string;
   order_number: string;
+  project_number: string;
+  project_status: string;
   invoice_number: string;
+  receipt_number: string;
   status: string;
   payment_status: string;
   amount_paid_ngn: number;
@@ -872,17 +907,20 @@ export interface ServicePaymentVerifyResponse {
   total_ngn: number;
   payment_type: string;
   project_name: string;
+  created_at: string;
 }
 
 export interface ServiceOrderListItem {
   id: string;
   order_number: string;
+  project_number: string | null;
   service: string;
   project: string;
   package: string;
   total_ngn: number;
   total_usd: number;
   status: string;
+  project_status: string | null;
   payment_status: string;
   project_name: string | null;
   created_at: string;
@@ -1080,4 +1118,139 @@ export interface TeamMemberData {
   role_slug: string;
   avatar_url: string | null;
   is_available: boolean;
+}
+
+// Workspace Types
+export interface WorkspaceMilestoneData {
+  id: string;
+  service_order_id: string;
+  title: string;
+  description: string | null;
+  milestone_type: string | null;
+  status: string;
+  is_automatic: boolean;
+  sort_order: number;
+  due_date: string | null;
+  completed_at: string | null;
+  deliverables: string[] | null;
+  completion_notes: string | null;
+  created_at: string;
+}
+
+export interface WorkspaceInvoiceData {
+  id: string;
+  invoice_number: string;
+  status: string;
+  total_ngn: number;
+  amount_paid_ngn: number;
+  balance_ngn: number;
+  payment_type: string;
+  paid_at: string | null;
+  created_at: string;
+}
+
+export interface WorkspacePaymentData {
+  id: string;
+  reference: string;
+  gateway: string;
+  amount_ngn: number;
+  status: string;
+  payment_type: string;
+  paid_at: string;
+  created_at: string;
+}
+
+export interface WorkspaceReceiptData {
+  id: string;
+  receipt_number: string;
+  amount_ngn: number;
+  currency: string;
+  payment_gateway: string;
+  status: string;
+  created_at: string;
+}
+
+export interface WorkspaceActivityLogData {
+  id: string;
+  user_id: string | null;
+  action: string;
+  description: string | null;
+  metadata: Record<string, unknown> | null;
+  created_at: string;
+  user?: { profile: { full_name: string | null; avatar_url: string | null } | null } | null;
+}
+
+export interface WorkspaceProjectManagerData {
+  id: string;
+  profile: { full_name: string | null; avatar_url: string | null } | null;
+}
+
+export interface WorkspaceDataResponse {
+  id: string;
+  order_number: string;
+  project_number: string | null;
+  project_name: string;
+  status: string;
+  project_status: string;
+  payment_status: string;
+  total_ngn: number;
+  amount_paid_ngn: number;
+  balance_ngn: number;
+  service: { title: string; slug: string };
+  projectType: { title: string; slug: string };
+  package: { name: string; slug: string };
+  addOns: { id: string; name: string; price_ngn: number }[];
+  billing_details: Record<string, unknown>;
+  project_created_at: string | null;
+  kickoff_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+  milestones: WorkspaceMilestoneData[];
+  invoices: WorkspaceInvoiceData[];
+  payments: WorkspacePaymentData[];
+  receipts: WorkspaceReceiptData[];
+  activityLogs: WorkspaceActivityLogData[];
+  projectManager: WorkspaceProjectManagerData | null;
+  messages: unknown[];
+  files: unknown[];
+}
+
+export interface MilestonesResponseData {
+  milestones: WorkspaceMilestoneData[];
+  progress: number;
+  completed: number;
+  total: number;
+}
+
+export interface PaginatedActivityData {
+  data: WorkspaceActivityLogData[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export interface InvoiceDownloadData {
+  invoice: WorkspaceInvoiceData;
+  order: {
+    order_number: string;
+    project_number: string | null;
+    service: string;
+    project_type: string;
+    package: string;
+    billing_details: Record<string, unknown>;
+    metadata: Record<string, unknown>;
+  };
+}
+
+export interface ReceiptDownloadData {
+  receipt: WorkspaceReceiptData;
+  order: {
+    order_number: string;
+    project_number: string | null;
+    service: string;
+    project_type: string;
+    package: string;
+    billing_details: Record<string, unknown>;
+  };
 }

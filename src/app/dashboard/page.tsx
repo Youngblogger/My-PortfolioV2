@@ -378,9 +378,11 @@ function ProjectCard({ order }: { order: ServiceOrderListItem }) {
             <h3 className="text-white font-semibold truncate">
               {order.project_name || order.project}
             </h3>
-            <p className="text-xs text-muted mt-0.5 font-mono">#{order.order_number}</p>
+            <p className="text-xs text-muted mt-0.5 font-mono">
+              {order.project_number ? `${order.project_number} / ` : ""}#{order.order_number}
+            </p>
           </div>
-          <StatusBadge status={order.status} />
+          <StatusBadge status={order.project_status || order.status} />
         </div>
 
         <p className="text-xs text-muted mb-4">

@@ -4,27 +4,27 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { api, type ServiceOrderDetailData } from "@/lib/api";
+import { api, type WorkspaceDataResponse, type WorkspaceMilestoneData, type WorkspaceActivityLogData } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatCurrency } from "@/lib/utils";
 
 const TABS = ["Overview", "Timeline", "Team", "Files", "Messages", "Payments", "Activity"] as const;
 
-const STATUS_STAGES = [
-  "Lead",
-  "Discovery",
-  "Proposal",
-  "Approved",
-  "Development",
-  "Testing",
-  "Deployment",
-  "Completed",
-] as const;
+const PROJECT_STATUS_LABELS: Record<string, string> = {
+  pending_review: "Pending Review",
+  requirements_reviewed: "Requirements Reviewed",
+  clarification_needed: "Clarification Needed",
+  ready_for_kickoff: "Ready for Kickoff",
+  in_progress: "In Progress",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};
 
-function getStatusIndex(status: string): number {
-  const idx = STATUS_STAGES.findIndex((s) => s.toLowerCase() === status.toLowerCase());
-  return idx >= 0 ? idx : -1;
+function getProjectStatusIdx(status: string): number {
+  const order = ["pending_review", "requirements_reviewed", "clarification_needed", "ready_for_kickoff", "in_progress"];
+  const idx = order.indexOf(status);
+  return idx >= 0 ? idx : status === "completed" ? 5 : status === "cancelled" ? -1 : 0;
 }
 
 function getPaymentBadgeVariant(status: string): "gold" | "success" | "error" | "info" {
@@ -40,28 +40,44 @@ function getPaymentBadgeVariant(status: string): "gold" | "success" | "error" | 
   return map[status] || "info";
 }
 
-function getStatusBadgeVariant(status: string): "gold" | "success" | "error" | "info" {
+function getProjectStatusVariant(status: string): "gold" | "success" | "error" | "info" {
   const map: Record<string, "gold" | "success" | "error" | "info"> = {
-    draft: "info",
-    active: "gold",
+    pending_review: "gold",
+    requirements_reviewed: "info",
+    clarification_needed: "error",
+    ready_for_kickoff: "info",
     in_progress: "gold",
     completed: "success",
     cancelled: "error",
-    Lead: "info",
-    Discovery: "gold",
-    Proposal: "gold",
-    Approved: "success",
-    Development: "gold",
-    Testing: "gold",
-    Deployment: "gold",
   };
   return map[status] || "info";
+}
+
+function getMilestoneStatusIcon(status: string) {
+  if (status === "completed") return <span className="text-green-400 text-xs">&#10003;</span>;
+  if (status === "in_progress") return <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />;
+  return <span className="w-1.5 h-1.5 rounded-full bg-white/20" />;
+}
+
+function getMilestoneStatusStyle(status: string) {
+  if (status === "completed") return "border-green-500 bg-green-500/20";
+  if (status === "in_progress") return "border-gold bg-gold/20";
+  return "border-white/10 bg-white/5";
+}
+
+function getConnectorColor(milestones: WorkspaceMilestoneData[], idx: number) {
+  if (idx >= milestones.length - 1) return "bg-white/10";
+  const current = milestones[idx]?.status;
+  const next = milestones[idx + 1]?.status;
+  if (current === "completed" && next === "completed") return "bg-green-500/40";
+  if (current === "completed") return "bg-green-500/40";
+  return "bg-white/10";
 }
 
 export default function ProjectWorkspacePage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [order, setOrder] = useState<ServiceOrderDetailData | null>(null);
+  const [workspace, setWorkspace] = useState<WorkspaceDataResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("Overview");
@@ -72,13 +88,13 @@ export default function ProjectWorkspacePage() {
     setLoading(true);
     setError(null);
     api
-      .getServiceOrder(id)
+      .getServiceOrderWorkspace(id)
       .then((res) => {
-        setOrder(res.data);
+        setWorkspace(res.data);
         setLoading(false);
       })
       .catch((err) => {
-        setError(err?.message || "Failed to load project");
+        setError(err?.message || "Failed to load project workspace");
         setLoading(false);
       });
   }, [id]);
@@ -91,15 +107,13 @@ export default function ProjectWorkspacePage() {
 
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
-    const handles = TABS.map((tab) => {
+    TABS.map((tab) => {
       const el = sectionRefs.current[tab];
       if (!el) return null;
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setActiveTab(tab);
-            }
+            if (entry.isIntersecting) setActiveTab(tab);
           });
         },
         { rootMargin: "-100px 0px -60% 0px", threshold: 0 }
@@ -109,50 +123,22 @@ export default function ProjectWorkspacePage() {
       return observer;
     });
     return () => observers.forEach((o) => o.disconnect());
-  }, [order]);
+  }, [workspace]);
 
-  const projectName: string =
-    String((order?.metadata as Record<string, unknown>)?.project_name || "") || order?.order_number || "Project";
+  const w = workspace!;
+  const projectStatusIdx = w ? getProjectStatusIdx(w.project_status) : -1;
 
-  const statusIdx = order ? getStatusIndex(order.status) : -1;
+  const milestones = w?.milestones || [];
+  const completedMilestones = milestones.filter((m) => m.status === "completed").length;
+  const totalMilestones = milestones.length;
+  const milestoneProgress = totalMilestones > 0 ? Math.round((completedMilestones / totalMilestones) * 100) : 0;
 
-  const teamAssignments = (order?.teamAssignments || []) as {
-    id: string;
-    role: string;
-    teamMember: {
-      id: string;
-      title: string;
-      avatar_url: string | null;
-      user: {
-        profile: { full_name: string | null; avatar_url: string | null } | null;
-      };
-    };
-  }[];
-
-  const invoices = (order?.invoices || []) as {
-    id?: string;
-    invoice_number?: string;
-    amount_ngn?: number;
-    status?: string;
-    created_at?: string;
-  }[];
-
-  const payments = (order?.payments || []) as {
-    id?: string;
-    reference?: string;
-    amount_ngn?: number;
-    payment_gateway?: string;
-    status?: string;
-    created_at?: string;
-  }[];
-
-  const amountPaid = payments
+  const totalPaid = (w?.payments || [])
     .filter((p) => p.status === "success" || p.status === "completed")
-    .reduce((sum, p) => sum + (p.amount_ngn || 0), 0);
-  const balance = order ? order.total_ngn - amountPaid : 0;
+    .reduce((sum, p) => sum + p.amount_ngn, 0);
+  const balance = w ? w.total_ngn - totalPaid : 0;
 
   if (loading) return <PageLoader />;
-
   if (error) {
     return (
       <section className="relative pt-32 pb-20 px-6 min-h-screen flex items-center justify-center">
@@ -170,8 +156,7 @@ export default function ProjectWorkspacePage() {
       </section>
     );
   }
-
-  if (!order) {
+  if (!w) {
     return (
       <section className="relative pt-32 pb-20 px-6 min-h-screen flex items-center justify-center">
         <div className="glass rounded-2xl p-12 text-center max-w-md mx-auto">
@@ -202,11 +187,7 @@ export default function ProjectWorkspacePage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <Link
             href="/dashboard"
             className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-4"
@@ -214,14 +195,17 @@ export default function ProjectWorkspacePage() {
             &larr; Back to Dashboard
           </Link>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl md:text-3xl font-bold text-white">{projectName}</h1>
-            <Badge variant={getStatusBadgeVariant(order.status === "pending_payment" ? "pending" : order.status)}>
-              {order.status === "pending_payment" ? "Pending Payment" : order.status.replace(/_/g, " ")}
+            <h1 className="text-2xl md:text-3xl font-bold text-white">{w.project_name || w.projectType.title}</h1>
+            <Badge variant={getProjectStatusVariant(w.project_status)}>
+              {PROJECT_STATUS_LABELS[w.project_status] || w.project_status.replace(/_/g, " ")}
             </Badge>
-            <Badge variant={getPaymentBadgeVariant(order.payment_status)}>
-              {order.payment_status === "partially_paid" ? "Deposit Paid" : order.payment_status.replace(/_/g, " ")}
+            <Badge variant={getPaymentBadgeVariant(w.payment_status)}>
+              {w.payment_status === "partially_paid" ? "Deposit Paid" : w.payment_status.replace(/_/g, " ")}
             </Badge>
-            <span className="text-xs text-muted font-mono">#{order.order_number}</span>
+            {w.project_number && (
+              <span className="text-xs text-muted font-mono">{w.project_number}</span>
+            )}
+            <span className="text-xs text-muted font-mono">#{w.order_number}</span>
           </div>
         </motion.div>
 
@@ -280,7 +264,13 @@ export default function ProjectWorkspacePage() {
                   transition={{ duration: 0.5 }}
                 >
                   <h2 className="text-xl font-bold text-white mb-6 hidden md:block">{tab}</h2>
-                  {renderTabContent(tab)}
+                  {tab === "Overview" && <OverviewSection />}
+                  {tab === "Timeline" && <TimelineSection />}
+                  {tab === "Team" && <TeamSection />}
+                  {tab === "Files" && <FilesSection />}
+                  {tab === "Messages" && <MessagesSection />}
+                  {tab === "Payments" && <PaymentsSection />}
+                  {tab === "Activity" && <ActivitySection />}
                 </motion.div>
               </div>
             ))}
@@ -290,20 +280,7 @@ export default function ProjectWorkspacePage() {
     </section>
   );
 
-  function renderTabContent(tab: (typeof TABS)[number]) {
-    switch (tab) {
-      case "Overview": return <OverviewSection />;
-      case "Timeline": return <TimelineSection />;
-      case "Team": return <TeamSection />;
-      case "Files": return <FilesSection />;
-      case "Messages": return <MessagesSection />;
-      case "Payments": return <PaymentsSection />;
-      case "Activity": return <ActivitySection />;
-    }
-  }
-
   function OverviewSection() {
-    const data = order!;
     return (
       <div className="space-y-6">
         {/* Service & Package info */}
@@ -312,29 +289,29 @@ export default function ProjectWorkspacePage() {
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-muted">Service</span>
-              <p className="text-white font-medium mt-0.5">{data.service.title}</p>
+              <p className="text-white font-medium mt-0.5">{w.service.title}</p>
             </div>
             <div>
               <span className="text-muted">Project Type</span>
-              <p className="text-white font-medium mt-0.5">{data.projectType.title}</p>
+              <p className="text-white font-medium mt-0.5">{w.projectType.title}</p>
             </div>
             <div>
               <span className="text-muted">Package</span>
-              <p className="text-white font-medium mt-0.5">{data.package.name}</p>
+              <p className="text-white font-medium mt-0.5">{w.package.name}</p>
             </div>
             <div>
               <span className="text-muted">Total Amount</span>
-              <p className="text-gold font-bold mt-0.5 text-lg">{formatCurrency(data.total_ngn)}</p>
+              <p className="text-gold font-bold mt-0.5 text-lg">{formatCurrency(w.total_ngn)}</p>
             </div>
           </div>
         </div>
 
         {/* Add-ons */}
-        {data.addOns && data.addOns.length > 0 && (
+        {w.addOns && w.addOns.length > 0 && (
           <div className="glass rounded-2xl p-6 md:p-8">
             <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Add-Ons</h3>
             <div className="space-y-2">
-              {data.addOns.map((addon) => (
+              {w.addOns.map((addon) => (
                 <div key={addon.id} className="flex justify-between text-sm py-1">
                   <span className="text-white">{addon.name}</span>
                   <span className="text-gold">{formatCurrency(addon.price_ngn)}</span>
@@ -345,11 +322,11 @@ export default function ProjectWorkspacePage() {
         )}
 
         {/* Billing info */}
-        {data.billing_details && Object.keys(data.billing_details).length > 0 && (
+        {w.billing_details && Object.keys(w.billing_details).length > 0 && (
           <div className="glass rounded-2xl p-6 md:p-8">
             <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Billing Information</h3>
             <div className="grid sm:grid-cols-2 gap-3 text-sm">
-              {Object.entries(data.billing_details as Record<string, unknown>).filter(([, val]) => val).map(([key, val]) => (
+              {Object.entries(w.billing_details as Record<string, unknown>).filter(([, val]) => val).map(([key, val]) => (
                 <div key={key}>
                   <span className="text-muted capitalize">{key.replace(/_/g, " ")}</span>
                   <p className="text-white mt-0.5">{String(val)}</p>
@@ -359,43 +336,60 @@ export default function ProjectWorkspacePage() {
           </div>
         )}
 
-        {/* Quick actions */}
+        {/* Milestone Progress */}
+        {totalMilestones > 0 && (
+          <div className="glass rounded-2xl p-6 md:p-8">
+            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Milestone Progress</h3>
+            <div className="flex items-center gap-4 mb-3">
+              <div className="flex-1 h-2.5 rounded-full bg-white/5 overflow-hidden">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-gold to-green-400"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${milestoneProgress}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                />
+              </div>
+              <span className="text-sm font-bold text-white whitespace-nowrap">
+                {completedMilestones}/{totalMilestones}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs text-muted">
+              <span className="text-green-400">&#9679; {completedMilestones} completed</span>
+              <span className="text-gold">&#9679; {milestones.filter((m) => m.status === "in_progress").length} in progress</span>
+              <span>&#9679; {milestones.filter((m) => m.status === "pending" || m.status === "locked").length} remaining</span>
+            </div>
+          </div>
+        )}
+
+        {/* Project Timeline Info */}
         <div className="glass rounded-2xl p-6 md:p-8">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Quick Actions</h3>
-          <div className="grid sm:grid-cols-3 gap-3">
-            <Link
-              href={`/hire/discovery-call`}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all text-sm text-white font-medium"
-            >
-              <span className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-base">&#128222;</span>
-              Schedule Discovery Call
-            </Link>
-            <Link
-              href={`/proposals`}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all text-sm text-white font-medium"
-            >
-              <span className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-base">&#128196;</span>
-              View Proposals
-            </Link>
-            <Link
-              href={`/hire/${data.service.slug}/${data.projectType.slug}/requirements`}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all text-sm text-white font-medium"
-            >
-              <span className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-base">&#128221;</span>
-              View Requirements
-            </Link>
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Project Timeline</h3>
+          <div className="grid sm:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span className="text-muted">Order Created</span>
+              <p className="text-white mt-0.5">{formatDate(w.created_at)}</p>
+            </div>
+            <div>
+              <span className="text-muted">Kickoff</span>
+              <p className="text-white mt-0.5">{w.kickoff_at ? formatDate(w.kickoff_at) : "Not yet scheduled"}</p>
+            </div>
+            <div>
+              <span className="text-muted">Completed</span>
+              <p className="text-white mt-0.5">{w.completed_at ? formatDate(w.completed_at) : "In progress"}</p>
+            </div>
           </div>
         </div>
 
-        {/* Status pipeline */}
+        {/* Project Status Pipeline */}
         <div className="glass rounded-2xl p-6 md:p-8">
           <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-6">Project Pipeline</h3>
           <div className="flex items-center gap-0 overflow-x-auto pb-2">
-            {STATUS_STAGES.map((stage, idx) => {
-              const isCompleted = statusIdx >= idx;
-              const isCurrent = statusIdx === idx;
+            {Object.entries(PROJECT_STATUS_LABELS).map(([key, label], idx) => {
+              const isCompleted = projectStatusIdx > idx;
+              const isCurrent = projectStatusIdx === idx;
               return (
-                <div key={stage} className="flex items-center shrink-0">
+                <div key={key} className="flex items-center shrink-0">
                   <div
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 ${
                       isCurrent
@@ -405,20 +399,77 @@ export default function ProjectWorkspacePage() {
                           : "bg-white/5 text-muted border border-white/5"
                     }`}
                   >
-                    {isCompleted && !isCurrent && <span className="text-green-400">&#10003;</span>}
+                    {isCompleted && <span className="text-green-400">&#10003;</span>}
                     {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />}
-                    {stage}
+                    {label}
                   </div>
-                  {idx < STATUS_STAGES.length - 1 && (
-                    <div
-                      className={`w-6 h-px mx-1 ${
-                        isCompleted && idx < statusIdx ? "bg-green-500/40" : "bg-white/10"
-                      }`}
-                    />
+                  {idx < Object.keys(PROJECT_STATUS_LABELS).length - 1 && (
+                    <div className={`w-6 h-px mx-1 ${isCompleted && idx < projectStatusIdx ? "bg-green-500/40" : "bg-white/10"}`} />
                   )}
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        {/* Quick actions */}
+        <div className="glass rounded-2xl p-6 md:p-8">
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Quick Actions</h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {w.receipts.length > 0 && (
+              <button
+                onClick={() => {
+                  const receipt = w.receipts[0];
+                  api.downloadServiceReceipt(w.id, receipt.id).then((res) => {
+                    const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `receipt-${receipt.receipt_number}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  });
+                }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all text-sm text-white font-medium text-left"
+              >
+                <span className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-base">&#128196;</span>
+                Download Receipt
+              </button>
+            )}
+            {w.invoices.length > 0 && (
+              <button
+                onClick={() => {
+                  const invoice = w.invoices[0];
+                  api.downloadServiceInvoice(w.id, invoice.id).then((res) => {
+                    const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `invoice-${invoice.invoice_number}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                  });
+                }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all text-sm text-white font-medium text-left"
+              >
+                <span className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-base">&#128179;</span>
+                Download Invoice
+              </button>
+            )}
+            <Link
+              href="/hire/discovery-call"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all text-sm text-white font-medium"
+            >
+              <span className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-base">&#128222;</span>
+              Schedule Call
+            </Link>
+            <Link
+              href="/notifications"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all text-sm text-white font-medium"
+            >
+              <span className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center text-gold text-base">&#128276;</span>
+              Notifications
+            </Link>
           </div>
         </div>
       </div>
@@ -426,68 +477,80 @@ export default function ProjectWorkspacePage() {
   }
 
   function TimelineSection() {
-    const data = order!;
-    const statusHistory = STATUS_STAGES.map((stage, idx) => ({
-      stage,
-      date: idx === 0 ? data.created_at : null,
-      isReached: statusIdx >= idx,
-      isCurrent: statusIdx === idx,
-    }));
-
     return (
       <div className="space-y-6">
-        <div className="glass rounded-2xl p-6 md:p-8">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Created</h3>
-          <p className="text-white font-medium">{formatDate(data.created_at)}</p>
-        </div>
+        {totalMilestones > 0 && (
+          <div className="glass rounded-2xl p-6 md:p-8">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Progress</h3>
+              <span className="text-sm font-bold text-white">{milestoneProgress}%</span>
+            </div>
+            <div className="h-2.5 rounded-full bg-white/5 overflow-hidden">
+              <motion.div
+                className="h-full rounded-full bg-gradient-to-r from-gold to-green-400"
+                initial={{ width: 0 }}
+                whileInView={{ width: `${milestoneProgress}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+              />
+            </div>
+          </div>
+        )}
 
         <div className="glass rounded-2xl p-6 md:p-8">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-6">Status History</h3>
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-6">Milestones</h3>
           <div className="relative pl-8 space-y-0">
-            {statusHistory.map((entry, idx) => (
-              <div key={entry.stage} className="relative pb-8 last:pb-0">
-                {/* Connecting line */}
-                {idx < statusHistory.length - 1 && (
-                  <div
-                    className={`absolute left-[11px] top-4 bottom-0 w-0.5 ${
-                      entry.isReached && statusHistory[idx + 1]?.isReached
-                        ? "bg-green-500/40"
-                        : "bg-white/10"
-                    }`}
-                  />
-                )}
-                {/* Dot */}
-                <div
-                  className={`absolute left-0 top-1 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center ${
-                    entry.isCurrent
-                      ? "border-gold bg-gold/20"
-                      : entry.isReached
-                        ? "border-green-500 bg-green-500/20"
-                        : "border-white/10 bg-white/5"
-                  }`}
-                >
-                  {entry.isReached && !entry.isCurrent && (
-                    <span className="text-green-400 text-xs">&#10003;</span>
-                  )}
-                  {entry.isCurrent && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />
-                  )}
-                </div>
-                {/* Content */}
-                <div className="ml-4">
-                  <p
-                    className={`text-sm font-medium ${
-                      entry.isReached ? "text-white" : "text-muted/50"
-                    }`}
-                  >
-                    {entry.stage}
-                  </p>
-                  {entry.date && (
-                    <p className="text-xs text-muted mt-0.5">{formatDate(entry.date)}</p>
-                  )}
-                </div>
-              </div>
-            ))}
+            {milestones.length === 0 ? (
+              <p className="text-sm text-muted">No milestones defined yet.</p>
+            ) : (
+              milestones.map((milestone, idx) => {
+                const isAutomatic = milestone.is_automatic;
+                return (
+                  <div key={milestone.id} className="relative pb-8 last:pb-0">
+                    {idx < milestones.length - 1 && (
+                      <div className={`absolute left-[11px] top-4 bottom-0 w-0.5 ${getConnectorColor(milestones, idx)}`} />
+                    )}
+                    <div className={`absolute left-0 top-1 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center ${getMilestoneStatusStyle(milestone.status)}`}>
+                      {getMilestoneStatusIcon(milestone.status)}
+                    </div>
+                    <div className="ml-4">
+                      <div className="flex items-center gap-2">
+                        <p className={`text-sm font-medium ${milestone.status === "completed" ? "text-white" : milestone.status === "in_progress" ? "text-gold" : "text-muted/50"}`}>
+                          {milestone.title}
+                        </p>
+                        {isAutomatic && (
+                          <span className="text-[10px] text-muted bg-white/5 px-1.5 py-0.5 rounded">auto</span>
+                        )}
+                      </div>
+                      {milestone.description && (
+                        <p className="text-xs text-muted/60 mt-0.5">{milestone.description}</p>
+                      )}
+                      <div className="flex items-center gap-3 mt-1">
+                        {milestone.due_date && (
+                          <span className="text-xs text-muted">Due: {formatDate(milestone.due_date)}</span>
+                        )}
+                        {milestone.completed_at && (
+                          <span className="text-xs text-green-400">Completed: {formatDate(milestone.completed_at)}</span>
+                        )}
+                        <span className="text-xs capitalize text-muted/40">{milestone.status.replace(/_/g, " ")}</span>
+                      </div>
+                      {milestone.completion_notes && (
+                        <p className="text-xs text-white/40 mt-1 italic">&ldquo;{milestone.completion_notes}&rdquo;</p>
+                      )}
+                      {milestone.deliverables && milestone.deliverables.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {milestone.deliverables.map((d, i) => (
+                            <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-gold/5 text-gold border border-gold/10">
+                              {d}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>
@@ -495,46 +558,42 @@ export default function ProjectWorkspacePage() {
   }
 
   function TeamSection() {
-    if (teamAssignments.length === 0) {
-      return (
-        <div className="glass rounded-2xl p-12 text-center">
-          <div className="text-4xl mb-4" aria-hidden="true">&#128101;</div>
-          <h3 className="text-lg font-bold text-white mb-2">Team Being Assigned</h3>
-          <p className="text-muted text-sm">
-            We&apos;re currently putting together the best team for your project. You&apos;ll be notified once they&apos;re assigned.
-          </p>
-        </div>
-      );
-    }
-
+    const pm = w.projectManager;
     return (
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {teamAssignments.map((a) => {
-          const name = a.teamMember.user.profile?.full_name || "Team Member";
-          const role = a.role || a.teamMember.title || "Team Member";
-          const avatar = a.teamMember.avatar_url || a.teamMember.user.profile?.avatar_url;
-          return (
-            <motion.div
-              key={a.id}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="glass rounded-xl p-5 flex items-center gap-4 hover:border-gold/20 transition-all duration-300"
-            >
-              <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center text-gold font-bold text-sm shrink-0 overflow-hidden">
-                {avatar ? (
-                  <img src={avatar} alt={name} className="w-full h-full object-cover" />
+      <div className="space-y-6">
+        {pm && (
+          <div className="glass rounded-2xl p-6 md:p-8">
+            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Project Manager</h3>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-gold/10 flex items-center justify-center text-gold font-bold text-lg shrink-0 overflow-hidden">
+                {pm.profile?.avatar_url ? (
+                  <img src={pm.profile.avatar_url} alt={pm.profile.full_name || "PM"} className="w-full h-full object-cover" />
                 ) : (
-                  name.charAt(0).toUpperCase()
+                  (pm.profile?.full_name || "PM").charAt(0).toUpperCase()
                 )}
               </div>
-              <div className="min-w-0">
-                <p className="text-white font-medium text-sm truncate">{name}</p>
-                <p className="text-xs text-muted truncate">{role}</p>
+              <div>
+                <p className="text-white font-semibold">{pm.profile?.full_name || "Project Manager"}</p>
+                <p className="text-xs text-muted">Your dedicated project manager</p>
               </div>
-            </motion.div>
-          );
-        })}
+            </div>
+          </div>
+        )}
+
+        <div className="glass rounded-2xl p-6 md:p-8">
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Team</h3>
+          {w.messages.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-4" aria-hidden="true">&#128101;</div>
+              <h3 className="text-lg font-bold text-white mb-2">Team Being Assembled</h3>
+              <p className="text-muted text-sm">
+                We&apos;re putting together the best team for your project. You&apos;ll be notified once they&apos;re assigned.
+              </p>
+            </div>
+          ) : (
+            <p className="text-sm text-muted">Team members will appear here.</p>
+          )}
+        </div>
       </div>
     );
   }
@@ -564,7 +623,6 @@ export default function ProjectWorkspacePage() {
   }
 
   function PaymentsSection() {
-    const data = order!;
     return (
       <div className="space-y-6">
         {/* Summary */}
@@ -573,11 +631,11 @@ export default function ProjectWorkspacePage() {
           <div className="grid sm:grid-cols-3 gap-4">
             <div className="text-center p-4 rounded-xl bg-white/5">
               <div className="text-xs text-muted mb-1">Total</div>
-              <div className="text-xl font-bold text-white">{formatCurrency(data.total_ngn)}</div>
+              <div className="text-xl font-bold text-white">{formatCurrency(w.total_ngn)}</div>
             </div>
             <div className="text-center p-4 rounded-xl bg-white/5">
               <div className="text-xs text-muted mb-1">Paid</div>
-              <div className="text-xl font-bold text-green-400">{formatCurrency(amountPaid)}</div>
+              <div className="text-xl font-bold text-green-400">{formatCurrency(totalPaid)}</div>
             </div>
             <div className="text-center p-4 rounded-xl bg-white/5">
               <div className="text-xs text-muted mb-1">Outstanding</div>
@@ -586,45 +644,118 @@ export default function ProjectWorkspacePage() {
           </div>
         </div>
 
+        {/* Receipts */}
+        {w.receipts.length > 0 && (
+          <div className="glass rounded-2xl p-6 md:p-8">
+            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Receipts</h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-muted border-b border-white/10">
+                    <th className="text-left pb-3 font-medium">Receipt #</th>
+                    <th className="text-left pb-3 font-medium">Amount</th>
+                    <th className="text-left pb-3 font-medium">Gateway</th>
+                    <th className="text-left pb-3 font-medium">Status</th>
+                    <th className="text-left pb-3 font-medium">Date</th>
+                    <th className="text-left pb-3 font-medium">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {w.receipts.map((r) => (
+                    <tr key={r.id} className="border-b border-white/5">
+                      <td className="py-3 text-white font-mono">{r.receipt_number}</td>
+                      <td className="py-3 text-white">{formatCurrency(r.amount_ngn)}</td>
+                      <td className="py-3 text-muted capitalize">{r.payment_gateway}</td>
+                      <td className="py-3">
+                        <Badge variant={getPaymentBadgeVariant(r.status)}>{r.status}</Badge>
+                      </td>
+                      <td className="py-3 text-muted">{formatDate(r.created_at)}</td>
+                      <td className="py-3">
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await api.downloadServiceReceipt(w.id, r.id);
+                              const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: "application/json" });
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement("a");
+                              a.href = url;
+                              a.download = `receipt-${r.receipt_number}.json`;
+                              a.click();
+                              URL.revokeObjectURL(url);
+                            } catch {}
+                          }}
+                          className="text-xs text-gold hover:underline"
+                        >
+                          Download
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {/* Invoices */}
-        <div className="glass rounded-2xl p-6 md:p-8">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Invoices</h3>
-          {invoices.length === 0 ? (
-            <p className="text-sm text-muted">No invoices available.</p>
-          ) : (
+        {w.invoices.length > 0 && (
+          <div className="glass rounded-2xl p-6 md:p-8">
+            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Invoices</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-muted border-b border-white/10">
                     <th className="text-left pb-3 font-medium">Invoice #</th>
                     <th className="text-left pb-3 font-medium">Amount</th>
+                    <th className="text-left pb-3 font-medium">Paid</th>
+                    <th className="text-left pb-3 font-medium">Balance</th>
                     <th className="text-left pb-3 font-medium">Status</th>
                     <th className="text-left pb-3 font-medium">Date</th>
+                    <th className="text-left pb-3 font-medium">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {invoices.map((inv, i) => (
-                    <tr key={inv.id || i} className="border-b border-white/5">
-                      <td className="py-3 text-white font-mono">{inv.invoice_number || "&mdash;"}</td>
-                      <td className="py-3 text-white">{formatCurrency(inv.amount_ngn || 0)}</td>
+                  {w.invoices.map((inv) => (
+                    <tr key={inv.id} className="border-b border-white/5">
+                      <td className="py-3 text-white font-mono">{inv.invoice_number}</td>
+                      <td className="py-3 text-white">{formatCurrency(inv.total_ngn)}</td>
+                      <td className="py-3 text-green-400">{formatCurrency(inv.amount_paid_ngn)}</td>
+                      <td className="py-3 text-gold">{formatCurrency(inv.balance_ngn)}</td>
                       <td className="py-3">
-                        <Badge variant={getPaymentBadgeVariant(inv.status || "")}>
-                          {inv.status || "&mdash;"}
-                        </Badge>
+                        <Badge variant={getPaymentBadgeVariant(inv.status)}>{inv.status}</Badge>
                       </td>
-                      <td className="py-3 text-muted">{inv.created_at ? formatDate(inv.created_at) : "&mdash;"}</td>
+                      <td className="py-3 text-muted">{formatDate(inv.created_at)}</td>
+                      <td className="py-3">
+                        <button
+                          onClick={async () => {
+                            try {
+                              const res = await api.downloadServiceInvoice(w.id, inv.id);
+                              const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: "application/json" });
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement("a");
+                              a.href = url;
+                              a.download = `invoice-${inv.invoice_number}.json`;
+                              a.click();
+                              URL.revokeObjectURL(url);
+                            } catch {}
+                          }}
+                          className="text-xs text-gold hover:underline"
+                        >
+                          Download
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Payment history */}
         <div className="glass rounded-2xl p-6 md:p-8">
           <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Payment History</h3>
-          {payments.length === 0 ? (
+          {w.payments.length === 0 ? (
             <p className="text-sm text-muted">No payments recorded yet.</p>
           ) : (
             <div className="overflow-x-auto">
@@ -639,17 +770,15 @@ export default function ProjectWorkspacePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {payments.map((p, i) => (
-                    <tr key={p.id || i} className="border-b border-white/5">
-                      <td className="py-3 text-white font-mono text-xs">{p.reference || "&mdash;"}</td>
-                      <td className="py-3 text-white">{formatCurrency(p.amount_ngn || 0)}</td>
-                      <td className="py-3 text-muted capitalize">{p.payment_gateway || "&mdash;"}</td>
+                  {w.payments.map((p) => (
+                    <tr key={p.id} className="border-b border-white/5">
+                      <td className="py-3 text-white font-mono text-xs">{p.reference}</td>
+                      <td className="py-3 text-white">{formatCurrency(p.amount_ngn)}</td>
+                      <td className="py-3 text-muted capitalize">{p.gateway}</td>
                       <td className="py-3">
-                        <Badge variant={getPaymentBadgeVariant(p.status || "")}>
-                          {p.status || "&mdash;"}
-                        </Badge>
+                        <Badge variant={getPaymentBadgeVariant(p.status)}>{p.status}</Badge>
                       </td>
-                      <td className="py-3 text-muted">{p.created_at ? formatDate(p.created_at) : "&mdash;"}</td>
+                      <td className="py-3 text-muted">{formatDate(p.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -662,28 +791,35 @@ export default function ProjectWorkspacePage() {
   }
 
   function ActivitySection() {
-    const data = order!;
-    const activityEntries = [
-      { action: "Order created", timestamp: data.created_at, type: "created" },
-      { action: `Status changed to ${data.status}`, timestamp: data.created_at, type: "status" },
-    ];
-
     return (
       <div className="glass rounded-2xl p-6 md:p-8">
         <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Activity Log</h3>
-        {activityEntries.length === 0 ? (
+        {w.activityLogs.length === 0 ? (
           <p className="text-sm text-muted">No activity recorded yet.</p>
         ) : (
           <div className="space-y-0">
-            {activityEntries.map((entry, idx) => (
-              <div key={idx} className="flex gap-4 pb-6 last:pb-0 relative">
-                {idx < activityEntries.length - 1 && (
+            {w.activityLogs.map((entry: WorkspaceActivityLogData, idx: number) => (
+              <div key={entry.id} className="flex gap-4 pb-6 last:pb-0 relative">
+                {idx < w.activityLogs.length - 1 && (
                   <div className="absolute left-[7px] top-4 bottom-0 w-0.5 bg-white/10" />
                 )}
                 <div className="w-[14px] h-[14px] rounded-full border-2 border-gold/30 bg-gold/10 shrink-0 mt-1" />
-                <div>
-                  <p className="text-sm text-white">{entry.action}</p>
-                  <p className="text-xs text-muted mt-0.5">{formatDate(entry.timestamp)}</p>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-white capitalize">{entry.action.replace(/_/g, " ")}</p>
+                    {entry.user?.profile?.full_name && (
+                      <span className="text-xs text-muted">by {entry.user.profile.full_name}</span>
+                    )}
+                  </div>
+                  {entry.description && (
+                    <p className="text-xs text-muted/70 mt-0.5">{entry.description}</p>
+                  )}
+                  <p className="text-xs text-muted mt-0.5">{formatDate(entry.created_at)}</p>
+                  {entry.metadata && Object.keys(entry.metadata).length > 0 && (
+                    <pre className="text-[10px] text-muted/40 mt-1 bg-white/5 p-2 rounded-lg overflow-x-auto max-w-md">
+                      {JSON.stringify(entry.metadata, null, 1)}
+                    </pre>
+                  )}
                 </div>
               </div>
             ))}

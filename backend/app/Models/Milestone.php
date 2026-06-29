@@ -11,9 +11,9 @@ class Milestone extends Model
     use HasUuids, HasFactory;
 
     protected $fillable = [
-        'service_order_id', 'title', 'description',
-        'status', 'sort_order', 'due_date', 'completed_at',
-        'deliverables', 'metadata',
+        'service_order_id', 'title', 'description', 'milestone_type',
+        'status', 'is_automatic', 'sort_order', 'due_date', 'completed_at',
+        'deliverables', 'completion_notes', 'metadata',
     ];
 
     protected function casts(): array
@@ -22,6 +22,7 @@ class Milestone extends Model
             'due_date' => 'date',
             'completed_at' => 'date',
             'deliverables' => 'array',
+            'is_automatic' => 'boolean',
             'metadata' => 'array',
         ];
     }

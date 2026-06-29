@@ -16,6 +16,7 @@ use App\Models\Proposal;
 use App\Models\ServiceActivityLog;
 use App\Models\Notification;
 use App\Models\RequirementQuestion;
+use App\Models\Milestone;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -116,6 +117,126 @@ class AdminController extends Controller
         ]);
 
         return response()->json(['success' => true, 'data' => ['status' => $request->status]]);
+    }
+
+    public function reviewRequirements(Request $request, $orderId)
+    {
+        $order = ServiceOrder::findOrFail($orderId);
+
+        $order->update([
+            'project_status' => 'requirements_reviewed',
+            'requirements_reviewed_at' => now(),
+        ]);
+
+        ServiceActivityLog::create([
+            'service_order_id' => $order->id,
+            'user_id' => $request->user()->id,
+            'action' => 'requirements_reviewed',
+            'description' => 'Project requirements reviewed and approved.',
+        ]);
+
+        Notification::create([
+            'user_id' => $order->user_id,
+            'service_order_id' => $order->id,
+            'type' => 'requirements_reviewed',
+            'title' => 'Requirements Approved',
+            'body' => 'Your project requirements have been reviewed and approved. Team assignment is next.',
+            'action_url' => '/hire/project/' . $order->id,
+            'action_text' => 'View Project',
+            'channel' => 'in_app',
+        ]);
+
+        return response()->json(['success' => true, 'data' => ['project_status' => 'requirements_reviewed']]);
+    }
+
+    public function kickoffProject(Request $request, $orderId)
+    {
+        $order = ServiceOrder::findOrFail($orderId);
+
+        $order->update([
+            'project_status' => 'in_progress',
+            'status' => 'in_progress',
+            'kickoff_at' => now(),
+        ]);
+
+        // Mark kickoff milestone as completed
+        $order->milestones()
+            ->where('milestone_type', 'kickoff')
+            ->update(['status' => 'completed', 'completed_at' => now()]);
+
+        // Mark team assignment milestone as completed
+        $order->milestones()
+            ->where('milestone_type', 'team')
+            ->update(['status' => 'completed', 'completed_at' => now()]);
+
+        // Mark requirements review milestone as completed
+        $order->milestones()
+            ->where('milestone_type', 'planning')
+            ->update(['status' => 'completed', 'completed_at' => now()]);
+
+        ServiceActivityLog::create([
+            'service_order_id' => $order->id,
+            'user_id' => $request->user()->id,
+            'action' => 'project_kickoff',
+            'description' => 'Project kickoff completed. Development phase initiated.',
+        ]);
+
+        Notification::create([
+            'user_id' => $order->user_id,
+            'service_order_id' => $order->id,
+            'type' => 'project_kickoff',
+            'title' => 'Project is Live!',
+            'body' => 'Your project has kicked off! The team is now working on design and development.',
+            'action_url' => '/hire/project/' . $order->id,
+            'action_text' => 'View Project',
+            'channel' => 'in_app',
+        ]);
+
+        return response()->json(['success' => true, 'data' => ['project_status' => 'in_progress']]);
+    }
+
+    public function updateMilestone(Request $request, $milestoneId)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => ['required', 'string', 'in:pending,in_progress,completed'],
+            'completion_notes' => ['nullable', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'error' => $validator->errors()->first()], 422);
+        }
+
+        $milestone = Milestone::with('serviceOrder')->findOrFail($milestoneId);
+
+        $oldStatus = $milestone->status;
+        $milestone->update([
+            'status' => $request->status,
+            'completed_at' => $request->status === 'completed' ? now() : ($request->status === 'pending' ? null : $milestone->completed_at),
+            'completion_notes' => $request->completion_notes ?? $milestone->completion_notes,
+        ]);
+
+        ServiceActivityLog::create([
+            'service_order_id' => $milestone->service_order_id,
+            'user_id' => $request->user()->id,
+            'action' => 'milestone_' . $request->status,
+            'description' => 'Milestone "' . $milestone->title . '" changed from ' . $oldStatus . ' to ' . $request->status . '.',
+            'metadata' => ['milestone_id' => $milestone->id, 'milestone_title' => $milestone->title],
+        ]);
+
+        if ($request->status === 'completed') {
+            Notification::create([
+                'user_id' => $milestone->serviceOrder->user_id,
+                'service_order_id' => $milestone->service_order_id,
+                'type' => 'milestone_completed',
+                'title' => 'Milestone Completed: ' . $milestone->title,
+                'body' => 'The "' . $milestone->title . '" milestone has been completed.',
+                'action_url' => '/hire/project/' . $milestone->service_order_id,
+                'action_text' => 'View Progress',
+                'channel' => 'in_app',
+            ]);
+        }
+
+        return response()->json(['success' => true, 'data' => $milestone]);
     }
 
     public function assignTeam(Request $request, $orderId)
