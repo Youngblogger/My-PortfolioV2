@@ -437,9 +437,9 @@ export default function RequirementsPage() {
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center">
-              <Link href={`/hire/${serviceSlug}/${projectSlug}/book`}>
+              <Link href={`/hire/review`}>
                 <Button variant="primary" size="lg">
-                  Proceed to Booking →
+                  Review & Cost Estimate →
                 </Button>
               </Link>
               <Link href={`/hire/${serviceSlug}/${projectSlug}`}>

@@ -1,55 +1,22 @@
 "use client";
 
-import { useParams } from "next/navigation";
-import { notFound } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams, notFound } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
-
-const services = [
-  { id: "e-commerce", title: "E-Commerce Website", description: "Online store system with product catalog, cart, checkout, payment integration, admin dashboard, and inventory management.", icon: "🛒", price: "₦350,000 – ₦3,000,000", gradient: "from-blue-500/10 to-cyan-500/10" },
-  { id: "lms", title: "LMS / Education Platform", description: "Learning management system with student dashboard, course system, video lessons, progress tracking, and certificates.", icon: "🎓", price: "₦400,000 – ₦3,500,000", gradient: "from-green-500/10 to-emerald-500/10" },
-  { id: "business-website", title: "Business Website", description: "Corporate website with landing page, service pages, contact system, CMS, and SEO optimization.", icon: "🏢", price: "₦250,000 – ₦800,000", gradient: "from-purple-500/10 to-violet-500/10" },
-  { id: "entertainment", title: "Entertainment Platform", description: "Media/streaming system with video/audio streaming, user profiles, content categories, and admin upload.", icon: "🎬", price: "₦500,000 – ₦4,000,000", gradient: "from-orange-500/10 to-amber-500/10" },
-  { id: "saas", title: "SaaS Platform", description: "Custom SaaS product with authentication, dashboard UI, API architecture, subscription system, and RBAC.", icon: "☁️", price: "Custom (₦3,000,000+)", gradient: "from-pink-500/10 to-rose-500/10" },
-  { id: "mvp", title: "Startup MVP Build", description: "MVP architecture, core feature development, rapid prototyping, and deployment setup for your startup idea.", icon: "🚀", price: "₦500,000 – ₦2,500,000", gradient: "from-yellow-500/10 to-orange-500/10" },
-];
-
-const includes: Record<string, string[]> = {
-  "e-commerce": ["Product catalog management", "Shopping cart & checkout", "Payment gateway integration", "Admin dashboard", "Inventory management system", "Order management", "Customer accounts", "Mobile responsive design"],
-  "lms": ["Student dashboard", "Course creation system", "Video lesson hosting", "Progress tracking", "Certificate generation", "Quiz & assessment system", "Student management", "Analytics & reporting"],
-  "business-website": ["Custom landing page", "Service pages", "Contact form system", "Content management", "SEO optimization", "Google Analytics", "Social media integration", "Blog system"],
-  "entertainment": ["Video/audio streaming", "User profile system", "Content categorization", "Admin upload panel", "Search & discovery", "Watch history", "User ratings", "Responsive design"],
-  "saas": ["Authentication system", "Dashboard UI kit", "API architecture", "Subscription management", "Role-based access", "Database design", "Analytics system", "Documentation"],
-  "mvp": ["MVP architecture design", "Core feature development", "Rapid prototyping", "Deployment setup", "Database setup", "Basic authentication", "API development", "Testing & QA"],
-};
-
-const upgrades = [
-  { name: "AI Integration", description: "Add intelligent features powered by machine learning", price: "+₦150,000" },
-  { name: "Mobile App Extension", description: "Native iOS and Android app for your platform", price: "+₦500,000" },
-  { name: "Performance Optimization", description: "Advanced caching, CDN, and load time optimization", price: "+₦100,000" },
-  { name: "Advanced Security Layer", description: "Penetration testing, audit logging, DDoS protection", price: "+₦200,000" },
-  { name: "Admin Dashboard Upgrade", description: "Advanced analytics, custom reports, user management", price: "+₦150,000" },
-  { name: "Automation Features", description: "Email automation, workflow triggers, scheduled tasks", price: "+₦120,000" },
-  { name: "Analytics System", description: "Custom dashboards, user tracking, conversion funnels", price: "+₦100,000" },
-];
-
-const process = [
-  { step: "01", title: "Discovery", description: "We learn about your business, goals, and requirements." },
-  { step: "02", title: "Planning", description: "We design the architecture, UX, and project roadmap." },
-  { step: "03", title: "Development", description: "We build your product in agile sprints with regular updates." },
-  { step: "04", title: "Launch", description: "We deploy, test, and hand over your fully functional product." },
-];
+import { api, type ServiceDetailData } from "@/lib/api";
+import { useBooking } from "@/contexts/BookingContext";
 
 const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 },
+    transition: { staggerChildren: 0.08 },
   },
 };
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
@@ -57,22 +24,62 @@ const fadeUp = {
   },
 };
 
+const gradients: Record<string, string> = {
+  "web-development": "from-blue-500/10 to-cyan-500/10",
+  "saas-development": "from-purple-500/10 to-violet-500/10",
+  "mobile-development": "from-green-500/10 to-emerald-500/10",
+  "ui-ux-design": "from-orange-500/10 to-amber-500/10",
+  "ai-solutions": "from-pink-500/10 to-rose-500/10",
+};
+
+const serviceIcons: Record<string, string> = {
+  "web-development": "🌐",
+  "saas-development": "☁️",
+  "mobile-development": "📱",
+  "ui-ux-design": "🎨",
+  "ai-solutions": "🤖",
+};
+
 export default function ServiceDetailPage() {
   const params = useParams();
-  const service = services.find((s) => s.id === params.service);
+  const serviceSlug = params.service as string;
+  const [data, setData] = useState<ServiceDetailData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { setService } = useBooking();
 
-  if (!service) {
-    notFound();
+  useEffect(() => {
+    if (!serviceSlug) return;
+    setLoading(true);
+    api.getService(serviceSlug).then((res) => {
+      setData(res.data);
+      setService({ id: res.data.id, slug: res.data.slug, title: res.data.title });
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
+      notFound();
+    });
+  }, [serviceSlug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="glass rounded-2xl p-8 animate-pulse space-y-4">
+          <div className="h-8 w-64 bg-white/10 rounded" />
+          <div className="h-4 w-96 bg-white/10 rounded" />
+          <div className="h-48 w-full bg-white/5 rounded" />
+        </div>
+      </div>
+    );
   }
 
-  const serviceIncludes = includes[service.id] ?? [];
+  if (!data) return notFound();
 
   return (
     <>
       <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 opacity-20"
-            style={{ background: "radial-gradient(circle at 50% 50%, rgba(212,175,55,0.08) 0%, transparent 50%)" }}
+            style={{ background: `radial-gradient(circle at 50% 50%, rgba(212,175,55,0.08) 0%, transparent 50%)` }}
           />
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-6">
@@ -87,138 +94,145 @@ export default function ServiceDetailPage() {
             >
               ← Back to Services
             </Link>
-            <div className="text-5xl mb-6">{service.icon}</div>
-            <h1 className="section-heading max-w-4xl">
-              {service.title}
-            </h1>
+            <div className="flex items-center gap-6 mb-6">
+              <div className="text-5xl">{data.icon || serviceIcons[data.slug] || "🚀"}</div>
+              <div>
+                <span className="section-label">{data.subtitle || "SERVICE"}</span>
+                <h1 className="section-heading mt-1">
+                  {data.title}
+                </h1>
+              </div>
+            </div>
             <p className="section-subtitle mt-4 max-w-2xl">
-              {service.description}
+              {data.description || data.short_description}
             </p>
-            <div className="inline-block mt-6 px-5 py-2.5 rounded-full glass text-sm text-gold font-semibold">
-              {service.price}
+            <div className="flex flex-wrap gap-4 mt-8">
+              <div className="glass rounded-xl px-5 py-3">
+                <span className="text-xs text-muted uppercase tracking-wider">Starting From</span>
+                <p className="text-xl font-bold text-gold mt-1">
+                  {data.starting_price_ngn > 0 ? `₦${data.starting_price_ngn.toLocaleString()}` : "Custom Quote"}
+                </p>
+              </div>
+              {data.estimated_delivery && (
+                <div className="glass rounded-xl px-5 py-3">
+                  <span className="text-xs text-muted uppercase tracking-wider">Typical Timeline</span>
+                  <p className="text-xl font-bold text-white mt-1">{data.estimated_delivery}</p>
+                </div>
+              )}
+              <div className="glass rounded-xl px-5 py-3">
+                <span className="text-xs text-muted uppercase tracking-wider">Project Types</span>
+                <p className="text-xl font-bold text-white mt-1">{data.project_types?.length || 0}</p>
+              </div>
             </div>
           </motion.div>
         </div>
       </section>
 
+      {/* Features */}
+      {data.features && data.features.length > 0 && (
+        <section className="relative py-16 md:py-24 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent pointer-events-none" />
+          <div className="relative z-10 max-w-7xl mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="mb-12 text-center"
+            >
+              <span className="section-label">CAPABILITIES</span>
+              <h2 className="section-heading mt-2">
+                What We <span className="text-gradient">Deliver</span>
+              </h2>
+            </motion.div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              {(data.features || []).map((f, i) => (
+                <motion.div
+                  key={f}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.05 }}
+                  className="glass rounded-xl p-4 flex items-center gap-3"
+                >
+                  <span className="w-6 h-6 rounded-full bg-gold/10 flex items-center justify-center shrink-0">
+                    <svg className="w-3.5 h-3.5 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </span>
+                  <span className="text-white text-sm">{f}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Project Types */}
       <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+            transition={{ duration: 0.6 }}
             className="mb-12"
           >
-            <span className="section-label">INCLUDED</span>
+            <span className="section-label">PROJECT TYPES</span>
             <h2 className="section-heading mt-2">
-              What&apos;s
-              <br />
-              <span className="text-gradient">Included</span>
+              Choose Your <span className="text-gradient">Project</span>
             </h2>
+            <p className="section-subtitle mt-3">
+              Browse our project categories and select the one that best fits your needs.
+            </p>
           </motion.div>
 
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-4"
-          >
-            {serviceIncludes.map((item) => (
-              <motion.div
-                key={item}
-                variants={fadeUp}
-                className="glass rounded-2xl p-5 flex items-start gap-3"
+          {data.project_types && data.project_types.length > 0 ? (
+            <motion.div
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+            >
+              {data.project_types.map((pt) => (
+                <motion.div key={pt.id} variants={fadeUp} className="h-full">
+                  <Link
+                    href={`/hire/${data.slug}/${pt.slug}`}
+                    className="block glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300 cursor-pointer h-full group"
+                  >
+                    <div className="text-3xl mb-4">{pt.icon || "📋"}</div>
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-gold transition-colors">{pt.title}</h3>
+                    <p className="text-muted text-sm leading-relaxed mb-4 line-clamp-2">{pt.short_description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gold font-semibold">
+                        {pt.starting_price_ngn > 0 ? `₦${pt.starting_price_ngn.toLocaleString()}+` : "Custom"}
+                      </span>
+                      {pt.estimated_timeline && (
+                        <span className="text-xs text-muted">{pt.estimated_timeline}</span>
+                      )}
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          ) : (
+            <div className="glass rounded-2xl p-12 text-center">
+              <p className="text-muted mb-6">
+                Project types are being configured for this service.
+              </p>
+              <Link
+                href="/hire/request-quote"
+                className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
               >
-                <span className="text-gold shrink-0 mt-0.5">✓</span>
-                <span className="text-sm text-white/80">{item}</span>
-              </motion.div>
-            ))}
-          </motion.div>
+                Request Custom Quote
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
-      <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-            className="mb-12"
-          >
-            <span className="section-label">UPGRADES</span>
-            <h2 className="section-heading mt-2">
-              Optional
-              <br />
-              <span className="text-gradient">Upgrades</span>
-            </h2>
-          </motion.div>
-
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
-          >
-            {upgrades.map((upgrade) => (
-              <motion.div
-                key={upgrade.name}
-                variants={fadeUp}
-                className="glass rounded-2xl p-6 md:p-8 gold-border/50 hover:gold-border transition-all duration-300"
-              >
-                <h3 className="text-lg font-bold text-white mb-2">{upgrade.name}</h3>
-                <p className="text-muted text-sm leading-relaxed mb-4">{upgrade.description}</p>
-                <span className="text-gold font-semibold text-sm">{upgrade.price}</span>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-            className="mb-12"
-          >
-            <span className="section-label">PROCESS</span>
-            <h2 className="section-heading mt-2">
-              Our
-              <br />
-              <span className="text-gradient">Process</span>
-            </h2>
-          </motion.div>
-
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-4 gap-5"
-          >
-            {process.map((phase) => (
-              <motion.div
-                key={phase.step}
-                variants={fadeUp}
-                className="glass rounded-2xl p-6 md:p-8"
-              >
-                <span className="text-4xl font-bold text-gold/30">{phase.step}</span>
-                <h3 className="text-lg font-bold text-white mt-4 mb-3">{phase.title}</h3>
-                <p className="text-muted text-sm leading-relaxed">{phase.description}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
+      {/* CTA */}
       <section className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gold/[0.02] to-transparent" />
@@ -240,7 +254,7 @@ export default function ServiceDetailPage() {
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               Ready to Build Your
               <br />
-              <span className="text-gradient">{service.title}?</span>
+              <span className="text-gradient">{data.title}?</span>
             </h2>
             <p className="text-lg md:text-xl text-muted mt-6 max-w-2xl mx-auto leading-relaxed">
               Let&apos;s discuss your project requirements and create something amazing together.

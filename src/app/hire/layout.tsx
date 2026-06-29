@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import HireProgressBarWrapper from "./HireProgressBarWrapper";
 
 export const metadata: Metadata = {
   title: "Hire Us | CODEMAFIA",
@@ -16,5 +17,10 @@ export default function HireLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <HireProgressBarWrapper />
+      <div className="pt-28">{children}</div>
+    </>
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 
 interface BookingState {
   service: { id: string; slug: string; title: string } | null;
@@ -32,6 +32,8 @@ interface BookingContextType {
   reset: () => void;
 }
 
+const STORAGE_KEY = "codemafia_booking";
+
 const initialState: BookingState = {
   service: null,
   projectType: null,
@@ -46,10 +48,37 @@ const initialState: BookingState = {
   paymentType: "full",
 };
 
+function loadState(): BookingState {
+  if (typeof window === "undefined") return initialState;
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return { ...initialState, ...JSON.parse(saved) };
+  } catch {}
+  return initialState;
+}
+
+function saveState(state: BookingState) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {}
+}
+
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
 
 export function BookingProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<BookingState>(initialState);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    const saved = loadState();
+    setState(saved);
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (hydrated) saveState(state);
+  }, [state, hydrated]);
 
   const setService = useCallback((s: { id: string; slug: string; title: string }) => {
     setState((prev) => ({ ...prev, service: s, projectType: null, package: null, addOns: [] }));
@@ -66,9 +95,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   const toggleAddOn = useCallback((addOn: { id: string; name: string; price_ngn: number; price_usd: number }) => {
     setState((prev) => {
       const exists = prev.addOns.find((a) => a.id === addOn.id);
-      if (exists) {
-        return { ...prev, addOns: prev.addOns.filter((a) => a.id !== addOn.id) };
-      }
+      if (exists) return { ...prev, addOns: prev.addOns.filter((a) => a.id !== addOn.id) };
       return { ...prev, addOns: [...prev.addOns, addOn] };
     });
   }, []);
