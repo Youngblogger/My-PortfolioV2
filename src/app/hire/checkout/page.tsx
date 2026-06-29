@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -13,6 +13,7 @@ export default function CheckoutPage() {
   const [user, setUser] = useState<{ id: string; email: string; full_name: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const isSubmitting = useRef(false);
   const [form, setForm] = useState({
     full_name: "",
     email: "",
@@ -85,11 +86,13 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting.current) return;
     if (!user) return;
     if (!state.service || !state.projectType || !state.package) {
       alert("Missing project selections. Please start over.");
       return;
     }
+    isSubmitting.current = true;
     setSubmitting(true);
 
     const billing = {
@@ -132,6 +135,8 @@ export default function CheckoutPage() {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Something went wrong";
       alert(message);
+    } finally {
+      isSubmitting.current = false;
       setSubmitting(false);
     }
   };

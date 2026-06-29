@@ -5,6 +5,7 @@ return [
     'env' => env('APP_ENV', 'production'),
     'debug' => (bool) env('APP_DEBUG', false),
     'url' => env('APP_URL', 'https://codemafia.ng'),
+    'frontend_url' => env('FRONTEND_URL', 'https://codemafia.ng'),
     'timezone' => 'Africa/Lagos',
     'locale' => 'en',
     'fallback_locale' => 'en',

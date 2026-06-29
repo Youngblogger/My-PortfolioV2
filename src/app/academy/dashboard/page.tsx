@@ -168,37 +168,64 @@ export default function DashboardPage() {
         {activeTab === "projects" && (
         <div>
         {serviceOrders.length === 0 ? (
-          <div className="glass rounded-2xl p-12 text-center">
-            <div className="text-4xl mb-4" aria-hidden="true">🚀</div>
-            <h3 className="text-lg font-bold text-white mb-2">No Projects Yet</h3>
-            <p className="text-muted text-sm mb-6">Start your first project with us.</p>
-            <Link href="/hire">
-              <Button>Start a Project</Button>
+          <div className="space-y-4">
+            <div className="glass rounded-2xl p-12 text-center">
+              <div className="text-4xl mb-4" aria-hidden="true">🚀</div>
+              <h3 className="text-lg font-bold text-white mb-2">No Projects Yet</h3>
+              <p className="text-muted text-sm mb-6">Start your first project with us.</p>
+              <Link href="/hire">
+                <Button>Start a Project</Button>
+              </Link>
+            </div>
+            <Link
+              href="/hire"
+              className="block glass rounded-2xl p-6 hover:border-gold/20 transition-all duration-300 group"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center text-2xl shrink-0">
+                  📞
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-white font-semibold text-sm group-hover:text-gold transition-colors">
+                    Book a Service
+                  </h4>
+                  <p className="text-xs text-muted mt-0.5">
+                    Explore our services and start building your next project.
+                  </p>
+                </div>
+                <span className="text-gold text-lg" aria-hidden="true">→</span>
+              </div>
             </Link>
           </div>
         ) : (
           <div className="space-y-4">
             {serviceOrders.map((order) => (
-              <motion.div
-                key={order.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="glass rounded-2xl p-5 hover:border-gold/20 transition-all duration-300"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="text-white font-semibold">{order.project_name || order.project}</h3>
-                    <p className="text-xs text-muted mt-0.5">{order.service} — {order.project}</p>
+              <Link key={order.id} href={`/hire/project/${order.id}`}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="glass rounded-2xl p-5 hover:border-gold/20 transition-all duration-300 cursor-pointer"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-white font-semibold truncate">
+                        {order.project_name || order.project}
+                      </h3>
+                      <p className="text-xs text-muted mt-0.5 font-mono">#{order.order_number}</p>
+                      <p className="text-xs text-muted mt-0.5">
+                        {order.service} — {order.project} ({order.package})
+                      </p>
+                    </div>
+                    <Badge variant={order.status === "active" ? "success" : order.status === "pending_payment" ? "gold" : order.status === "completed" ? "success" : "info"}>
+                      {order.status === "pending_payment" ? "Pending Payment" : order.status}
+                    </Badge>
                   </div>
-                  <Badge variant={order.status === "active" ? "success" : order.status === "pending_payment" ? "gold" : "info"}>
-                    {order.status === "pending_payment" ? "Pending Payment" : order.status}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gold font-semibold">₦{order.total_ngn.toLocaleString()}</span>
-                  <span className="text-xs text-muted">{formatDate(order.created_at)}</span>
-                </div>
-              </motion.div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gold font-semibold">₦{order.total_ngn.toLocaleString()}</span>
+                    <span className="text-xs text-muted">{formatDate(order.created_at)}</span>
+                  </div>
+                </motion.div>
+              </Link>
             ))}
           </div>
         )}

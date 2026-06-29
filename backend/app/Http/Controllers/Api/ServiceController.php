@@ -13,6 +13,7 @@ class ServiceController extends Controller
     public function index()
     {
         $services = Service::where('is_active', true)
+            ->withCount('activeProjectTypes')
             ->orderBy('sort_order')
             ->get()
             ->map(fn ($s) => [
@@ -28,7 +29,7 @@ class ServiceController extends Controller
                 'starting_price_usd' => (float) $s->starting_price_usd,
                 'estimated_delivery' => $s->estimated_delivery,
                 'features' => $s->features,
-                'project_types_count' => $s->activeProjectTypes()->count(),
+                'project_types_count' => $s->active_project_types_count,
             ]);
 
         return response()->json([
@@ -151,6 +152,35 @@ class ServiceController extends Controller
                 ],
             ],
         ]);
+    }
+
+    public function projectTypes($serviceSlug)
+    {
+        $service = Service::where('slug', $serviceSlug)->where('is_active', true)->first();
+
+        if (!$service) {
+            return response()->json(['success' => false, 'error' => 'Service not found.'], 404);
+        }
+
+        $projectTypes = $service->activeProjectTypes()
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn ($pt) => [
+                'id' => $pt->id,
+                'slug' => $pt->slug,
+                'title' => $pt->title,
+                'subtitle' => $pt->subtitle,
+                'short_description' => $pt->short_description,
+                'icon' => $pt->icon,
+                'image_url' => $pt->image_url,
+                'starting_price_ngn' => (float) $pt->starting_price_ngn,
+                'starting_price_usd' => (float) $pt->starting_price_usd,
+                'estimated_timeline' => $pt->estimated_timeline,
+                'features' => $pt->features,
+                'technologies' => $pt->technologies,
+            ]);
+
+        return response()->json(['success' => true, 'data' => $projectTypes]);
     }
 
     public function addOns()

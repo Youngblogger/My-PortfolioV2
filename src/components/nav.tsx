@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { NotificationBell } from "@/components/ui/NotificationBell";
 
 const navLinks = [
   { label: "Academy", href: "/academy" },
@@ -19,8 +20,21 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [authenticated, setAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = localStorage.getItem("auth_token");
+      setAuthenticated(!!token);
+      setIsAdmin(localStorage.getItem("user_role") === "admin");
+    };
+    checkAuth();
+    window.addEventListener("storage", checkAuth);
+    return () => window.removeEventListener("storage", checkAuth);
+  }, []);
 
   useEffect(() => {
     if (!isHome) return;
@@ -46,6 +60,15 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [mobileOpen]);
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -54,7 +77,7 @@ export default function Nav() {
           : "bg-transparent"
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-4 h-20 flex items-start pt-4 justify-between">
+      <nav role="navigation" aria-label="Main navigation" className="max-w-7xl mx-auto px-4 h-20 flex items-start pt-4 justify-between">
         <Link href="/" className="flex flex-col shrink-0 self-start outline-none">
             <span className="flex items-center gap-2">
             <Image src="/CodemafiaLogo.png" alt="CODEMAFIA" width={128} height={32} className="w-28 sm:w-32 h-auto" unoptimized />
@@ -74,6 +97,7 @@ export default function Nav() {
                 className={`relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg ${
                   isActive ? "text-white" : "text-muted hover:text-white"
                 }`}
+                aria-current={isActive ? "page" : undefined}
               >
                 {link.label}
                 {isActive && (
@@ -87,6 +111,33 @@ export default function Nav() {
             );
           })}
           <div className="ml-4 pl-4 border-l border-white/5 flex items-center gap-3">
+            {authenticated && (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg text-muted hover:text-white"
+                >
+                  Dashboard
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg text-muted hover:text-white"
+                  >
+                    Admin
+                  </Link>
+                )}
+                <NotificationBell />
+              </>
+            )}
+            {!authenticated && (
+              <Link
+                href="/auth/login"
+                className="relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg text-muted hover:text-white"
+              >
+                Login
+              </Link>
+            )}
             <Link
               href="/hire"
               className="px-5 py-2.5 rounded-lg border border-white/10 text-white font-semibold text-sm hover:bg-white/5 hover:border-white/20 animate-blink-border"
@@ -102,11 +153,12 @@ export default function Nav() {
           </div>
         </div>
 
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden relative w-6 h-6 flex items-center justify-center"
-          aria-label="Toggle menu"
-        >
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden relative w-6 h-6 flex items-center justify-center"
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+          >
           <div className="flex flex-col gap-1.5">
             <motion.span
               animate={mobileOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
@@ -148,20 +200,63 @@ export default function Nav() {
                 </motion.a>
               ))}
               <div className="mt-3 pt-3 border-t border-white/5 flex flex-col gap-2">
-                <a
+                {authenticated ? (
+                  <>
+                    <motion.a
+                      href="/dashboard"
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                      onClick={() => setMobileOpen(false)}
+                      className="text-muted hover:text-white transition-colors px-4 py-3 rounded-lg hover:bg-white/[0.03]"
+                    >
+                      Dashboard
+                    </motion.a>
+                    {isAdmin && (
+                      <motion.a
+                        href="/admin"
+                        initial={{ opacity: 0, x: -16 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.24 }}
+                        onClick={() => setMobileOpen(false)}
+                        className="text-muted hover:text-white transition-colors px-4 py-3 rounded-lg hover:bg-white/[0.03]"
+                      >
+                        Admin
+                      </motion.a>
+                    )}
+                  </>
+                ) : (
+                  <motion.a
+                    href="/auth/login"
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                    onClick={() => setMobileOpen(false)}
+                    className="text-muted hover:text-white transition-colors px-4 py-3 rounded-lg hover:bg-white/[0.03]"
+                  >
+                    Login
+                  </motion.a>
+                )}
+                <motion.a
                   href="/academy"
                   onClick={() => setMobileOpen(false)}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.28 }}
                   className="block px-5 py-3 rounded-lg bg-gold-gradient text-background font-semibold text-sm text-center"
                 >
                   Enroll Now
-                </a>
-                <a
+                </motion.a>
+                <motion.a
                   href="/hire"
                   onClick={() => setMobileOpen(false)}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.32 }}
                   className="block px-5 py-3 rounded-lg border border-white/10 text-white font-semibold text-sm text-center hover:bg-white/5 animate-blink-border"
                 >
                   Hire Us
-                </a>
+                </motion.a>
               </div>
             </div>
           </motion.div>

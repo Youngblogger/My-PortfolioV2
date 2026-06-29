@@ -34,7 +34,12 @@ function RegisterForm() {
     try {
       const result = await api.register(fullName, email, password);
       api.setToken(result.token);
-      router.push(redirect);
+      localStorage.setItem("user_role", result.user?.role || "student");
+      if (result.requires_verification) {
+        router.push("/auth/verify-pending");
+      } else {
+        router.push(redirect);
+      }
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");

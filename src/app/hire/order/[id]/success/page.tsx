@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { useBooking } from "@/contexts/BookingContext";
+import { PageLoader } from "@/components/ui/LoadingSpinner";
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -151,5 +152,13 @@ export default function OrderSuccessPage() {
         </motion.div>
       </div>
     </section>
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <OrderSuccessContent />
+    </Suspense>
   );
 }

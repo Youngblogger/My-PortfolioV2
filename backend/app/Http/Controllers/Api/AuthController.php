@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Profile;
+use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
+    public function __construct(private AuditService $audit) {}
+
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -30,6 +34,7 @@ class AuthController extends Controller
         $user = User::create([
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'email_verified_at' => null,
         ]);
 
         Profile::create([
@@ -39,11 +44,35 @@ class AuthController extends Controller
             'role' => 'student',
         ]);
 
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addHours(48),
+            ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+
+        $this->audit->log(
+            'user_registered',
+            $user->id,
+            'User',
+            $user->id,
+            ['email' => $user->email]
+        );
+
+        $this->audit->log(
+            'verification_email_sent',
+            $user->id,
+            'User',
+            $user->id,
+            ['email' => $user->email]
+        );
+
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'token' => $token,
+            'verification_url' => $verificationUrl,
+            'requires_verification' => true,
             'user' => [
                 'id' => $user->id,
                 'email' => $user->email,

@@ -12,7 +12,7 @@ import { api } from "@/lib/api";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/academy/dashboard";
+  const redirect = searchParams.get("redirect") || "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,6 +27,7 @@ function LoginForm() {
     try {
       const result = await api.login(email, password);
       api.setToken(result.token);
+      localStorage.setItem("user_role", result.user?.role || "student");
       router.push(redirect);
       router.refresh();
     } catch (err) {
@@ -73,6 +74,12 @@ function LoginForm() {
             {error && (
               <p className="text-red-400 text-sm bg-red-500/10 rounded-lg p-3">{error}</p>
             )}
+
+            <div className="flex justify-end">
+              <Link href="/auth/forgot-password" className="text-xs text-muted hover:text-gold transition-colors">
+                Forgot password?
+              </Link>
+            </div>
 
             <Button type="submit" loading={loading} fullWidth>
               Sign In

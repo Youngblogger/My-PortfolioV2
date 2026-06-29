@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\CreateOrderRequest;
 use App\Models\ServiceOrder;
 use App\Models\OrderAddOn;
 use App\Models\ServiceInvoice;
@@ -15,7 +16,6 @@ use App\Models\Service;
 use App\Models\ProjectType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use App\Services\Payments\PaymentService;
 
 class ServiceOrderController extends Controller
@@ -76,39 +76,8 @@ class ServiceOrderController extends Controller
         ]);
     }
 
-    public function placeOrder(Request $request)
+    public function placeOrder(CreateOrderRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'service_id' => ['required', 'string', 'exists:services,id'],
-            'project_type_id' => ['required', 'string', 'exists:project_types,id'],
-            'package_id' => ['required', 'string', 'exists:packages,id'],
-            'add_on_ids' => ['nullable', 'array'],
-            'add_on_ids.*' => ['string', 'exists:add_ons,id'],
-            'payment_gateway' => ['required', 'string', 'in:paystack,flutterwave'],
-            'payment_type' => ['required', 'string', 'in:full,deposit'],
-            'billing' => ['required', 'array'],
-            'billing.full_name' => ['required', 'string', 'max:255'],
-            'billing.email' => ['required', 'email', 'max:255'],
-            'billing.phone' => ['nullable', 'string', 'max:20'],
-            'billing.country' => ['nullable', 'string', 'max:100'],
-            'billing.state' => ['nullable', 'string', 'max:100'],
-            'billing.city' => ['nullable', 'string', 'max:100'],
-            'billing.address' => ['nullable', 'string', 'max:500'],
-            'billing.company' => ['nullable', 'string', 'max:255'],
-            'project_name' => ['required', 'string', 'max:255'],
-            'project_description' => ['nullable', 'string'],
-            'preferred_start_date' => ['nullable', 'date'],
-            'reference_links' => ['nullable', 'array'],
-            'reference_links.*' => ['url'],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'error' => $validator->errors()->first(),
-            ], 422);
-        }
-
         try {
             DB::beginTransaction();
 
