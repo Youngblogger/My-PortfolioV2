@@ -4,18 +4,18 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 
 const types = [
-  { title: "Personal Portfolio Website", description: "A stunning personal website to showcase your work, skills, and professional journey.", price: "₦250,000 – ₦500,000", icon: "👤" },
-  { title: "Business Website", description: "Professional business website with service pages, contact forms, and CMS integration.", price: "₦350,000 – ₦800,000", icon: "🏢" },
-  { title: "Corporate Website", description: "Multi-page corporate site with team pages, investor relations, and news section.", price: "₦500,000 – ₦1,500,000", icon: "🏛️" },
-  { title: "School Portal", description: "Complete school management portal with student records, grades, attendance, and parent communication.", price: "₦600,000 – ₦2,000,000", icon: "🎓" },
-  { title: "Church Website", description: "Church website with sermon uploads, event calendar, donation system, and member portal.", price: "₦300,000 – ₦700,000", icon: "⛪" },
-  { title: "News Website", description: "News portal with article management, categories, multimedia support, and subscription system.", price: "₦400,000 – ₦1,200,000", icon: "📰" },
-  { title: "NGO Website", description: "Non-profit website with donation integration, impact stories, volunteer management, and campaign pages.", price: "₦300,000 – ₦800,000", icon: "🤝" },
-  { title: "Real Estate Website", description: "Property listing platform with search filters, virtual tours, agent profiles, and inquiry management.", price: "₦500,000 – ₦1,500,000", icon: "🏠" },
-  { title: "Membership Website", description: "Members-only platform with tiered access, billing integration, content gating, and community features.", price: "₦500,000 – ₦1,500,000", icon: "🔐" },
-  { title: "Booking Website", description: "Appointment booking system with calendar sync, payment processing, reminders, and admin dashboard.", price: "₦400,000 – ₦1,000,000", icon: "📅" },
-  { title: "E-Commerce Website", description: "Online store with product management, shopping cart, secure checkout, payment gateway integration, and inventory tracking.", price: "₦600,000 – ₦2,500,000", icon: "🛒" },
-  { title: "Landing Page", description: "High-converting single-page website designed for product launches, marketing campaigns, or lead generation with analytics integration.", price: "₦150,000 – ₦400,000", icon: "🎯" },
+  { slug: "portfolio-website", title: "Personal Portfolio Website", description: "A stunning personal website to showcase your work, skills, and professional journey.", price: "₦250,000 – ₦500,000", icon: "👤" },
+  { slug: "business-website", title: "Business Website", description: "Professional business website with service pages, contact forms, and CMS integration.", price: "₦350,000 – ₦800,000", icon: "🏢" },
+  { slug: "corporate-website", title: "Corporate Website", description: "Multi-page corporate site with team pages, investor relations, and news section.", price: "₦500,000 – ₦1,500,000", icon: "🏛️" },
+  { slug: "school-website", title: "School Portal", description: "Complete school management portal with student records, grades, attendance, and parent communication.", price: "₦600,000 – ₦2,000,000", icon: "🎓" },
+  { slug: "church-website", title: "Church Website", description: "Church website with sermon uploads, event calendar, donation system, and member portal.", price: "₦300,000 – ₦700,000", icon: "⛪" },
+  { slug: "news-website", title: "News Website", description: "News portal with article management, categories, multimedia support, and subscription system.", price: "₦400,000 – ₦1,200,000", icon: "📰" },
+  { slug: "ngo-website", title: "NGO Website", description: "Non-profit website with donation integration, impact stories, volunteer management, and campaign pages.", price: "₦300,000 – ₦800,000", icon: "🤝" },
+  { slug: "real-estate-website", title: "Real Estate Website", description: "Property listing platform with search filters, virtual tours, agent profiles, and inquiry management.", price: "₦500,000 – ₦1,500,000", icon: "🏠" },
+  { slug: "membership-website", title: "Membership Website", description: "Members-only platform with tiered access, billing integration, content gating, and community features.", price: "₦500,000 – ₦1,500,000", icon: "🔐" },
+  { slug: "booking-website", title: "Booking Website", description: "Appointment booking system with calendar sync, payment processing, reminders, and admin dashboard.", price: "₦400,000 – ₦1,000,000", icon: "📅" },
+  { slug: "e-commerce-store", title: "E-Commerce Website", description: "Online store with product management, shopping cart, secure checkout, payment gateway integration, and inventory tracking.", price: "₦600,000 – ₦2,500,000", icon: "🛒" },
+  { slug: "landing-page", title: "Landing Page", description: "High-converting single-page website designed for product launches, marketing campaigns, or lead generation with analytics integration.", price: "₦150,000 – ₦400,000", icon: "🎯" },
 ];
 
 const staggerContainer = {
@@ -78,17 +78,18 @@ export default function WebDevelopmentPage() {
             className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-5"
           >
             {types.map((type) => (
-              <motion.div
-                key={type.title}
-                variants={fadeUp}
-                className="glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300"
-              >
-                <div className="text-3xl mb-4">{type.icon}</div>
-                <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
-                <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
-                <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
-                  {type.price}
-                </span>
+              <motion.div key={type.slug} variants={fadeUp} className="h-full">
+                <Link
+                  href={`/hire/web-development/${type.slug}`}
+                  className="block glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300 cursor-pointer h-full"
+                >
+                  <div className="text-3xl mb-4">{type.icon}</div>
+                  <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
+                  <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
+                  <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
+                    {type.price}
+                  </span>
+                </Link>
               </motion.div>
             ))}
           </motion.div>

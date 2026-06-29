@@ -13,8 +13,9 @@ class ServiceSeeder extends Seeder
     public function run(): void
     {
         // ---- Services ----
-        $webDev = Service::create([
-            'slug' => 'web-development',
+        $webDev = Service::updateOrCreate(
+            ['slug' => 'web-development'],
+            [
             'title' => 'Web Development',
             'subtitle' => 'Professional websites and web applications',
             'short_description' => 'Custom websites, e-commerce stores, and web applications built with modern technologies.',
@@ -29,8 +30,9 @@ class ServiceSeeder extends Seeder
             'features' => ['Responsive Design', 'SEO Optimized', 'Fast Loading', 'CMS Integration', 'Analytics'],
         ]);
 
-        $saas = Service::create([
-            'slug' => 'saas-development',
+        $saas = Service::updateOrCreate(
+            ['slug' => 'saas-development'],
+            [
             'title' => 'SaaS Development',
             'subtitle' => 'Scalable software as a service platforms',
             'short_description' => 'Full-featured SaaS platforms with subscription management, multi-tenancy, and more.',
@@ -45,8 +47,9 @@ class ServiceSeeder extends Seeder
             'features' => ['Multi-Tenant', 'Subscription Billing', 'API-First', 'Scalable', 'Analytics Dashboard'],
         ]);
 
-        $mobile = Service::create([
-            'slug' => 'mobile-development',
+        $mobile = Service::updateOrCreate(
+            ['slug' => 'mobile-development'],
+            [
             'title' => 'Mobile Development',
             'subtitle' => 'Native and cross-platform mobile apps',
             'short_description' => 'iOS, Android, and cross-platform mobile applications with exceptional user experiences.',
@@ -61,8 +64,9 @@ class ServiceSeeder extends Seeder
             'features' => ['iOS & Android', 'Offline Support', 'Push Notifications', 'Real-Time Sync', 'App Store Deployment'],
         ]);
 
-        $uiux = Service::create([
-            'slug' => 'ui-ux-design',
+        $uiux = Service::updateOrCreate(
+            ['slug' => 'ui-ux-design'],
+            [
             'title' => 'UI/UX Design',
             'subtitle' => 'Beautiful and intuitive user experiences',
             'short_description' => 'User-centered design solutions that delight users and drive conversions.',
@@ -77,8 +81,9 @@ class ServiceSeeder extends Seeder
             'features' => ['User Research', 'Wireframing', 'Prototyping', 'Design Systems', 'Usability Testing'],
         ]);
 
-        $ai = Service::create([
-            'slug' => 'ai-solutions',
+        $ai = Service::updateOrCreate(
+            ['slug' => 'ai-solutions'],
+            [
             'title' => 'AI Solutions',
             'subtitle' => 'Intelligent automation and AI-powered tools',
             'short_description' => 'Machine learning models, chatbots, and AI-powered solutions for your business.',
@@ -94,9 +99,9 @@ class ServiceSeeder extends Seeder
         ]);
 
         // ---- Project Types for Web Development ----
-        $portfolio = ProjectType::create([
-            'service_id' => $webDev->id,
-            'slug' => 'portfolio-website',
+        $portfolio = ProjectType::updateOrCreate(
+            ['slug' => 'portfolio-website', 'service_id' => $webDev->id],
+            [
             'title' => 'Personal Portfolio Website',
             'short_description' => 'A stunning personal portfolio to showcase your work and attract clients.',
             'description' => 'A professional portfolio website that highlights your skills, projects, and experience. Perfect for freelancers, creatives, and professionals who want to make a lasting impression online.',
@@ -112,9 +117,9 @@ class ServiceSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $business = ProjectType::create([
-            'service_id' => $webDev->id,
-            'slug' => 'business-website',
+        $business = ProjectType::updateOrCreate(
+            ['slug' => 'business-website', 'service_id' => $webDev->id],
+            [
             'title' => 'Business Website',
             'short_description' => 'A professional business website that builds credibility and generates leads.',
             'description' => 'A complete business website with all the pages and features you need to establish your online presence. Includes service pages, about section, contact forms, and more.',
@@ -130,9 +135,9 @@ class ServiceSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $ecommerce = ProjectType::create([
-            'service_id' => $webDev->id,
-            'slug' => 'e-commerce-store',
+        $ecommerce = ProjectType::updateOrCreate(
+            ['slug' => 'e-commerce-store', 'service_id' => $webDev->id],
+            [
             'title' => 'E-Commerce Store',
             'short_description' => 'A fully functional online store with payment integration and inventory management.',
             'description' => 'A powerful e-commerce platform that lets you sell products online. Features include product management, shopping cart, secure checkout, payment integration, and order tracking.',
@@ -148,9 +153,9 @@ class ServiceSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $corporate = ProjectType::create([
-            'service_id' => $webDev->id,
-            'slug' => 'corporate-website',
+        $corporate = ProjectType::updateOrCreate(
+            ['slug' => 'corporate-website', 'service_id' => $webDev->id],
+            [
             'title' => 'Corporate Website',
             'short_description' => 'An enterprise-level corporate website with advanced features.',
             'description' => 'A comprehensive corporate website that represents your brand at the highest level. Includes multiple departments, investor relations, newsroom, career portal, and more.',
@@ -166,9 +171,9 @@ class ServiceSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $school = ProjectType::create([
-            'service_id' => $webDev->id,
-            'slug' => 'school-website',
+        $school = ProjectType::updateOrCreate(
+            ['slug' => 'school-website', 'service_id' => $webDev->id],
+            [
             'title' => 'School Website',
             'short_description' => 'A modern website for schools with portals for students, parents, and staff.',
             'description' => 'A complete school management website with student portals, parent dashboards, admission management, event calendars, and academic resources.',
@@ -229,7 +234,10 @@ class ServiceSeeder extends Seeder
 
         foreach ($businessPackages as $pkg) {
             $pkg['project_type_id'] = $business->id;
-            Package::create($pkg);
+            Package::updateOrCreate(
+                ['slug' => $pkg['slug'], 'project_type_id' => $pkg['project_type_id']],
+                $pkg
+            );
         }
 
         // ---- Packages for E-Commerce ----
@@ -277,7 +285,10 @@ class ServiceSeeder extends Seeder
 
         foreach ($ecomPackages as $pkg) {
             $pkg['project_type_id'] = $ecommerce->id;
-            Package::create($pkg);
+            Package::updateOrCreate(
+                ['slug' => $pkg['slug'], 'project_type_id' => $pkg['project_type_id']],
+                $pkg
+            );
         }
 
         // ---- Packages for Portfolio ----
@@ -312,7 +323,10 @@ class ServiceSeeder extends Seeder
 
         foreach ($portfolioPackages as $pkg) {
             $pkg['project_type_id'] = $portfolio->id;
-            Package::create($pkg);
+            Package::updateOrCreate(
+                ['slug' => $pkg['slug'], 'project_type_id' => $pkg['project_type_id']],
+                $pkg
+            );
         }
 
         // ---- Packages for Corporate ----
@@ -345,7 +359,10 @@ class ServiceSeeder extends Seeder
 
         foreach ($corpPackages as $pkg) {
             $pkg['project_type_id'] = $corporate->id;
-            Package::create($pkg);
+            Package::updateOrCreate(
+                ['slug' => $pkg['slug'], 'project_type_id' => $pkg['project_type_id']],
+                $pkg
+            );
         }
 
         // ---- Packages for School ----
@@ -378,13 +395,16 @@ class ServiceSeeder extends Seeder
 
         foreach ($schoolPackages as $pkg) {
             $pkg['project_type_id'] = $school->id;
-            Package::create($pkg);
+            Package::updateOrCreate(
+                ['slug' => $pkg['slug'], 'project_type_id' => $pkg['project_type_id']],
+                $pkg
+            );
         }
 
         // ---- Project Types for SaaS ----
-        $crm = ProjectType::create([
-            'service_id' => $saas->id,
-            'slug' => 'crm-platform',
+        $crm = ProjectType::updateOrCreate(
+            ['slug' => 'crm-platform', 'service_id' => $saas->id],
+            [
             'title' => 'CRM Platform',
             'short_description' => 'Customer relationship management system.',
             'starting_price_ngn' => 1500000,
@@ -437,7 +457,10 @@ class ServiceSeeder extends Seeder
 
         foreach ($saasPackages as $pkg) {
             $pkg['project_type_id'] = $crm->id;
-            Package::create($pkg);
+            Package::updateOrCreate(
+                ['slug' => $pkg['slug'], 'project_type_id' => $pkg['project_type_id']],
+                $pkg
+            );
         }
 
         // ---- Add-Ons ----
@@ -462,7 +485,10 @@ class ServiceSeeder extends Seeder
         ];
 
         foreach ($addOns as $addOn) {
-            AddOn::create($addOn);
+            AddOn::updateOrCreate(
+                ['slug' => $addOn['slug']],
+                $addOn
+            );
         }
     }
 }
