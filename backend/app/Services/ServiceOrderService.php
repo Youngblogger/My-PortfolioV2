@@ -65,20 +65,29 @@ class ServiceOrderService
                 'paid_at' => $now,
             ]);
 
-            $payment = ServicePayment::create([
-                'service_order_id' => $order->id,
-                'service_invoice_id' => $invoice->id,
-                'user_id' => $order->user_id,
-                'reference' => $reference,
-                'gateway' => $order->payment_gateway,
-                'amount_ngn' => $amountPaidNgn,
-                'amount_usd' => $amountPaidUsd,
-                'currency' => 'NGN',
-                'status' => 'completed',
-                'payment_type' => $paymentType,
-                'gateway_response' => $verification,
-                'paid_at' => $now,
-            ]);
+            $payment = ServicePayment::where('reference', $reference)->first();
+            if (!$payment) {
+                $payment = ServicePayment::create([
+                    'service_order_id' => $order->id,
+                    'service_invoice_id' => $invoice->id,
+                    'user_id' => $order->user_id,
+                    'reference' => $reference,
+                    'gateway' => $order->payment_gateway,
+                    'amount_ngn' => $amountPaidNgn,
+                    'amount_usd' => $amountPaidUsd,
+                    'currency' => 'NGN',
+                    'status' => 'completed',
+                    'payment_type' => $paymentType,
+                    'gateway_response' => $verification,
+                    'paid_at' => $now,
+                ]);
+            } else {
+                Log::info('processVerifiedPayment: payment already exists', [
+                    'order_id' => $order->id,
+                    'reference' => $reference,
+                    'payment_id' => $payment->id,
+                ]);
+            }
 
             $receiptNumber = 'RCT-SVC-' . strtoupper(substr(uniqid(), -8));
             ServiceReceipt::create([

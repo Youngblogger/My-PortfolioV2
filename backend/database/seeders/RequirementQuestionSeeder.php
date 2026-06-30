@@ -38,7 +38,7 @@ class RequirementQuestionSeeder extends Seeder
                 $q['options'] = ['Restaurant', 'Healthcare', 'Education', 'Real Estate', 'Corporate', 'NGO', 'E-commerce', 'Other'];
             }
             if ($q['question_key'] === 'pages_count') {
-                $q['options'] = ['1-3 pages', '4-6 pages', '7-10 pages', '10+ pages'];
+                $q['options'] = ['1-3 pages', '4-6 pages', '7-10 pages', '10-15', '16-20', '21-30', '31-40', '41-49', '50+'];
             }
 
             RequirementQuestion::create(array_merge($q, [

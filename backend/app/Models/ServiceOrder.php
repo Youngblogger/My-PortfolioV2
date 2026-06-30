@@ -36,9 +36,14 @@ class ServiceOrder extends Model
             'tax_usd' => 'decimal:2',
             'total_ngn' => 'decimal:2',
             'total_usd' => 'decimal:2',
+            'project_created_at' => 'datetime',
+            'kickoff_at' => 'datetime',
+            'completed_at' => 'datetime',
+            'requirements_reviewed_at' => 'datetime',
             'billing_details' => 'array',
             'metadata' => 'array',
             'estimated_completion' => 'date',
+
         ];
     }
 
@@ -105,6 +110,11 @@ class ServiceOrder extends Model
     public function receipts()
     {
         return $this->hasMany(ServiceReceipt::class);
+    }
+
+    public function teamAssignments()
+    {
+        return $this->hasMany(TeamAssignment::class);
     }
 
     public function projectManager()

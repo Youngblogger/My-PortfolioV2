@@ -48,7 +48,8 @@ class PasswordResetController extends Controller
             ]);
         }
 
-        Password::createToken($user);
+        $token = Password::createToken($user);
+        $user->sendPasswordResetNotification($token);
 
         AuditLog::create([
             'user_id' => $user->id,

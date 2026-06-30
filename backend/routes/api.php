@@ -151,7 +151,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
 
     // Admin Auth Routes (authenticated session check)
-    Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+    Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
         Route::get('/me', [AdminAuthController::class, 'me']);
         Route::post('/logout', [AdminAuthController::class, 'logout']);
     });
@@ -161,6 +161,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
         Route::get('/orders', [AdminController::class, 'orders']);
         Route::patch('/orders/{id}/status', [AdminController::class, 'updateOrderStatus']);
+        Route::get('/payments', [AdminController::class, 'payments']);
+        Route::get('/payments/analytics', [AdminController::class, 'paymentsAnalytics']);
 
         Route::post('/orders/{orderId}/review-requirements', [AdminController::class, 'reviewRequirements']);
         Route::post('/orders/{orderId}/kickoff', [AdminController::class, 'kickoffProject']);

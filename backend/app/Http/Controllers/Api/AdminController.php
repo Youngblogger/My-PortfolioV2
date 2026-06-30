@@ -21,6 +21,7 @@ use App\Models\ServiceActivityLog;
 use App\Models\Notification;
 use App\Models\RequirementQuestion;
 use App\Models\Milestone;
+use App\Models\ServicePayment;
 use App\Services\MilestoneService;
 use App\Services\ProjectManagementService;
 use App\Services\FileService;
@@ -750,5 +751,61 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(50);
         return response()->json(['success' => true, 'data' => $logs]);
+    }
+
+    public function payments(Request $request)
+    {
+        $query = ServicePayment::with(['user.profile', 'serviceOrder.service', 'serviceOrder.projectType']);
+
+        if ($search = $request->search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('reference', 'like', "%{$search}%")
+                  ->orWhereHas('user.profile', fn ($u) => $u->where('full_name', 'like', "%{$search}%"))
+                  ->orWhereHas('user', fn ($u) => $u->where('email', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($status = $request->status) {
+            $query->where('status', $status);
+        }
+
+        $payments = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $payments->getCollection()->transform(function ($p) {
+            return [
+                'id' => $p->id,
+                'reference' => $p->reference,
+                'user_id' => $p->user_id,
+                'client_name' => $p->user?->profile?->full_name ?? $p->user?->email,
+                'client_email' => $p->user?->email,
+                'service' => $p->serviceOrder?->service?->title,
+                'amount' => (float) $p->amount_ngn,
+                'amount_ngn' => (float) $p->amount_ngn,
+                'gateway' => $p->gateway,
+                'status' => $p->status,
+                'fees' => null,
+                'paid_at' => $p->paid_at?->toIso8601String(),
+                'created_at' => $p->created_at->toIso8601String(),
+                'metadata' => $p->gateway_response,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $payments,
+        ]);
+    }
+
+    public function paymentsAnalytics()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total_revenue' => (float) ServicePayment::where('status', 'completed')->sum('amount_ngn'),
+                'pending_count' => ServicePayment::where('status', 'pending')->count(),
+                'successful_count' => ServicePayment::where('status', 'completed')->count(),
+                'failed_count' => ServicePayment::where('status', 'failed')->count(),
+            ],
+        ]);
     }
 }

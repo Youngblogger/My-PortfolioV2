@@ -40,7 +40,9 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/notifications") ||
     pathname.startsWith("/hire/review") ||
     pathname.startsWith("/hire/checkout") ||
-    pathname.startsWith("/hire/order/")
+    pathname.startsWith("/hire/order") ||
+    pathname.startsWith("/academy/dashboard") ||
+    pathname.startsWith("/academy/enrollment")
   ) {
     const hasSession = request.cookies.has("codemafia_session");
     if (!hasSession) {

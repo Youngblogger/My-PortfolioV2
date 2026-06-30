@@ -9,6 +9,14 @@ use App\Models\OrderAddOn;
 use App\Models\AddOn;
 use App\Models\Package;
 use App\Models\ServiceActivityLog;
+use App\Models\ServiceInvoice;
+use App\Models\ServicePayment;
+use App\Models\ServiceReceipt;
+use App\Models\ServiceMessage;
+use App\Models\ServiceFile;
+use App\Models\Milestone;
+use App\Models\TeamAssignment;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Payments\PaymentService;
@@ -60,6 +68,328 @@ class ServiceOrderController extends Controller
             'success' => true,
             'data' => $orders,
         ]);
+    }
+
+    public function showOrder(Request $request, string $id)
+    {
+        $order = ServiceOrder::with([
+            'service', 'projectType', 'package', 'addOns',
+            'invoices', 'payments', 'milestones',
+            'teamAssignments.teamMember.user.profile',
+        ])->findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $order->id,
+                'order_number' => $order->order_number,
+                'service' => ['title' => $order->service?->title, 'slug' => $order->service?->slug],
+                'projectType' => ['title' => $order->projectType?->title, 'slug' => $order->projectType?->slug],
+                'package' => ['name' => $order->package?->name, 'slug' => $order->package?->slug],
+                'total_ngn' => (float) $order->total_ngn,
+                'total_usd' => (float) $order->total_usd,
+                'status' => $order->status,
+                'payment_status' => $order->payment_status,
+                'billing_details' => $order->billing_details ?? [],
+                'metadata' => $order->metadata ?? [],
+                'addOns' => $order->addOns->map(fn ($a) => [
+                    'id' => $a->id,
+                    'name' => $a->name,
+                    'price_ngn' => (float) $a->price_ngn,
+                ]),
+                'invoices' => $order->invoices ?? [],
+                'payments' => $order->payments ?? [],
+                'milestones' => $order->milestones ?? [],
+                'teamAssignments' => $order->teamAssignments?->map(fn ($ta) => [
+                    'id' => $ta->id,
+                    'role' => $ta->role,
+                    'teamMember' => $ta->teamMember ? [
+                        'id' => $ta->teamMember->id,
+                        'title' => $ta->teamMember->title,
+                        'avatar_url' => $ta->teamMember->avatar_url,
+                        'user' => $ta->teamMember->user ? [
+                            'profile' => $ta->teamMember->user->profile ? [
+                                'full_name' => $ta->teamMember->user->profile->full_name,
+                                'avatar_url' => $ta->teamMember->user->profile->avatar_url,
+                            ] : null,
+                        ] : null,
+                    ] : null,
+                ]),
+                'created_at' => $order->created_at->toIso8601String(),
+            ],
+        ]);
+    }
+
+    public function workspace(Request $request, string $id)
+    {
+        $order = ServiceOrder::with([
+            'service', 'projectType', 'package', 'addOns',
+            'milestones', 'invoices', 'payments', 'receipts',
+            'activityLogs.user.profile',
+            'messages.user.profile',
+            'files',
+            'teamAssignments.teamMember.user.profile',
+        ])->findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        $metadata = $order->metadata ?? [];
+        $paymentType = $metadata['payment_type'] ?? 'full';
+        $amountPaidNgn = $paymentType === 'deposit' ? $order->total_ngn / 2 : $order->total_ngn;
+        $balanceNgn = $order->total_ngn - $amountPaidNgn;
+
+        $projectManager = $order->teamAssignments
+            ?->where('role', 'project_manager')
+            ?->first()
+            ?->teamMember;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $order->id,
+                'order_number' => $order->order_number,
+                'project_number' => $order->project_number,
+                'project_name' => $metadata['project_name'] ?? $order->projectType?->title,
+                'status' => $order->status,
+                'project_status' => $order->project_status,
+                'payment_status' => $order->payment_status,
+                'total_ngn' => (float) $order->total_ngn,
+                'amount_paid_ngn' => $amountPaidNgn,
+                'balance_ngn' => $balanceNgn,
+                'service' => ['title' => $order->service?->title, 'slug' => $order->service?->slug],
+                'projectType' => ['title' => $order->projectType?->title, 'slug' => $order->projectType?->slug],
+                'package' => ['name' => $order->package?->name, 'slug' => $order->package?->slug],
+                'addOns' => $order->addOns->map(fn ($a) => [
+                    'id' => $a->id,
+                    'name' => $a->name,
+                    'price_ngn' => (float) $a->price_ngn,
+                ]),
+                'billing_details' => $order->billing_details ?? [],
+                'project_created_at' => $order->project_created_at?->toIso8601String(),
+                'kickoff_at' => $order->kickoff_at?->toIso8601String(),
+                'completed_at' => $order->completed_at?->toIso8601String(),
+                'created_at' => $order->created_at->toIso8601String(),
+                'milestones' => $order->milestones->map(fn ($m) => [
+                    'id' => $m->id,
+                    'service_order_id' => $m->service_order_id,
+                    'title' => $m->title,
+                    'description' => $m->description,
+                    'milestone_type' => $m->milestone_type,
+                    'status' => $m->status,
+                    'is_automatic' => (bool) $m->is_automatic,
+                    'sort_order' => $m->sort_order,
+                    'due_date' => $m->due_date?->toIso8601String(),
+                    'completed_at' => $m->completed_at?->toIso8601String(),
+                    'deliverables' => $m->deliverables,
+                    'completion_notes' => $m->completion_notes,
+                    'created_at' => $m->created_at->toIso8601String(),
+                    'review_requested_at' => $m->review_requested_at?->toIso8601String(),
+                    'review_status' => $m->review_status,
+                    'review_feedback' => $m->review_feedback,
+                ]),
+                'invoices' => $order->invoices->map(fn ($inv) => [
+                    'id' => $inv->id,
+                    'invoice_number' => $inv->invoice_number,
+                    'status' => $inv->status,
+                    'total_ngn' => (float) $inv->total_ngn,
+                    'amount_paid_ngn' => (float) $inv->amount_paid_ngn,
+                    'balance_ngn' => (float) $inv->balance_ngn,
+                    'payment_type' => $inv->payment_type,
+                    'paid_at' => $inv->paid_at?->toIso8601String(),
+                    'created_at' => $inv->created_at->toIso8601String(),
+                ]),
+                'payments' => $order->payments->map(fn ($p) => [
+                    'id' => $p->id,
+                    'reference' => $p->reference,
+                    'gateway' => $p->gateway,
+                    'amount_ngn' => (float) $p->amount_ngn,
+                    'status' => $p->status,
+                    'payment_type' => $p->payment_type,
+                    'paid_at' => $p->paid_at?->toIso8601String(),
+                    'created_at' => $p->created_at->toIso8601String(),
+                ]),
+                'receipts' => $order->receipts->map(fn ($r) => [
+                    'id' => $r->id,
+                    'receipt_number' => $r->receipt_number,
+                    'amount_ngn' => (float) $r->amount_ngn,
+                    'currency' => $r->currency,
+                    'payment_gateway' => $r->payment_gateway,
+                    'status' => $r->status,
+                    'created_at' => $r->created_at->toIso8601String(),
+                ]),
+                'activityLogs' => $order->activityLogs->map(fn ($log) => [
+                    'id' => $log->id,
+                    'user_id' => $log->user_id,
+                    'action' => $log->action,
+                    'description' => $log->description,
+                    'metadata' => $log->metadata,
+                    'created_at' => $log->created_at->toIso8601String(),
+                    'user' => $log->user ? [
+                        'profile' => $log->user->profile ? [
+                            'full_name' => $log->user->profile->full_name,
+                            'avatar_url' => $log->user->profile->avatar_url,
+                        ] : null,
+                    ] : null,
+                ]),
+                'projectManager' => $projectManager ? [
+                    'id' => $projectManager->id,
+                    'profile' => $projectManager->user?->profile ? [
+                        'full_name' => $projectManager->user->profile->full_name,
+                        'avatar_url' => $projectManager->user->profile->avatar_url,
+                    ] : null,
+                ] : null,
+                'messages' => $order->messages->map(fn ($msg) => [
+                    'id' => $msg->id,
+                    'service_order_id' => $msg->service_order_id,
+                    'user_id' => $msg->user_id,
+                    'message' => $msg->message,
+                    'type' => $msg->type,
+                    'is_important' => (bool) $msg->is_important,
+                    'created_at' => $msg->created_at->toIso8601String(),
+                    'user' => $msg->user ? [
+                        'profile' => $msg->user->profile ? [
+                            'full_name' => $msg->user->profile->full_name,
+                            'avatar_url' => $msg->user->profile->avatar_url,
+                        ] : null,
+                    ] : null,
+                ]),
+                'files' => $order->files->map(fn ($f) => [
+                    'id' => $f->id,
+                    'service_order_id' => $f->service_order_id,
+                    'user_id' => $f->user_id,
+                    'original_name' => $f->original_name,
+                    'file_path' => $f->file_path,
+                    'mime_type' => $f->mime_type,
+                    'file_size' => $f->file_size,
+                    'type' => $f->type,
+                    'created_at' => $f->created_at->toIso8601String(),
+                ]),
+            ],
+        ]);
+    }
+
+    public function milestones(Request $request, string $id)
+    {
+        $order = ServiceOrder::findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        $milestones = Milestone::where('service_order_id', $id)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn ($m) => [
+                'id' => $m->id,
+                'service_order_id' => $m->service_order_id,
+                'title' => $m->title,
+                'description' => $m->description,
+                'milestone_type' => $m->milestone_type,
+                'status' => $m->status,
+                'is_automatic' => (bool) $m->is_automatic,
+                'sort_order' => $m->sort_order,
+                'due_date' => $m->due_date?->toIso8601String(),
+                'completed_at' => $m->completed_at?->toIso8601String(),
+                'deliverables' => $m->deliverables,
+                'completion_notes' => $m->completion_notes,
+                'created_at' => $m->created_at->toIso8601String(),
+                'review_requested_at' => $m->review_requested_at?->toIso8601String(),
+                'review_status' => $m->review_status,
+                'review_feedback' => $m->review_feedback,
+            ]);
+
+        $completed = $milestones->filter(fn ($m) => $m['status'] === 'completed')->count();
+        $progress = $milestones->count() > 0 ? round(($completed / $milestones->count()) * 100) : 0;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'milestones' => $milestones,
+                'progress' => $progress,
+            ],
+        ]);
+    }
+
+    public function activityLog(Request $request, string $id)
+    {
+        $order = ServiceOrder::findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        $logs = ServiceActivityLog::with('user.profile')
+            ->where('service_order_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(50);
+
+        return response()->json([
+            'success' => true,
+            'data' => $logs,
+        ]);
+    }
+
+    public function downloadInvoice(Request $request, string $id, string $invoiceId)
+    {
+        $order = ServiceOrder::findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        $invoice = ServiceInvoice::where('service_order_id', $id)
+            ->where('id', $invoiceId)
+            ->firstOrFail();
+
+        return response()->json([
+            'success' => true,
+            'data' => $invoice,
+        ]);
+    }
+
+    public function downloadReceipt(Request $request, string $id, string $receiptId)
+    {
+        $order = ServiceOrder::with(['service', 'projectType', 'package'])
+            ->findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        $receipt = ServiceReceipt::with('servicePayment')
+            ->where('service_order_id', $id)
+            ->where('id', $receiptId)
+            ->firstOrFail();
+
+        try {
+            $pdf = Pdf::loadView('pdf.service-receipt', [
+                'receipt' => $receipt,
+                'order' => $order,
+            ]);
+            $pdf->setPaper('A4');
+
+            return response($pdf->output(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="receipt-' . $receipt->receipt_number . '.pdf"',
+                'Cache-Control' => 'no-cache',
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Receipt PDF generation failed', [
+                'order_id' => $id,
+                'receipt_id' => $receiptId,
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to generate receipt PDF.',
+            ], 500);
+        }
     }
 
     public function createQuote(Request $request)

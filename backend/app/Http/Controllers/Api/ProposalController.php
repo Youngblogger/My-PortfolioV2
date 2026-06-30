@@ -137,6 +137,14 @@ class ProposalController extends Controller
     public function updateStatus(UpdateProposalRequest $request, $id)
     {
         $proposal = Proposal::findOrFail($id);
+        $user = $request->user();
+
+        $isOwner = $proposal->user_id === $user->id;
+        $isAdmin = $user->profile?->isAdmin();
+
+        if (!$isOwner && !$isAdmin) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
 
         if ($request->status === 'approved') {
             $proposal->update([
