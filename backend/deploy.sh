@@ -21,7 +21,6 @@ rsync -av \
     --exclude='node_modules/' \
     --exclude='tests/' \
     --exclude='.env' \
-    --exclude='.env.example.laravel' \
     --exclude='deploy.sh' \
     --exclude='storage/framework/cache/data/*' \
     --exclude='storage/framework/sessions/*' \
@@ -69,8 +68,22 @@ find "$APP_DIR/bootstrap/cache" -type d -exec chmod 775 {} \;
 
 echo "=== Deployment Complete ==="
 echo ""
-echo "Next steps:"
-echo "  1. Edit $APP_DIR/.env with your credentials"
-echo "  2. Run: php artisan key:generate"
-echo "  3. Set up cron job for: * * * * * php $APP_DIR/artisan schedule:run"
-echo "  4. Point your subdomain's document root to: $PUBLIC_DIR"
+echo ""
+echo "=== IMPORTANT: Manual Steps ==="
+echo "  1. Edit $APP_DIR/.env — set DB credentials, API keys"
+echo "  2. Run: cd $APP_DIR && php artisan key:generate"
+echo ""
+echo "=== Cron (REQUIRED) ==="
+echo "  Add to crontab:"
+echo "  * * * * * php $APP_DIR/artisan schedule:run >> /dev/null 2>&1"
+echo ""
+echo "=== Queue Worker (REQUIRED for async jobs) ==="
+echo "  Start supervisor or screen/tmux to keep the worker alive:"
+echo "  php $APP_DIR/artisan queue:work --tries=3 --delay=3 --timeout=300"
+echo ""
+echo "=== Web Server ==="
+echo "  Point your document root to: $PUBLIC_DIR"
+echo ""
+echo "=== Verify ==="
+echo "  Visit: https://codemafia.ng/api/v1/up"
+echo "  Login and test a full transaction flow"

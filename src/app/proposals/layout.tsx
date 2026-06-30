@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ClientPortalLayout from "@/components/ClientPortalLayout";
 
 export const metadata: Metadata = {
   title: "Proposals | CODEMAFIA",
@@ -16,5 +17,5 @@ export default function ProposalsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <ClientPortalLayout>{children}</ClientPortalLayout>;
 }

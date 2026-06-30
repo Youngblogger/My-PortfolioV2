@@ -24,12 +24,15 @@ export default function Nav() {
   const [isAdmin, setIsAdmin] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const isAdminPage = pathname.startsWith("/admin");
+  const portalPaths = ["/dashboard", "/academy/enrollment", "/academy/dashboard", "/proposals", "/notifications", "/auth", "/hire/checkout"];
+  const isPortalPage = portalPaths.some(p => pathname === p || pathname.startsWith(p + "/"));
 
   useEffect(() => {
     let mounted = true;
     async function checkAuth() {
       try {
-        const res = await fetch("/api/auth/user", { credentials: "include" });
+        const res = await fetch("/api/v1/auth/user", { credentials: "include" });
         if (!mounted) return;
         if (res.ok) {
           const data = await res.json();
@@ -82,6 +85,8 @@ export default function Nav() {
     window.addEventListener("keydown", handleEscape);
     return () => window.removeEventListener("keydown", handleEscape);
   }, [mobileOpen]);
+
+  if (isAdminPage || isPortalPage) return null;
 
   return (
     <header

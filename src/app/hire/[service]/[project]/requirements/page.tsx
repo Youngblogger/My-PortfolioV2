@@ -62,12 +62,24 @@ export default function RequirementsPage() {
         const qs = (res.data || []).sort((a, b) => a.sort_order - b.sort_order);
         setQuestions(qs);
 
+        let initial: Record<string, ResponseValue> = {};
         try {
           const saved = sessionStorage.getItem(storageKey);
           if (saved) {
-            setResponses(JSON.parse(saved));
+            initial = JSON.parse(saved);
           }
         } catch {}
+
+        for (const q of qs) {
+          if (initial[q.question_key] !== undefined) continue;
+          if (q.type === "select" && q.options && q.options.length > 0) {
+            initial[q.question_key] = q.options[0];
+          }
+          if (q.type === "boolean") {
+            initial[q.question_key] = false;
+          }
+        }
+        setResponses(initial);
 
         setLoading(false);
       })

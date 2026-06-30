@@ -43,7 +43,7 @@ export default function ReviewPage() {
 
   const handleProceed = async () => {
     try {
-      const res = await fetch("/api/auth/user", { credentials: "include" });
+      const res = await fetch("/api/v1/auth/user", { credentials: "include" });
       if (res.ok) {
         router.push("/hire/checkout");
       } else {

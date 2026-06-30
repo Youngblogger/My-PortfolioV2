@@ -59,7 +59,7 @@ export default function ProjectTypePage() {
   const { setProjectType, setPackage } = useBooking();
 
   useEffect(() => {
-    fetch("/api/auth/user", { credentials: "include" })
+    fetch("/api/v1/auth/user", { credentials: "include" })
       .then((res) => setIsAuthenticated(res.ok))
       .catch(() => setIsAuthenticated(false));
   }, []);

@@ -8,10 +8,13 @@ use App\Models\ServiceOrder;
 use App\Models\OrderAddOn;
 use App\Models\AddOn;
 use App\Models\Package;
+use App\Models\ServiceActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Payments\PaymentService;
 use App\Services\ServiceOrderService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ServiceOrderController extends Controller
 {
@@ -19,6 +22,45 @@ class ServiceOrderController extends Controller
         private PaymentService $paymentService,
         private ServiceOrderService $serviceOrderService,
     ) {}
+
+    public function myOrders(Request $request)
+    {
+        $orders = ServiceOrder::with(['service', 'projectType', 'package', 'addOns'])
+            ->where('user_id', $request->user()->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($order) {
+                $metadata = $order->metadata ?? [];
+
+                return [
+                    'id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'project_number' => $order->project_number,
+                    'status' => $order->status,
+                    'payment_status' => $order->payment_status,
+                    'project_status' => $order->project_status,
+                    'service_name' => $order->service?->title,
+                    'project_type' => $order->projectType?->title,
+                    'package_name' => $order->package?->name,
+                    'total_ngn' => (float) $order->total_ngn,
+                    'total_usd' => (float) $order->total_usd,
+                    'add_ons' => $order->addOns->map(fn ($a) => [
+                        'name' => $a->name,
+                        'price_ngn' => (float) $a->price_ngn,
+                        'price_usd' => (float) $a->price_usd,
+                    ]),
+                    'project_name' => $metadata['project_name'] ?? null,
+                    'payment_type' => $metadata['payment_type'] ?? 'full',
+                    'created_at' => $order->created_at->toIso8601String(),
+                    'updated_at' => $order->updated_at->toIso8601String(),
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders,
+        ]);
+    }
 
     public function createQuote(Request $request)
     {

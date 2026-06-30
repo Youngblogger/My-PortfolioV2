@@ -110,7 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Requirements
     Route::get('/services/{serviceSlug}/requirements/questions', [RequirementController::class, 'questions']);
-    Route::post('/requirements/responses', [RequirementController::class, 'store']);
+    Route::post('/requirements/responses', [RequirementController::class, 'saveResponses']);
     Route::get('/requirements/responses/{orderId}', [RequirementController::class, 'getResponses']);
 
     // Proposals
