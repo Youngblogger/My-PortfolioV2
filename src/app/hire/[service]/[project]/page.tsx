@@ -54,6 +54,7 @@ export default function ProjectTypePage() {
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
   const [relatedProjects, setRelatedProjects] = useState<ProjectTypeSummaryData[]>([]);
+  const [showAuthGate, setShowAuthGate] = useState(false);
   const { setProjectType, setPackage } = useBooking();
 
   useEffect(() => {
@@ -82,11 +83,25 @@ export default function ProjectTypePage() {
   const addOnsTotalNgn = 0;
   const grandTotalNgn = (selectedPkg?.price_ngn || 0) + addOnsTotalNgn;
 
+  const handleGetStarted = () => {
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      document.getElementById("packages-section")?.scrollIntoView({ behavior: "smooth" });
+    } else {
+      setShowAuthGate(true);
+    }
+  };
+
   const handleContinue = () => {
     if (!selectedPackageId || !data) return;
     const pkg = data.packages.find((p) => p.id === selectedPackageId);
     if (!pkg) return;
     setPackage({ id: pkg.id, slug: pkg.slug, name: pkg.name, price_ngn: pkg.price_ngn, price_usd: pkg.price_usd });
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      setShowAuthGate(true);
+      return;
+    }
     router.push(`/hire/${serviceSlug}/${projectSlug}/book`);
   };
 
@@ -157,7 +172,7 @@ export default function ProjectTypePage() {
               className="mt-10"
             >
               <button
-                onClick={() => document.getElementById("packages-section")?.scrollIntoView({ behavior: "smooth" })}
+                onClick={handleGetStarted}
                 className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
               >
                 Get Started — Choose a Package
@@ -662,6 +677,54 @@ export default function ProjectTypePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Auth Gate Overlay */}
+      {showAuthGate && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center px-6"
+        >
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowAuthGate(false)} />
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="relative glass rounded-2xl p-8 md:p-10 max-w-md w-full text-center"
+          >
+            <button
+              onClick={() => setShowAuthGate(false)}
+              className="absolute top-4 right-4 text-muted hover:text-white transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="text-4xl mb-4">🔐</div>
+            <h2 className="text-2xl font-bold text-white">Continue Your Project Request</h2>
+            <p className="text-muted mt-3 leading-relaxed">
+              To continue, please create your client account or sign in if you already have one.
+            </p>
+            <div className="mt-8 space-y-3">
+              <Link
+                href={`/auth/register?redirect=${encodeURIComponent(`/hire/${serviceSlug}/${projectSlug}`)}`}
+                className="block w-full px-6 py-3.5 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+              >
+                Create Client Account
+              </Link>
+              <Link
+                href={`/auth/login?redirect=${encodeURIComponent(`/hire/${serviceSlug}/${projectSlug}`)}`}
+                className="block w-full px-6 py-3.5 rounded-xl border border-white/10 text-white font-bold text-sm hover:bg-white/5 transition-all duration-300"
+              >
+                Already a Client? Login
+              </Link>
+            </div>
+            <p className="text-xs text-muted mt-4">
+              After signing in, you&apos;ll return here to continue your project request.
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
     </>
   );
 }

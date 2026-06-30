@@ -12,7 +12,7 @@ import { api } from "@/lib/api";
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/academy/dashboard";
+  const redirect = searchParams.get("redirect") || "/dashboard";
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -56,11 +56,8 @@ function RegisterForm() {
         className="relative z-10 w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <Link href="/academy" className="text-gold text-xl font-bold">
-            CODEMAFIA Academy
-          </Link>
-          <h1 className="text-3xl font-bold text-white mt-6">Create Account</h1>
-          <p className="text-muted mt-2">Start your learning journey with us</p>
+          <h1 className="text-3xl font-bold text-white">Create Your Account</h1>
+          <p className="text-muted mt-2">Join CODEMAFIA to get started with your project.</p>
         </div>
 
         <div className="glass rounded-2xl p-8">

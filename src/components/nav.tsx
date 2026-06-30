@@ -111,33 +111,12 @@ export default function Nav() {
             );
           })}
           <div className="ml-4 pl-4 border-l border-white/5 flex items-center gap-3">
-            {authenticated && (
-              <>
-                <Link
-                  href="/dashboard"
-                  className="relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg text-muted hover:text-white"
-                >
-                  Dashboard
-                </Link>
-                {isAdmin && (
-                  <Link
-                    href="/admin"
-                    className="relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg text-muted hover:text-white"
-                  >
-                    Admin
-                  </Link>
-                )}
-                <NotificationBell />
-              </>
-            )}
-            {!authenticated && (
-              <Link
-                href="/auth/login"
-                className="relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg text-muted hover:text-white"
-              >
-                Login
-              </Link>
-            )}
+            <Link
+              href={authenticated ? "/dashboard" : "/auth/login"}
+              className="relative px-4 py-2 text-sm font-bold transition-colors duration-300 rounded-lg text-gold/70 hover:text-gold border border-gold/20 hover:border-gold/40"
+            >
+              Client Portal
+            </Link>
             <Link
               href="/hire"
               className="px-5 py-2.5 rounded-lg border border-white/10 text-white font-semibold text-sm hover:bg-white/5 hover:border-white/20 animate-blink-border"
@@ -150,6 +129,15 @@ export default function Nav() {
             >
               Enroll Now
             </Link>
+            {authenticated && isAdmin && (
+              <Link
+                href="/admin"
+                className="relative px-4 py-2 text-sm transition-colors duration-300 rounded-lg text-muted hover:text-white"
+              >
+                Admin
+              </Link>
+            )}
+            {authenticated && <NotificationBell />}
           </div>
         </div>
 
@@ -200,43 +188,26 @@ export default function Nav() {
                 </motion.a>
               ))}
               <div className="mt-3 pt-3 border-t border-white/5 flex flex-col gap-2">
-                {authenticated ? (
-                  <>
-                    <motion.a
-                      href="/dashboard"
-                      initial={{ opacity: 0, x: -16 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.2 }}
-                      onClick={() => setMobileOpen(false)}
-                      className="text-muted hover:text-white transition-colors px-4 py-3 rounded-lg hover:bg-white/[0.03]"
-                    >
-                      Dashboard
-                    </motion.a>
-                    {isAdmin && (
-                      <motion.a
-                        href="/admin"
-                        initial={{ opacity: 0, x: -16 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.24 }}
-                        onClick={() => setMobileOpen(false)}
-                        className="text-muted hover:text-white transition-colors px-4 py-3 rounded-lg hover:bg-white/[0.03]"
-                      >
-                        Admin
-                      </motion.a>
-                    )}
-                  </>
-                ) : (
-                  <motion.a
-                    href="/auth/login"
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                    onClick={() => setMobileOpen(false)}
-                    className="text-muted hover:text-white transition-colors px-4 py-3 rounded-lg hover:bg-white/[0.03]"
-                  >
-                    Login
-                  </motion.a>
-                )}
+                <motion.a
+                  href={authenticated ? "/dashboard" : "/auth/login"}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  onClick={() => setMobileOpen(false)}
+                  className="font-bold text-gold/70 hover:text-gold transition-colors px-4 py-3 rounded-lg border border-gold/20 hover:border-gold/40 hover:bg-gold/[0.03]"
+                >
+                  Client Portal
+                </motion.a>
+                <motion.a
+                  href="/hire"
+                  onClick={() => setMobileOpen(false)}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.24 }}
+                  className="block px-5 py-3 rounded-lg border border-white/10 text-white font-semibold text-sm text-center hover:bg-white/5 animate-blink-border"
+                >
+                  Hire Us
+                </motion.a>
                 <motion.a
                   href="/academy"
                   onClick={() => setMobileOpen(false)}
@@ -247,16 +218,18 @@ export default function Nav() {
                 >
                   Enroll Now
                 </motion.a>
-                <motion.a
-                  href="/hire"
-                  onClick={() => setMobileOpen(false)}
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.32 }}
-                  className="block px-5 py-3 rounded-lg border border-white/10 text-white font-semibold text-sm text-center hover:bg-white/5 animate-blink-border"
-                >
-                  Hire Us
-                </motion.a>
+                {authenticated && isAdmin && (
+                  <motion.a
+                    href="/admin"
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.32 }}
+                    onClick={() => setMobileOpen(false)}
+                    className="text-muted hover:text-white transition-colors px-4 py-3 rounded-lg hover:bg-white/[0.03]"
+                  >
+                    Admin
+                  </motion.a>
+                )}
               </div>
             </div>
           </motion.div>
