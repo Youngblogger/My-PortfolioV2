@@ -24,12 +24,6 @@ export default function DashboardPage() {
 
     async function load() {
       try {
-        const token = api.getToken();
-        if (!token) {
-          router.push("/auth/login?redirect=/academy/dashboard");
-          return;
-        }
-
         const [dashData, ordersData] = await Promise.all([
           api.getDashboard(),
           api.getServiceOrders().catch(() => ({ data: [] })),

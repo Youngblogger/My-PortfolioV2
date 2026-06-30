@@ -28,14 +28,13 @@ function isStaticAsset(path: string): boolean {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get("auth_token")?.value || request.headers.get("authorization")?.replace("Bearer ", "");
 
   if (isStaticAsset(pathname) || pathname.startsWith("/_next")) {
     return NextResponse.next();
   }
 
   if (
-    pathname.startsWith("/admin") ||
+    (pathname.startsWith("/admin") && !pathname.startsWith("/admin/login") && !pathname.startsWith("/admin/forgot-password")) ||
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/proposals") ||
     pathname.startsWith("/notifications") ||
@@ -43,7 +42,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith("/hire/checkout") ||
     pathname.startsWith("/hire/order/")
   ) {
-    if (!token) {
+    const hasSession = request.cookies.has("codemafia_session");
+    if (!hasSession) {
       const loginUrl = new URL("/auth/login", request.url);
       loginUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(loginUrl);

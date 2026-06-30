@@ -55,7 +55,14 @@ export default function ProjectTypePage() {
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
   const [relatedProjects, setRelatedProjects] = useState<ProjectTypeSummaryData[]>([]);
   const [showAuthGate, setShowAuthGate] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { setProjectType, setPackage } = useBooking();
+
+  useEffect(() => {
+    fetch("/api/auth/user", { credentials: "include" })
+      .then((res) => setIsAuthenticated(res.ok))
+      .catch(() => setIsAuthenticated(false));
+  }, []);
 
   useEffect(() => {
     if (!serviceSlug || !projectSlug) return;
@@ -84,8 +91,7 @@ export default function ProjectTypePage() {
   const grandTotalNgn = (selectedPkg?.price_ngn || 0) + addOnsTotalNgn;
 
   const handleGetStarted = () => {
-    const token = localStorage.getItem("auth_token");
-    if (token) {
+    if (isAuthenticated) {
       document.getElementById("packages-section")?.scrollIntoView({ behavior: "smooth" });
     } else {
       setShowAuthGate(true);
@@ -97,8 +103,7 @@ export default function ProjectTypePage() {
     const pkg = data.packages.find((p) => p.id === selectedPackageId);
     if (!pkg) return;
     setPackage({ id: pkg.id, slug: pkg.slug, name: pkg.name, price_ngn: pkg.price_ngn, price_usd: pkg.price_usd });
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
+    if (!isAuthenticated) {
       setShowAuthGate(true);
       return;
     }

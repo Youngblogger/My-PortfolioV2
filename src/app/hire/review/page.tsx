@@ -41,11 +41,15 @@ export default function ReviewPage() {
     );
   }
 
-  const handleProceed = () => {
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      router.push("/hire/checkout");
-    } else {
+  const handleProceed = async () => {
+    try {
+      const res = await fetch("/api/auth/user", { credentials: "include" });
+      if (res.ok) {
+        router.push("/hire/checkout");
+      } else {
+        setShowAuthOptions(true);
+      }
+    } catch {
       setShowAuthOptions(true);
     }
   };

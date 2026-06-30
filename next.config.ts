@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
         source: "/api/v1/:path*",
         destination: `${API_PROXY_TARGET}/api/v1/:path*`,
       },
+      {
+        source: "/sanctum/:path*",
+        destination: `${API_PROXY_TARGET}/sanctum/:path*`,
+      },
     ];
   },
 };

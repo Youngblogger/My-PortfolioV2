@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Profile;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\URL;
@@ -37,12 +38,16 @@ class AuthController extends Controller
             'email_verified_at' => null,
         ]);
 
-        Profile::create([
+        $profile = new Profile([
             'id' => $user->id,
             'email' => $request->email,
             'full_name' => $request->full_name,
-            'role' => 'student',
         ]);
+        $profile->role = 'student';
+        $profile->save();
+
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
 
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
@@ -66,13 +71,10 @@ class AuthController extends Controller
             ['email' => $user->email]
         );
 
-        $token = $user->createToken('auth-token')->plainTextToken;
-
         return response()->json([
             'success' => true,
-            'token' => $token,
-            'verification_url' => $verificationUrl,
             'requires_verification' => true,
+            'verification_url' => $verificationUrl,
             'user' => [
                 'id' => $user->id,
                 'email' => $user->email,
@@ -95,30 +97,31 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        if (Auth::guard('web')->attempt(
+            $request->only('email', 'password'),
+            $request->boolean('remember')
+        )) {
+            $request->session()->regenerate();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+            $user = Auth::guard('web')->user();
+            $profile = $user->profile;
+
             return response()->json([
-                'success' => false,
-                'error' => 'Invalid credentials',
-            ], 401);
+                'success' => true,
+                'user' => [
+                    'id' => $user->id,
+                    'email' => $user->email,
+                    'full_name' => $profile?->full_name,
+                    'avatar_url' => $profile?->avatar_url,
+                    'role' => $profile?->role ?? 'student',
+                ],
+            ]);
         }
 
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        $profile = $user->profile;
-
         return response()->json([
-            'success' => true,
-            'token' => $token,
-            'user' => [
-                'id' => $user->id,
-                'email' => $user->email,
-                'full_name' => $profile?->full_name,
-                'avatar_url' => $profile?->avatar_url,
-                'role' => $profile?->role ?? 'student',
-            ],
-        ]);
+            'success' => false,
+            'error' => 'Invalid credentials',
+        ], 401);
     }
 
     public function user(Request $request)
@@ -140,7 +143,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'success' => true,

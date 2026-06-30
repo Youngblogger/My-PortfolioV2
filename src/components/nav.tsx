@@ -26,14 +26,28 @@ export default function Nav() {
   const isHome = pathname === "/";
 
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem("auth_token");
-      setAuthenticated(!!token);
-      setIsAdmin(localStorage.getItem("user_role") === "admin");
-    };
+    let mounted = true;
+    async function checkAuth() {
+      try {
+        const res = await fetch("/api/auth/user", { credentials: "include" });
+        if (!mounted) return;
+        if (res.ok) {
+          const data = await res.json();
+          setAuthenticated(true);
+          setIsAdmin(data?.data?.role === "admin");
+        } else {
+          setAuthenticated(false);
+          setIsAdmin(false);
+        }
+      } catch {
+        if (mounted) {
+          setAuthenticated(false);
+          setIsAdmin(false);
+        }
+      }
+    }
     checkAuth();
-    window.addEventListener("storage", checkAuth);
-    return () => window.removeEventListener("storage", checkAuth);
+    return () => { mounted = false; };
   }, []);
 
   useEffect(() => {

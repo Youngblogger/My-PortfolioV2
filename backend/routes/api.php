@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\DiscoveryCallController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AdminAuthController;
+use App\Http\Controllers\Api\AdminManagementController;
 use App\Http\Controllers\Api\VerificationController;
 use App\Http\Controllers\Api\ProjectFileController;
 use App\Http\Controllers\Api\ProjectMessageController;
@@ -41,6 +43,7 @@ Route::post('/auth/register', [AuthController::class, 'register'])->middleware('
 Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:api');
 Route::post('/auth/forgot-password', [PasswordResetController::class, 'sendResetLink'])->middleware('throttle:password-reset');
 Route::post('/auth/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:password-reset');
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/auth/email/verify/send', [VerificationController::class, 'sendVerificationEmail'])->middleware('auth:sanctum');
 Route::get('/auth/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
 Route::post('/auth/email/verify/resend', [VerificationController::class, 'resend'])->middleware('auth:sanctum');
@@ -147,8 +150,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/{id}/read', [NotificationController::class, 'markRead']);
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
 
+    // Admin Auth Routes (authenticated session check)
+    Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
+        Route::get('/me', [AdminAuthController::class, 'me']);
+        Route::post('/logout', [AdminAuthController::class, 'logout']);
+    });
+
     // Admin Routes
-    Route::prefix('admin')->middleware(['admin', 'throttle:api'])->group(function () {
+    Route::prefix('admin')->middleware(['auth:sanctum', 'admin', 'throttle:api'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
         Route::get('/orders', [AdminController::class, 'orders']);
         Route::patch('/orders/{id}/status', [AdminController::class, 'updateOrderStatus']);
@@ -213,5 +222,87 @@ Route::middleware('auth:sanctum')->group(function () {
         // Collaboration — Review Moderation
         Route::get('/reviews', [ProjectReviewController::class, 'adminList']);
         Route::patch('/reviews/{reviewId}', [ProjectReviewController::class, 'moderate']);
+
+        // ─── Admin Management ────────────────────────────────────
+        Route::get('/clients', [AdminManagementController::class, 'clients']);
+        Route::get('/clients/{id}', [AdminManagementController::class, 'clientShow']);
+        Route::post('/clients/{id}/suspend', [AdminManagementController::class, 'clientSuspend']);
+        Route::post('/clients/{id}/reactivate', [AdminManagementController::class, 'clientReactivate']);
+        Route::post('/clients/{id}/notify', [AdminManagementController::class, 'clientSendNotification']);
+        Route::get('/clients/export/csv', [AdminManagementController::class, 'clientExport']);
+
+        // Portfolio
+        Route::get('/portfolio', [AdminManagementController::class, 'portfolioItems']);
+        Route::get('/portfolio/{id}', [AdminManagementController::class, 'portfolioShow']);
+        Route::post('/portfolio', [AdminManagementController::class, 'portfolioStore']);
+        Route::put('/portfolio/{id}', [AdminManagementController::class, 'portfolioUpdate']);
+        Route::delete('/portfolio/{id}', [AdminManagementController::class, 'portfolioDestroy']);
+
+        // Blog
+        Route::get('/blog/posts', [AdminManagementController::class, 'blogPosts']);
+        Route::get('/blog/posts/{id}', [AdminManagementController::class, 'blogShow']);
+        Route::post('/blog/posts', [AdminManagementController::class, 'blogStore']);
+        Route::put('/blog/posts/{id}', [AdminManagementController::class, 'blogUpdate']);
+        Route::delete('/blog/posts/{id}', [AdminManagementController::class, 'blogDestroy']);
+        Route::get('/blog/categories', [AdminManagementController::class, 'blogCategories']);
+        Route::post('/blog/categories', [AdminManagementController::class, 'blogCategoryStore']);
+        Route::put('/blog/categories/{id}', [AdminManagementController::class, 'blogCategoryUpdate']);
+        Route::delete('/blog/categories/{id}', [AdminManagementController::class, 'blogCategoryDestroy']);
+
+        // Academy - Courses
+        Route::get('/academy/courses', [AdminManagementController::class, 'courses']);
+        Route::get('/academy/courses/{id}', [AdminManagementController::class, 'courseShow']);
+        Route::post('/academy/courses', [AdminManagementController::class, 'courseStore']);
+        Route::put('/academy/courses/{id}', [AdminManagementController::class, 'courseUpdate']);
+        Route::delete('/academy/courses/{id}', [AdminManagementController::class, 'courseDestroy']);
+        Route::get('/academy/course-categories', [AdminManagementController::class, 'courseCategories']);
+        Route::post('/academy/course-categories', [AdminManagementController::class, 'courseCategoryStore']);
+        Route::put('/academy/course-categories/{id}', [AdminManagementController::class, 'courseCategoryUpdate']);
+        Route::delete('/academy/course-categories/{id}', [AdminManagementController::class, 'courseCategoryDestroy']);
+
+        // Academy - Modules & Lessons
+        Route::get('/academy/courses/{courseId}/modules', [AdminManagementController::class, 'modules']);
+        Route::post('/academy/courses/{courseId}/modules', [AdminManagementController::class, 'moduleStore']);
+        Route::put('/academy/modules/{id}', [AdminManagementController::class, 'moduleUpdate']);
+        Route::delete('/academy/modules/{id}', [AdminManagementController::class, 'moduleDestroy']);
+        Route::get('/academy/modules/{moduleId}/lessons', [AdminManagementController::class, 'lessons']);
+        Route::post('/academy/modules/{moduleId}/lessons', [AdminManagementController::class, 'lessonStore']);
+        Route::put('/academy/lessons/{id}', [AdminManagementController::class, 'lessonUpdate']);
+        Route::delete('/academy/lessons/{id}', [AdminManagementController::class, 'lessonDestroy']);
+
+        // Academy - Enrollments & Certificates
+        Route::get('/academy/enrollments', [AdminManagementController::class, 'enrollments']);
+        Route::get('/academy/certificates', [AdminManagementController::class, 'certificates']);
+        Route::post('/academy/enrollments/{enrollmentId}/certificate', [AdminManagementController::class, 'certificateGenerate']);
+
+        // CMS
+        Route::get('/cms/sections', [AdminManagementController::class, 'cmsSections']);
+        Route::put('/cms/sections/{section}', [AdminManagementController::class, 'cmsUpdate']);
+
+        // Media
+        Route::get('/media', [AdminManagementController::class, 'mediaIndex']);
+        Route::post('/media/upload', [AdminManagementController::class, 'mediaUpload']);
+        Route::put('/media/{id}', [AdminManagementController::class, 'mediaUpdate']);
+        Route::delete('/media/{id}', [AdminManagementController::class, 'mediaDestroy']);
+
+        // Analytics
+        Route::get('/analytics', [AdminManagementController::class, 'analytics']);
+
+        // Admin Users
+        Route::get('/admin-users', [AdminManagementController::class, 'adminUsers']);
+        Route::post('/admin-users', [AdminManagementController::class, 'adminUserStore']);
+        Route::put('/admin-users/{id}', [AdminManagementController::class, 'adminUserUpdate']);
+        Route::delete('/admin-users/{id}', [AdminManagementController::class, 'adminUserDestroy']);
+
+        // Audit Logs
+        Route::get('/audit-logs', [AdminManagementController::class, 'auditLogs']);
+
+        // Settings
+        Route::get('/settings', [AdminManagementController::class, 'settings']);
+        Route::put('/settings', [AdminManagementController::class, 'settingsUpdate']);
+
+        // Notifications
+        Route::get('/notifications/manage', [AdminManagementController::class, 'notifications']);
+        Route::post('/notifications/send', [AdminManagementController::class, 'sendNotification']);
     });
 });

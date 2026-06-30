@@ -75,11 +75,6 @@ export default function DashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const token = api.getToken();
-      if (!token) {
-        router.push("/auth/login?redirect=/dashboard");
-        return;
-      }
       const res = await api.getServiceOrders();
       setOrders(res.data || []);
     } catch (err) {

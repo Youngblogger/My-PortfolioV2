@@ -31,11 +31,6 @@ export default function CheckoutPage() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      router.push(`/auth/login?redirect=${encodeURIComponent("/hire/checkout")}`);
-      return;
-    }
     api.getUser().then((res) => {
       const u = res.user;
       setUser(u);

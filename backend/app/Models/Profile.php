@@ -21,7 +21,6 @@ class Profile extends Model
         'address',
         'company',
         'tax_id',
-        'role',
         'bio',
         'title',
         'metadata',

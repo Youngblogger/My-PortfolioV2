@@ -33,8 +33,6 @@ function RegisterForm() {
 
     try {
       const result = await api.register(fullName, email, password);
-      api.setToken(result.token);
-      localStorage.setItem("user_role", result.user?.role || "student");
       if (result.requires_verification) {
         router.push("/auth/verify-pending");
       } else {

@@ -254,7 +254,7 @@ export default function AdminProjectTypesPage() {
               initial={{ opacity: 0, y: 40, scale: 0.96 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 40, scale: 0.96 }}
-              transition={{ ease: [0.16, 1, 0.3, 1] }}
+              transition={{ ease: [0.16, 1, 0.3, 1] as const }}
               className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 md:w-full md:max-w-lg max-h-[90vh] overflow-y-auto"
             >
               <form onSubmit={handleSubmit} className="glass rounded-2xl p-6 space-y-5">

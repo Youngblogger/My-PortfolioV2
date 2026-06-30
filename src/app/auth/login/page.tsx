@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -14,6 +14,12 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/dashboard";
 
+  useEffect(() => {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("user_role");
+  }, []);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,9 +31,7 @@ function LoginForm() {
     setError("");
 
     try {
-      const result = await api.login(email, password);
-      api.setToken(result.token);
-      localStorage.setItem("user_role", result.user?.role || "student");
+      await api.login(email, password);
       router.push(redirect);
       router.refresh();
     } catch (err) {

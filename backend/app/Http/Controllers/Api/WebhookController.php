@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ServiceOrder;
 use App\Services\CheckoutService;
 use App\Services\Payments\PaymentService;
+use App\Services\ServiceOrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -14,7 +15,7 @@ class WebhookController extends Controller
     public function __construct(
         private CheckoutService $checkoutService,
         private PaymentService $paymentService,
-        private ServiceOrderController $serviceOrderController,
+        private ServiceOrderService $serviceOrderService,
     ) {}
 
     public function handle(Request $request, string $gateway)
@@ -83,7 +84,7 @@ class WebhookController extends Controller
         }
 
         try {
-            $this->serviceOrderController->processVerifiedPayment($order, $reference, $webhookResult);
+            $this->serviceOrderService->processVerifiedPayment($order, $reference, $webhookResult);
 
             Log::info('Webhook: service order payment processed', [
                 'order_id' => $order->id,

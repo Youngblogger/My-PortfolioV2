@@ -1,43 +1,29 @@
 const API_BASE_URL = "/api/v1";
 
-interface ApiOptions extends RequestInit {
-  token?: string | null;
+const CSRF_COOKIE = "XSRF-TOKEN";
+
+// Fetches the CSRF cookie required by Sanctum for state-changing requests
+async function ensureCsrfCookie(): Promise<void> {
+  if (typeof window === "undefined") return;
+  await fetch("/sanctum/csrf-cookie", { credentials: "include" });
 }
 
-async function getToken(): Promise<string | null> {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("auth_token");
+function getCsrfToken(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(^| )${CSRF_COOKIE}=([^;]+)`));
+  return match ? decodeURIComponent(match[2]) : null;
 }
 
-function setToken(token: string) {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("auth_token", token);
-  }
-}
-
-function removeToken() {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("auth_token");
-  }
-}
-
-function clearAuth() {
-  removeToken();
-  document.cookie = "auth_token=; path=/; max-age=0";
-  localStorage.removeItem("user_role");
-}
-
-function isAuthenticated(): boolean {
-  if (typeof window === "undefined") return false;
-  return !!localStorage.getItem("auth_token");
-}
-
-async function apiRequest<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
-  const { token, ...fetchOptions } = options;
-  const authToken = token ?? (await getToken());
-
+async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   if (typeof navigator !== "undefined" && !navigator.onLine) {
     throw new ApiError("You are offline. Please check your internet connection.", 0);
+  }
+
+  const method = (options.method || "GET").toUpperCase();
+
+  // Ensure CSRF cookie for state-changing requests
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
+    await ensureCsrfCookie();
   }
 
   const headers: Record<string, string> = {
@@ -49,8 +35,12 @@ async function apiRequest<T>(endpoint: string, options: ApiOptions = {}): Promis
     headers["Content-Type"] = "application/json";
   }
 
-  if (authToken) {
-    headers["Authorization"] = `Bearer ${authToken}`;
+  // Add CSRF token header for state-changing requests (required by Sanctum SPA auth)
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
+    const csrfToken = getCsrfToken();
+    if (csrfToken) {
+      headers["X-XSRF-TOKEN"] = csrfToken;
+    }
   }
 
   const controller = new AbortController();
@@ -58,7 +48,7 @@ async function apiRequest<T>(endpoint: string, options: ApiOptions = {}): Promis
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...fetchOptions,
+      ...options,
       headers,
       credentials: "include",
       signal: controller.signal,
@@ -73,9 +63,8 @@ async function apiRequest<T>(endpoint: string, options: ApiOptions = {}): Promis
     const data = await response.json();
 
     if (!response.ok) {
-      if (response.status === 401) {
-        clearAuth();
-        if (typeof window !== "undefined") {
+      if (response.status === 401 && typeof window !== "undefined") {
+        if (!window.location.pathname.startsWith("/auth/login")) {
           window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`;
         }
         throw new ApiError("Session expired. Please log in again.", 401);
@@ -98,6 +87,12 @@ async function apiRequest<T>(endpoint: string, options: ApiOptions = {}): Promis
   }
 }
 
+function isAuthenticated(): boolean {
+  // Session-based auth — cookies are HttpOnly, so we can't check JS storage.
+  // The auth state is verified server-side via /auth/user endpoint.
+  return true; // optimistic; real check happens in layout/page guards
+}
+
 export class ApiError extends Error {
   status: number;
   data: unknown;
@@ -111,11 +106,9 @@ export class ApiError extends Error {
 }
 
 export const api = {
-  getToken,
-  setToken,
-  removeToken,
-  clearAuth,
   isAuthenticated,
+
+  ensureCsrfCookie,
 
   // Password Reset
   sendPasswordResetLink: (email: string) =>
@@ -131,29 +124,23 @@ export const api = {
     }),
 
   // Auth
-  login: async (email: string, password: string) => {
-    const result = await apiRequest<ApiResponse & { token: string; user: UserData }>("/auth/login", {
+  login: async (email: string, password: string, remember = false) => {
+    await ensureCsrfCookie();
+    const result = await apiRequest<ApiResponse & { user: UserData }>("/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, remember }),
     });
-    document.cookie = `auth_token=${result.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax; ${location.protocol === 'https:' ? 'Secure' : ''}`;
     return result;
   },
 
   register: (fullName: string, email: string, password: string) =>
-    apiRequest<ApiResponse & { token: string; verification_url?: string; requires_verification?: boolean; user: UserData }>("/auth/register", {
+    apiRequest<ApiResponse & { verification_url?: string; requires_verification?: boolean; user: UserData }>("/auth/register", {
       method: "POST",
       body: JSON.stringify({ full_name: fullName, email, password, password_confirmation: password }),
     }),
 
   logout: async () => {
-    try {
-      await apiRequest<ApiResponse>("/auth/logout", { method: "POST" });
-    } finally {
-      removeToken();
-      document.cookie = "auth_token=; path=/; max-age=0";
-      localStorage.removeItem("user_role");
-    }
+    await apiRequest<ApiResponse>("/auth/logout", { method: "POST" });
   },
 
   getUser: () =>
@@ -234,9 +221,7 @@ export const api = {
     apiRequest<ApiResponse & { invoice: InvoiceData }>(`/invoice?id=${id}`),
 
   downloadInvoicePdf: async (id: string) => {
-    const token = await getToken();
     const response = await fetch(`${API_BASE_URL}/invoice/pdf?id=${id}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
       credentials: "include",
     });
     if (!response.ok) throw new ApiError("Failed to download PDF", response.status);
@@ -248,9 +233,7 @@ export const api = {
     apiRequest<ApiResponse & { receipt: ReceiptData }>(`/receipt?id=${id}`),
 
   downloadReceiptPdf: async (id: string) => {
-    const token = await getToken();
     const response = await fetch(`${API_BASE_URL}/receipt/pdf?id=${id}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
       credentials: "include",
     });
     if (!response.ok) throw new ApiError("Failed to download PDF", response.status);
@@ -625,9 +608,7 @@ export const api = {
   },
 
   downloadProjectFile: async (id: string, fileId: string) => {
-    const token = await getToken();
     const response = await fetch(`${API_BASE_URL}/service-orders/${id}/files/${fileId}/download`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
       credentials: "include",
     });
     if (!response.ok) {
