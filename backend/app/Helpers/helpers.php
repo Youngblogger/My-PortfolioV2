@@ -108,3 +108,15 @@ if (!function_exists('sanitizeUrl')) {
         return $url;
     }
 }
+
+if (!function_exists('copyright')) {
+    function copyright(int $startYear = 2026, string $brand = 'CODEMAFIA'): string
+    {
+        $currentYear = (int) date('Y');
+        $year = $currentYear > $startYear
+            ? $startYear . "\u2013" . $currentYear
+            : (string) $startYear;
+
+        return "&copy; {$year} {$brand}. All rights reserved.";
+    }
+}

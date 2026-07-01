@@ -105,3 +105,28 @@ export function sanitizeUrl(url: string): string {
   }
   return url;
 }
+
+export function formatRelativeTime(date: string | Date): string {
+  const now = Date.now();
+  const then = new Date(date).getTime();
+  const diffMs = now - then;
+  const diffSecs = Math.floor(diffMs / 1000);
+  if (diffSecs < 60) return "just now";
+  const diffMins = Math.floor(diffSecs / 60);
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 30) return `${diffDays}d ago`;
+  const diffMonths = Math.floor(diffDays / 30);
+  if (diffMonths < 12) return `${diffMonths}mo ago`;
+  const diffYears = Math.floor(diffMonths / 12);
+  return `${diffYears}y ago`;
+}
+
+export function getDaysRemaining(date: string | Date): number {
+  const now = new Date();
+  const target = new Date(date);
+  const diff = target.getTime() - now.getTime();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}

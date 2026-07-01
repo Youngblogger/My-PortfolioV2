@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Invoice;
+use App\Models\ServiceInvoice;
+use App\Models\ServiceOrder;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceService
@@ -18,6 +20,21 @@ class InvoiceService
         ];
 
         $pdf = Pdf::loadView('pdf.invoice', $data);
+        $pdf->setPaper('A4');
+
+        return $pdf->output();
+    }
+
+    public function generateServiceInvoicePdf(ServiceInvoice $invoice, ServiceOrder $order): string
+    {
+        $order->loadMissing(['user.profile', 'service', 'projectType', 'package', 'addOns', 'payments']);
+
+        $data = [
+            'invoice' => $invoice,
+            'order' => $order,
+        ];
+
+        $pdf = Pdf::loadView('pdf.service-invoice', $data);
         $pdf->setPaper('A4');
 
         return $pdf->output();

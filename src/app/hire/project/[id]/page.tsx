@@ -1,13 +1,20 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { api, type WorkspaceDataResponse, type WorkspaceMilestoneData, type WorkspaceActivityLogData, type ServiceFileData, type ServiceMessageData, type ProjectReviewData } from "@/lib/api";
+import { api, type WorkspaceDataResponse, type WorkspaceMilestoneData, type WorkspaceActivityLogData, type ServiceFileData, type ServiceMessageData, type ProjectReviewData, type TimelineEventData } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
-import { formatDate, formatCurrency, formatFileSize } from "@/lib/utils";
+import { formatDate, formatCurrency, formatFileSize, getDaysRemaining, formatRelativeTime } from "@/lib/utils";
+import ProjectSummaryCards from "@/components/project/ProjectSummaryCards";
+import NextActionPanel from "@/components/project/NextActionPanel";
+import DynamicTimeline from "@/components/project/DynamicTimeline";
+import ActivityFeed from "@/components/project/ActivityFeed";
+import SectionSkeleton from "@/components/project/SectionSkeleton";
+import PaymentStatusCard from "@/components/project/PaymentStatusCard";
+import BalancePaymentSection from "@/components/project/BalancePaymentSection";
 
 const TABS = ["Overview", "Timeline", "Team", "Files", "Messages", "Payments", "Review", "Delivery", "Activity"] as const;
 
@@ -83,11 +90,191 @@ interface SectionProps {
   totalPaid: number;
   balance: number;
   projectStatusIdx: number;
+  timelineEvents?: TimelineEventData[];
+  onRefresh?: () => void;
+  tabId?: string;
 }
 
-function OverviewSection({ w, milestones, completedMilestones, totalMilestones, milestoneProgress, totalPaid, balance, projectStatusIdx }: SectionProps) {
+function OverviewSection({ w, milestones, completedMilestones, totalMilestones, milestoneProgress, totalPaid, balance, projectStatusIdx, timelineEvents, onRefresh }: SectionProps) {
+  const invoice = w.invoices?.[0];
+  const firstInvoiceNumber = invoice?.invoice_number;
+
+  const pm = w.projectManager;
+  const pendingReview = milestones.filter((m) => m.review_status === "pending").length > 0;
+
+  const currentMilestone = useMemo(() => {
+    const inProgress = milestones.find((m) => m.status === "in_progress");
+    if (inProgress) return inProgress;
+    const nextPending = milestones.find((m) => m.status === "pending" || m.status === "locked");
+    return nextPending || null;
+  }, [milestones]);
+
+  const estimatedDeliveryDate = useMemo(() => {
+    if (w.completed_at) return null;
+    if (currentMilestone?.due_date) return currentMilestone.due_date;
+    if (w.kickoff_at) {
+      const kickoff = new Date(w.kickoff_at);
+      kickoff.setDate(kickoff.getDate() + 60);
+      return kickoff.toISOString();
+    }
+    return null;
+  }, [w.completed_at, w.kickoff_at, currentMilestone]);
+
   return (
     <div className="space-y-6">
+      {/* Project Summary Cards */}
+      <ProjectSummaryCards
+        projectStatus={w.project_status}
+        paymentStatus={w.payment_status}
+        paymentType={w.payment_type}
+        totalNgn={w.total_ngn}
+        amountPaidNgn={w.amount_paid_ngn}
+        balanceNgn={w.balance_ngn}
+        estimatedDelivery={estimatedDeliveryDate}
+        completedAt={w.completed_at}
+        updatedAt={w.created_at}
+      />
+
+      {/* Balance Payment Section */}
+      {w.is_partially_paid && (
+        <BalancePaymentSection
+          orderId={w.id}
+          balanceNgn={w.balance_ngn}
+          totalNgn={w.total_ngn}
+          amountPaidNgn={w.amount_paid_ngn}
+          invoiceNumber={firstInvoiceNumber}
+          onPaymentSuccess={onRefresh}
+        />
+      )}
+
+      {/* Fully Paid Banner */}
+      {w.is_fully_paid && w.project_status !== "completed" && w.project_status !== "delivered" && (
+        <div className="glass rounded-2xl p-6 md:p-8 border border-green-500/20">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">✅</span>
+            <div>
+              <h3 className="text-lg font-bold text-white">Payment Received Successfully</h3>
+              <p className="text-sm text-muted mt-1">
+                Your project has been fully paid. Our team is completing the final work. Downloads will become available once the project has been completed.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Next Action Panel */}
+      <NextActionPanel
+        projectStatus={w.project_status}
+        paymentStatus={w.payment_status}
+        isFullyPaid={w.is_fully_paid}
+        isPartiallyPaid={w.is_partially_paid}
+        isDownloadAllowed={w.is_download_allowed}
+        balanceNgn={w.balance_ngn}
+        hasPendingReview={pendingReview}
+        onScrollToFiles={() => document.getElementById("section-files")?.scrollIntoView({ behavior: "smooth" })}
+        onScrollToPay={() => document.getElementById("section-payments")?.scrollIntoView({ behavior: "smooth" })}
+      />
+
+      {/* Estimated Completion + Progress */}
+      <div className="grid sm:grid-cols-2 gap-6">
+        {/* Progress */}
+        <div className="glass rounded-2xl p-6 md:p-8">
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Project Progress</h3>
+          <div className="flex items-center gap-4 mb-3">
+            <div className="flex-1 h-3 rounded-full bg-white/5 overflow-hidden">
+              <motion.div
+                className="h-full rounded-full bg-gradient-to-r from-gold to-green-400"
+                initial={{ width: 0 }}
+                whileInView={{ width: `${milestoneProgress}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                role="progressbar"
+                aria-valuenow={milestoneProgress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              />
+            </div>
+            <span className="text-2xl font-bold text-white">{milestoneProgress}%</span>
+          </div>
+          <div className="flex flex-wrap gap-3 text-xs">
+            <span className="text-green-400">&#9679; {completedMilestones} completed</span>
+            <span className="text-gold">&#9679; {milestones.filter((m) => m.status === "in_progress").length} in progress</span>
+            <span className="text-muted">&#9679; {totalMilestones - completedMilestones} remaining</span>
+          </div>
+        </div>
+
+        {/* Estimated Completion */}
+        {!w.completed_at && (
+          <div className="glass rounded-2xl p-6 md:p-8">
+            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Estimated Completion</h3>
+            {estimatedDeliveryDate ? (
+              <>
+                <div className="flex items-baseline gap-2 mb-2">
+                  <span className="text-2xl font-bold text-white">{getDaysRemaining(estimatedDeliveryDate)}</span>
+                  <span className="text-sm text-muted">days remaining</span>
+                </div>
+                <p className="text-xs text-muted mb-3">Target: {formatDate(estimatedDeliveryDate)}</p>
+              </>
+            ) : (
+              <p className="text-sm text-muted mb-3">Awaiting timeline confirmation from project team.</p>
+            )}
+            {currentMilestone && (
+              <div className="bg-white/5 rounded-xl p-3 space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted">Current</span>
+                  <span className="text-gold font-medium capitalize">{currentMilestone.status.replace(/_/g, " ")}</span>
+                </div>
+                <p className="text-sm text-white font-medium">{currentMilestone.title}</p>
+                {currentMilestone.description && (
+                  <p className="text-xs text-muted/70">{currentMilestone.description}</p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        {w.completed_at && (
+          <div className="glass rounded-2xl p-6 md:p-8 border border-green-500/20">
+            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Completed</h3>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-2xl">🎉</span>
+              <div>
+                <span className="text-2xl font-bold text-white">100%</span>
+                <p className="text-xs text-green-400">Project completed on {formatDate(w.completed_at)}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Assigned Team */}
+      <div className="glass rounded-2xl p-6 md:p-8">
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Assigned Team</h3>
+        {pm ? (
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-gold/10 flex items-center justify-center text-gold font-bold text-lg shrink-0 overflow-hidden">
+              {pm.profile?.avatar_url ? (
+                <img src={pm.profile.avatar_url} alt={pm.profile.full_name || "PM"} className="w-full h-full object-cover" />
+              ) : (
+                (pm.profile?.full_name || "PM").charAt(0).toUpperCase()
+              )}
+            </div>
+            <div>
+              <p className="text-white font-semibold">{pm.profile?.full_name || "Project Manager"}</p>
+              <p className="text-xs text-muted">Project Manager &middot; Your dedicated point of contact</p>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-6">
+            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-2xl mx-auto mb-3" aria-hidden="true">👥</div>
+            <p className="text-sm text-white font-medium">Team Being Assembled</p>
+            <p className="text-xs text-muted mt-1">We are putting together the best team for your project. You will be notified once assignments are made.</p>
+          </div>
+        )}
+      </div>
+
+      {/* Dynamic Timeline */}
+      <DynamicTimeline milestones={milestones} activityEvents={timelineEvents || []} />
+
       {/* Service & Package info */}
       <div className="glass rounded-2xl p-6 md:p-8">
         <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Service &amp; Package</h3>
@@ -141,32 +328,6 @@ function OverviewSection({ w, milestones, completedMilestones, totalMilestones, 
         </div>
       )}
 
-      {/* Milestone Progress */}
-      {totalMilestones > 0 && (
-        <div className="glass rounded-2xl p-6 md:p-8">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Milestone Progress</h3>
-          <div className="flex items-center gap-4 mb-3">
-            <div className="flex-1 h-2.5 rounded-full bg-white/5 overflow-hidden">
-              <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-gold to-green-400"
-                initial={{ width: 0 }}
-                whileInView={{ width: `${milestoneProgress}%` }}
-                viewport={{ once: true }}
-                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              />
-            </div>
-            <span className="text-sm font-bold text-white whitespace-nowrap">
-              {completedMilestones}/{totalMilestones}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2 text-xs text-muted">
-            <span className="text-green-400">&#9679; {completedMilestones} completed</span>
-            <span className="text-gold">&#9679; {milestones.filter((m) => m.status === "in_progress").length} in progress</span>
-            <span>&#9679; {milestones.filter((m) => m.status === "pending" || m.status === "locked").length} remaining</span>
-          </div>
-        </div>
-      )}
-
       {/* Project Timeline Info */}
       <div className="glass rounded-2xl p-6 md:p-8">
         <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Project Timeline</h3>
@@ -183,37 +344,6 @@ function OverviewSection({ w, milestones, completedMilestones, totalMilestones, 
             <span className="text-muted">Completed</span>
             <p className="text-white mt-0.5">{w.completed_at ? formatDate(w.completed_at) : "In progress"}</p>
           </div>
-        </div>
-      </div>
-
-      {/* Project Status Pipeline */}
-      <div className="glass rounded-2xl p-6 md:p-8">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-6">Project Pipeline</h3>
-        <div className="flex items-center gap-0 overflow-x-auto pb-2">
-          {Object.entries(PROJECT_STATUS_LABELS).map(([key, label], idx) => {
-            const isCompleted = projectStatusIdx > idx;
-            const isCurrent = projectStatusIdx === idx;
-            return (
-              <div key={key} className="flex items-center shrink-0">
-                <div
-                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-300 ${
-                    isCurrent
-                      ? "bg-gold/15 text-gold border border-gold/30 shadow-gold/20"
-                      : isCompleted
-                        ? "bg-green-500/10 text-green-400 border border-green-500/20"
-                        : "bg-white/5 text-muted border border-white/5"
-                  }`}
-                >
-                  {isCompleted && <span className="text-green-400">&#10003;</span>}
-                  {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse" />}
-                  {label}
-                </div>
-                {idx < Object.keys(PROJECT_STATUS_LABELS).length - 1 && (
-                  <div className={`w-6 h-px mx-1 ${isCompleted && idx < projectStatusIdx ? "bg-green-500/40" : "bg-white/10"}`} />
-                )}
-              </div>
-            );
-          })}
         </div>
       </div>
 
@@ -261,6 +391,19 @@ function OverviewSection({ w, milestones, completedMilestones, totalMilestones, 
               Download Invoice
             </button>
           )}
+          {w.is_download_allowed && (
+            <Link
+              href="#section-files"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("section-files")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gold/10 hover:bg-gold/20 transition-all text-sm text-white font-medium"
+            >
+              <span className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 text-base">&#128229;</span>
+              Download Files
+            </Link>
+          )}
           <Link
             href="/hire/discovery-call"
             className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all text-sm text-white font-medium"
@@ -281,97 +424,11 @@ function OverviewSection({ w, milestones, completedMilestones, totalMilestones, 
   );
 }
 
-function TimelineSection({ w, milestones, completedMilestones, totalMilestones, milestoneProgress, totalPaid, balance, projectStatusIdx }: SectionProps) {
+function TimelineSection({ w, milestones, completedMilestones, totalMilestones, milestoneProgress, totalPaid, balance, projectStatusIdx, timelineEvents }: SectionProps) {
   return (
     <div className="space-y-6">
-      {totalMilestones > 0 && (
-        <div className="glass rounded-2xl p-6 md:p-8">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Progress</h3>
-            <span className="text-sm font-bold text-white">{milestoneProgress}%</span>
-          </div>
-          <div className="h-2.5 rounded-full bg-white/5 overflow-hidden">
-            <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-gold to-green-400"
-              initial={{ width: 0 }}
-              whileInView={{ width: `${milestoneProgress}%` }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            />
-          </div>
-        </div>
-      )}
-
-      <div className="glass rounded-2xl p-6 md:p-8">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-6">Milestones</h3>
-        <div className="relative pl-8 space-y-0">
-          {milestones.length === 0 ? (
-            <p className="text-sm text-muted">No milestones defined yet.</p>
-          ) : (
-            milestones.map((milestone, idx) => {
-              const isAutomatic = milestone.is_automatic;
-              return (
-                <div key={milestone.id} className="relative pb-8 last:pb-0">
-                  {idx < milestones.length - 1 && (
-                    <div className={`absolute left-[11px] top-4 bottom-0 w-0.5 ${getConnectorColor(milestones, idx)}`} />
-                  )}
-                  <div className={`absolute left-0 top-1 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center ${getMilestoneStatusStyle(milestone.status)}`}>
-                    {getMilestoneStatusIcon(milestone.status)}
-                  </div>
-                  <div className="ml-4">
-                    <div className="flex items-center gap-2">
-                      <p className={`text-sm font-medium ${milestone.status === "completed" ? "text-white" : milestone.status === "in_progress" ? "text-gold" : "text-muted/50"}`}>
-                        {milestone.title}
-                      </p>
-                      {isAutomatic && (
-                        <span className="text-[10px] text-muted bg-white/5 px-1.5 py-0.5 rounded">auto</span>
-                      )}
-                    </div>
-                    {milestone.description && (
-                      <p className="text-xs text-muted/60 mt-0.5">{milestone.description}</p>
-                    )}
-                    <div className="flex items-center gap-3 mt-1">
-                      {milestone.due_date && (
-                        <span className="text-xs text-muted">Due: {formatDate(milestone.due_date)}</span>
-                      )}
-                      {milestone.completed_at && (
-                        <span className="text-xs text-green-400">Completed: {formatDate(milestone.completed_at)}</span>
-                      )}
-                      <span className="text-xs capitalize text-muted/40">{milestone.status.replace(/_/g, " ")}</span>
-                    </div>
-                    {milestone.completion_notes && (
-                      <p className="text-xs text-white/40 mt-1 italic">&ldquo;{milestone.completion_notes}&rdquo;</p>
-                    )}
-                    {milestone.review_status && (
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                          milestone.review_status === "approved" ? "bg-green-500/10 text-green-400" :
-                          milestone.review_status === "changes_requested" ? "bg-red-500/10 text-red-400" :
-                          "bg-gold/10 text-gold"
-                        }`}>
-                          Review: {milestone.review_status.replace(/_/g, " ")}
-                        </span>
-                      </div>
-                    )}
-                    {milestone.review_feedback && (
-                      <p className="text-xs text-gold/70 mt-1 italic">Feedback: &ldquo;{milestone.review_feedback}&rdquo;</p>
-                    )}
-                    {milestone.deliverables && milestone.deliverables.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mt-2">
-                        {milestone.deliverables.map((d, i) => (
-                          <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-gold/5 text-gold border border-gold/10">
-                            {d}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })
-          )}
-        </div>
-      </div>
+      {/* Dynamic Timeline */}
+      <DynamicTimeline milestones={milestones} activityEvents={timelineEvents || []} />
     </div>
   );
 }
@@ -380,37 +437,36 @@ function TeamSection({ w, milestones, completedMilestones, totalMilestones, mile
   const pm = w.projectManager;
   return (
     <div className="space-y-6">
-      {pm && (
-        <div className="glass rounded-2xl p-6 md:p-8">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Project Manager</h3>
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-gold/10 flex items-center justify-center text-gold font-bold text-lg shrink-0 overflow-hidden">
-              {pm.profile?.avatar_url ? (
-                <img src={pm.profile.avatar_url} alt={pm.profile.full_name || "PM"} className="w-full h-full object-cover" />
-              ) : (
-                (pm.profile?.full_name || "PM").charAt(0).toUpperCase()
-              )}
-            </div>
-            <div>
-              <p className="text-white font-semibold">{pm.profile?.full_name || "Project Manager"}</p>
-              <p className="text-xs text-muted">Your dedicated project manager</p>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="glass rounded-2xl p-6 md:p-8">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Team</h3>
-        {w.messages.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="text-4xl mb-4" aria-hidden="true">&#128101;</div>
-            <h3 className="text-lg font-bold text-white mb-2">Team Being Assembled</h3>
-            <p className="text-muted text-sm">
-              We&apos;re putting together the best team for your project. You&apos;ll be notified once they&apos;re assigned.
-            </p>
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Assigned Team</h3>
+        {pm ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5">
+              <div className="w-14 h-14 rounded-full bg-gold/10 flex items-center justify-center text-gold font-bold text-lg shrink-0 overflow-hidden">
+                {pm.profile?.avatar_url ? (
+                  <img src={pm.profile.avatar_url} alt={pm.profile.full_name || "PM"} className="w-full h-full object-cover" />
+                ) : (
+                  (pm.profile?.full_name || "PM").charAt(0).toUpperCase()
+                )}
+              </div>
+              <div>
+                <p className="text-white font-semibold">{pm.profile?.full_name || "Project Manager"}</p>
+                <p className="text-xs text-muted">Project Manager</p>
+                <p className="text-xs text-muted/60 mt-0.5">Your dedicated point of contact for this project</p>
+              </div>
+            </div>
+            <div className="text-center py-4 bg-white/5 rounded-xl">
+              <p className="text-sm text-muted">Additional team members will be visible here once assigned.</p>
+            </div>
           </div>
         ) : (
-          <p className="text-sm text-muted">Team members will appear here.</p>
+          <div className="text-center py-10">
+            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-3xl mx-auto mb-4" aria-hidden="true">👥</div>
+            <h3 className="text-lg font-bold text-white mb-2">Team Being Assembled</h3>
+            <p className="text-muted text-sm max-w-md mx-auto">
+              We are putting together the best team for your project. You will be notified once your project manager and team members are assigned.
+            </p>
+          </div>
         )}
       </div>
     </div>
@@ -481,8 +537,25 @@ function FilesSection({ w, milestones, completedMilestones, totalMilestones, mil
     } catch {}
   };
 
+  const canDownload = w.is_download_allowed;
+
   return (
     <div className="glass rounded-2xl p-6 md:p-8">
+      {!canDownload && w.is_fully_paid && (
+        <div className="mb-6 p-4 rounded-xl bg-gold/5 border border-gold/10">
+          <p className="text-xs text-gold">
+            Your project has been fully paid and is awaiting completion. Downloads will be available once the project is marked as completed.
+          </p>
+        </div>
+      )}
+      {!canDownload && !w.is_fully_paid && (
+        <div className="mb-6 p-4 rounded-xl bg-gold/5 border border-gold/10">
+          <p className="text-xs text-gold">
+            Project downloads are unavailable. Your project must be fully paid and marked as completed before downloads are enabled.
+          </p>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Project Files</h3>
         <div className="flex items-center gap-3">
@@ -523,7 +596,17 @@ function FilesSection({ w, milestones, completedMilestones, totalMilestones, mil
       </div>
 
       {loadingFiles ? (
-        <p className="text-sm text-muted">Loading files...</p>
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse flex items-center gap-3 p-3 rounded-xl bg-white/5">
+              <div className="w-8 h-8 rounded-lg bg-white/10 shrink-0" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 bg-white/10 rounded w-3/4" />
+                <div className="h-2.5 bg-white/10 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : files.length === 0 ? (
         <div className="text-center py-8">
           <div className="text-4xl mb-3 opacity-30">📁</div>
@@ -543,7 +626,9 @@ function FilesSection({ w, milestones, completedMilestones, totalMilestones, mil
                 </div>
               </div>
               <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => handleDownload(file)} className="text-xs px-2 py-1 rounded bg-white/5 text-muted hover:text-white">Download</button>
+                {canDownload && (
+                  <button onClick={() => handleDownload(file)} className="text-xs px-2 py-1 rounded bg-white/5 text-muted hover:text-white">Download</button>
+                )}
                 {file.category !== "delivery" && (
                   <button onClick={() => handleDelete(file.id)} className="text-xs px-2 py-1 rounded bg-red-500/10 text-red-400 hover:bg-red-500/20">Delete</button>
                 )}
@@ -658,31 +743,83 @@ function MessagesSection({ w, milestones, completedMilestones, totalMilestones, 
 }
 
 function PaymentsSection({ w, milestones, completedMilestones, totalMilestones, milestoneProgress, totalPaid, balance, projectStatusIdx }: SectionProps) {
+  const invoice = w.invoices?.[0];
+  const pendingPayments = w.is_partially_paid;
+
   return (
     <div className="space-y-6">
       {/* Summary */}
       <div className="glass rounded-2xl p-6 md:p-8">
         <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Payment Summary</h3>
-        <div className="grid sm:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-3 gap-4 mb-6">
           <div className="text-center p-4 rounded-xl bg-white/5">
             <div className="text-xs text-muted mb-1">Total</div>
             <div className="text-xl font-bold text-white">{formatCurrency(w.total_ngn)}</div>
           </div>
           <div className="text-center p-4 rounded-xl bg-white/5">
             <div className="text-xs text-muted mb-1">Paid</div>
-            <div className="text-xl font-bold text-green-400">{formatCurrency(totalPaid)}</div>
+            <div className="text-xl font-bold text-green-400">{formatCurrency(w.amount_paid_ngn || totalPaid)}</div>
           </div>
           <div className="text-center p-4 rounded-xl bg-white/5">
             <div className="text-xs text-muted mb-1">Outstanding</div>
-            <div className="text-xl font-bold text-gold">{formatCurrency(balance)}</div>
+            <div className="text-xl font-bold text-gold">{formatCurrency(w.balance_ngn || balance)}</div>
           </div>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div className="p-3 rounded-lg bg-white/5">
+            <span className="text-muted">Payment Status</span>
+            <p className="text-white font-semibold mt-0.5 capitalize">
+              {w.payment_status === "partially_paid" ? "Partially Paid" : w.payment_status === "paid" || w.payment_status === "completed" ? "Fully Paid" : w.payment_status.replace(/_/g, " ")}
+            </p>
+          </div>
+          <div className="p-3 rounded-lg bg-white/5">
+            <span className="text-muted">Payment Type</span>
+            <p className="text-white font-semibold mt-0.5 capitalize">{w.payment_type === "full" ? "Full Payment" : "50% Deposit"}</p>
+          </div>
+          <div className="p-3 rounded-lg bg-white/5">
+            <span className="text-muted">Last Payment</span>
+            <p className="text-white font-semibold mt-0.5">{w.last_payment_date ? formatDate(w.last_payment_date) : "N/A"}</p>
+          </div>
+          {invoice && (
+            <div className="p-3 rounded-lg bg-white/5">
+              <span className="text-muted">Invoice #</span>
+              <p className="text-white font-semibold mt-0.5 font-mono text-[11px]">{invoice.invoice_number}</p>
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Balance Payment CTA */}
+      {pendingPayments && w.balance_ngn > 0 && (
+        <div className="glass rounded-2xl p-6 md:p-8 border border-gold/20">
+          <div className="flex items-start gap-4 flex-col sm:flex-row sm:items-center">
+            <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center shrink-0 text-2xl">💰</div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg font-bold text-white">Upcoming Payment Required</h3>
+              <p className="text-sm text-muted mt-1">
+                Outstanding balance of <span className="text-gold font-bold">{formatCurrency(w.balance_ngn)}</span> needs to be paid to complete your project.
+              </p>
+            </div>
+            <button
+              onClick={() => document.getElementById("section-overview")?.scrollIntoView({ behavior: "smooth" })}
+              className="shrink-0 px-6 py-2.5 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all"
+            >
+              Pay {formatCurrency(w.balance_ngn)} Now
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Receipts */}
-      {w.receipts.length > 0 && (
-        <div className="glass rounded-2xl p-6 md:p-8">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Receipts</h3>
+      <div className="glass rounded-2xl p-6 md:p-8">
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Receipts</h3>
+        {w.receipts.length === 0 ? (
+          <div className="text-center py-6">
+            <div className="text-3xl mb-2 opacity-30">🧾</div>
+            <p className="text-sm text-muted">No receipts yet. Receipts will appear here after payments are processed.</p>
+          </div>
+        ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -729,13 +866,18 @@ function PaymentsSection({ w, milestones, completedMilestones, totalMilestones, 
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Invoices */}
-      {w.invoices.length > 0 && (
-        <div className="glass rounded-2xl p-6 md:p-8">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Invoices</h3>
+      <div className="glass rounded-2xl p-6 md:p-8">
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Invoices</h3>
+        {w.invoices.length === 0 ? (
+          <div className="text-center py-6">
+            <div className="text-3xl mb-2 opacity-30">📄</div>
+            <p className="text-sm text-muted">No invoices generated yet.</p>
+          </div>
+        ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -784,14 +926,17 @@ function PaymentsSection({ w, milestones, completedMilestones, totalMilestones, 
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Payment history */}
       <div className="glass rounded-2xl p-6 md:p-8">
         <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Payment History</h3>
         {w.payments.length === 0 ? (
-          <p className="text-sm text-muted">No payments recorded yet.</p>
+          <div className="text-center py-6">
+            <div className="text-3xl mb-2 opacity-30">💳</div>
+            <p className="text-sm text-muted">No payments recorded yet.</p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -1067,8 +1212,14 @@ function ReviewSection({ w, milestones, completedMilestones, totalMilestones, mi
 function DeliverySection({ w, milestones, completedMilestones, totalMilestones, milestoneProgress, totalPaid, balance, projectStatusIdx }: SectionProps) {
   const [items, setItems] = useState<ServiceFileData[]>([]);
   const [loadingItems, setLoadingItems] = useState(true);
+  const canDownload = w.can_download_delivery || w.is_download_allowed;
+  const totalSize = useMemo(() => items.reduce((sum, i) => sum + (i.size || 0), 0), [items]);
 
   useEffect(() => {
+    if (!canDownload) {
+      setLoadingItems(false);
+      return;
+    }
     (async () => {
       try {
         const res = await api.getProjectDeliveryItems(w.id);
@@ -1077,7 +1228,7 @@ function DeliverySection({ w, milestones, completedMilestones, totalMilestones, 
         setLoadingItems(false);
       }
     })();
-  }, []);
+  }, [w.id, canDownload]);
 
   const handleDownload = async (item: ServiceFileData) => {
     if (!item.has_file) return;
@@ -1095,9 +1246,35 @@ function DeliverySection({ w, milestones, completedMilestones, totalMilestones, 
 
   return (
     <div className="glass rounded-2xl p-6 md:p-8">
-      <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Final Deliverables</h3>
-      {loadingItems ? (
-        <p className="text-sm text-muted">Loading delivery items...</p>
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Final Deliverables</h3>
+        {items.length > 0 && canDownload && (
+          <span className="text-xs text-muted">{items.length} file{items.length !== 1 ? "s" : ""} &middot; {formatFileSize(totalSize)}</span>
+        )}
+      </div>
+
+      {!canDownload && (
+        <div className="p-4 rounded-xl bg-gold/5 border border-gold/10 mb-4">
+          <p className="text-xs text-gold">
+            {w.is_fully_paid
+              ? "Your project has been fully paid and is awaiting completion. Deliverables will be available once the project is completed."
+              : "Project downloads are currently unavailable. Your project must be fully paid and marked as completed before downloads are enabled."}
+          </p>
+        </div>
+      )}
+
+      {!canDownload ? null : loadingItems ? (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse flex items-center gap-4 p-4 rounded-xl bg-white/5">
+              <div className="w-10 h-10 rounded-lg bg-white/10" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 bg-white/10 rounded w-3/4" />
+                <div className="h-2.5 bg-white/10 rounded w-1/2" />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : items.length === 0 ? (
         <div className="text-center py-8">
           <div className="text-4xl mb-3 opacity-30">📦</div>
@@ -1111,9 +1288,17 @@ function DeliverySection({ w, milestones, completedMilestones, totalMilestones, 
                 {item.has_file ? "📦" : "🔗"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white">{item.name}</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="text-sm font-medium text-white">{item.name}</p>
+                  {item.type && (
+                    <span className="text-[10px] text-muted bg-white/5 px-1.5 py-0.5 rounded">{item.type}</span>
+                  )}
+                </div>
                 {item.description && <p className="text-xs text-muted/70 mt-0.5">{item.description}</p>}
-                <p className="text-xs text-muted mt-1">{formatDate(item.created_at)}</p>
+                <div className="flex items-center gap-3 text-xs text-muted mt-1">
+                  <span>{formatDate(item.created_at)}</span>
+                  {item.size > 0 && <span>{formatFileSize(item.size)}</span>}
+                </div>
               </div>
               {item.has_file && (
                 <button
@@ -1132,47 +1317,7 @@ function DeliverySection({ w, milestones, completedMilestones, totalMilestones, 
 }
 
 function ActivitySection({ w, milestones, completedMilestones, totalMilestones, milestoneProgress, totalPaid, balance, projectStatusIdx }: SectionProps) {
-  return (
-    <div className="glass rounded-2xl p-6 md:p-8">
-      <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Activity Log</h3>
-      {w.activityLogs.length === 0 ? (
-        <p className="text-sm text-muted">No activity recorded yet.</p>
-      ) : (
-        <div className="space-y-0">
-          {w.activityLogs.map((entry: WorkspaceActivityLogData, idx: number) => (
-            <div key={entry.id} className="flex gap-4 pb-6 last:pb-0 relative">
-              {idx < w.activityLogs.length - 1 && (
-                <div className="absolute left-[7px] top-4 bottom-0 w-0.5 bg-white/10" />
-              )}
-              <div className="w-[14px] h-[14px] rounded-full border-2 border-gold/30 bg-gold/10 shrink-0 mt-1" />
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm text-white capitalize">{entry.action.replace(/_/g, " ")}</p>
-                  {entry.user?.profile?.full_name && (
-                    <span className="text-xs text-muted">by {entry.user.profile.full_name}</span>
-                  )}
-                </div>
-                {entry.description && (
-                  <p className="text-xs text-muted/70 mt-0.5">{entry.description}</p>
-                )}
-                <p className="text-xs text-muted mt-0.5">{formatDate(entry.created_at)}</p>
-                {entry.metadata && Object.keys(entry.metadata).length > 0 && (
-                  <div className="text-[10px] text-muted/40 mt-1 bg-white/5 p-2 rounded-lg max-w-md space-y-0.5">
-                    {Object.entries(entry.metadata).map(([key, val]) => (
-                      <div key={key} className="flex gap-2">
-                        <span className="capitalize shrink-0">{key.replace(/_/g, " ")}:</span>
-                        <span className="truncate">{String(val)}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  return <ActivityFeed logs={w.activityLogs} />;
 }
 
 export default function ProjectWorkspacePage() {
@@ -1182,23 +1327,45 @@ export default function ProjectWorkspacePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("Overview");
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEventData[]>([]);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  useEffect(() => {
+  const loadWorkspace = useCallback(async () => {
     if (!id) return;
     setLoading(true);
     setError(null);
-    api
-      .getServiceOrderWorkspace(id)
-      .then((res) => {
-        setWorkspace(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err?.message || "Failed to load project workspace");
-        setLoading(false);
-      });
+    try {
+      const res = await api.getServiceOrderWorkspace(id);
+      setWorkspace(res.data);
+      return res.data;
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to load project workspace";
+      setError(msg);
+      return null;
+    } finally {
+      setLoading(false);
+    }
   }, [id]);
+
+  const loadTimeline = useCallback(async (orderId: string) => {
+    try {
+      const res = await api.getServiceOrderTimeline(orderId);
+      setTimelineEvents(res.data);
+    } catch {
+      // non-critical
+    }
+  }, []);
+
+  const refreshWorkspace = useCallback(async () => {
+    const w = await loadWorkspace();
+    if (w) loadTimeline(w.id);
+  }, [loadWorkspace, loadTimeline]);
+
+  useEffect(() => {
+    loadWorkspace().then((w) => {
+      if (w) loadTimeline(w.id);
+    });
+  }, [loadWorkspace, loadTimeline]);
 
   const scrollTo = useCallback((tab: (typeof TABS)[number]) => {
     setActiveTab(tab);
@@ -1337,6 +1504,7 @@ export default function ProjectWorkspacePage() {
                 <button
                   key={tab}
                   onClick={() => scrollTo(tab)}
+                  aria-current={activeTab === tab ? "true" : undefined}
                   className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                     activeTab === tab
                       ? "bg-gold/10 text-gold border-l-2 border-gold"
@@ -1365,8 +1533,8 @@ export default function ProjectWorkspacePage() {
                   transition={{ duration: 0.5 }}
                 >
                   <h2 className="text-xl font-bold text-white mb-6 hidden md:block">{tab}</h2>
-                  {tab === "Overview" && <OverviewSection w={w} milestones={milestones} completedMilestones={completedMilestones} totalMilestones={totalMilestones} milestoneProgress={milestoneProgress} totalPaid={totalPaid} balance={balance} projectStatusIdx={projectStatusIdx} />}
-                  {tab === "Timeline" && <TimelineSection w={w} milestones={milestones} completedMilestones={completedMilestones} totalMilestones={totalMilestones} milestoneProgress={milestoneProgress} totalPaid={totalPaid} balance={balance} projectStatusIdx={projectStatusIdx} />}
+                  {tab === "Overview" && <OverviewSection w={w} milestones={milestones} completedMilestones={completedMilestones} totalMilestones={totalMilestones} milestoneProgress={milestoneProgress} totalPaid={totalPaid} balance={balance} projectStatusIdx={projectStatusIdx} timelineEvents={timelineEvents} onRefresh={refreshWorkspace} />}
+                  {tab === "Timeline" && <TimelineSection w={w} milestones={milestones} completedMilestones={completedMilestones} totalMilestones={totalMilestones} milestoneProgress={milestoneProgress} totalPaid={totalPaid} balance={balance} projectStatusIdx={projectStatusIdx} timelineEvents={timelineEvents} />}
                   {tab === "Team" && <TeamSection w={w} milestones={milestones} completedMilestones={completedMilestones} totalMilestones={totalMilestones} milestoneProgress={milestoneProgress} totalPaid={totalPaid} balance={balance} projectStatusIdx={projectStatusIdx} />}
                   {tab === "Files" && <FilesSection w={w} milestones={milestones} completedMilestones={completedMilestones} totalMilestones={totalMilestones} milestoneProgress={milestoneProgress} totalPaid={totalPaid} balance={balance} projectStatusIdx={projectStatusIdx} />}
                   {tab === "Messages" && <MessagesSection w={w} milestones={milestones} completedMilestones={completedMilestones} totalMilestones={totalMilestones} milestoneProgress={milestoneProgress} totalPaid={totalPaid} balance={balance} projectStatusIdx={projectStatusIdx} />}

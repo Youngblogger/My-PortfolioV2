@@ -86,7 +86,8 @@ class ReceiptController extends Controller
 
             return response($pdfContent, 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="receipt-' . $receipt->receipt_number . '.pdf"',
+                'Content-Disposition' => 'attachment; filename="CODEMAFIA-Receipt-' . $receipt->receipt_number . '.pdf"',
+                'Cache-Control' => 'no-cache',
             ]);
         } catch (\Exception $e) {
             return response()->json([

@@ -55,10 +55,10 @@ export default function ConversationPage() {
   const [error, setError] = useState("");
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastMessageTimeRef = useRef<string | null>(null);
+  const sentIdsRef = useRef<Set<string>>(new Set());
 
   const scrollToBottom = (smooth = true) => {
     messagesEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
@@ -70,16 +70,6 @@ export default function ConversationPage() {
     const threshold = 150;
     return container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
   };
-
-  useEffect(() => {
-    async function getCurrentUser() {
-      try {
-        const res = await api.getUser();
-        if (res.user?.id) setCurrentUserId(res.user.id);
-      } catch {}
-    }
-    getCurrentUser();
-  }, []);
 
   const loadMessages = useCallback(async () => {
     try {
@@ -167,6 +157,7 @@ export default function ConversationPage() {
       const newMsg = res.data;
       if (newMsg) {
         setMessages((prev) => [...prev, newMsg]);
+        if (newMsg.id) sentIdsRef.current.add(newMsg.id);
         lastMessageTimeRef.current = newMsg.created_at;
       }
       setText("");
@@ -238,8 +229,12 @@ export default function ConversationPage() {
             </svg>
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-white">Chat</h1>
+            <h1 className="text-xl font-bold text-white">Chat Developer</h1>
             <p className="text-xs text-muted">{messages.length} message{messages.length !== 1 ? "s" : ""}</p>
+            <p className="text-[11px] text-gold/60 mt-0.5">
+              Msg users: {[...new Set(messages.slice(0, 5).map(m => m.user?.id).filter(Boolean))].join(", ") || "none"}
+              | admin: {[...new Set(messages.slice(0, 5).map(m => m.user?.is_admin))].join(", ") || "?"}
+            </p>
           </div>
         </div>
 
@@ -255,24 +250,24 @@ export default function ConversationPage() {
             )}
 
             {messages.map((msg) => {
-              const isMe = msg.user?.id === currentUserId;
+              const isMe = sentIdsRef.current.has(msg.id);
               const isRead = msg.is_read === true && msg.read_at !== null;
-              const displayName = getAdminName(msg);
+              const displayName = isMe ? "You" : getAdminName(msg);
               return (
                 <div
                   key={msg.id}
                   className={`flex items-start gap-3 ${isMe ? "flex-row-reverse" : ""}`}
                 >
                   <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold ${
-                    msg.user?.is_admin
+                    isMe
                       ? "bg-gold/20 text-gold"
                       : "bg-blue-500/20 text-blue-400"
                   }`}>
                     {displayName.charAt(0).toUpperCase()}
                   </div>
-                  <div className={`max-w-[75%] ${isMe ? "items-end" : ""}`}>
+                  <div className={`max-w-[75%] flex flex-col ${isMe ? "items-end" : ""}`}>
                     <div className={`rounded-2xl px-4 py-2.5 ${
-                      msg.user?.is_admin
+                      isMe
                         ? "bg-gold/10 border border-gold/10"
                         : "bg-blue-500/10 border border-blue-500/10"
                     }`}>

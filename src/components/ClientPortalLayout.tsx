@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { NotificationBell } from "@/components/ui/NotificationBell";
+import { api } from "@/lib/api";
 
 const sidebarLinks = [
   { label: "Dashboard", href: "/dashboard", icon: "layout-dashboard" },
@@ -91,11 +92,7 @@ export default function ClientPortalLayout({
 
     async function handleLogout() {
     try {
-      await fetch("/api/v1/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+      await api.logout();
     } catch {}
     setAuthenticated(false);
     setUser(null);

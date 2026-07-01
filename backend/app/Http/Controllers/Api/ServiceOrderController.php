@@ -14,11 +14,13 @@ use App\Models\ServicePayment;
 use App\Models\ServiceReceipt;
 use App\Models\Milestone;
 use App\Models\TeamAssignment;
+use App\Services\InvoiceService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Services\Payments\PaymentService;
 use App\Services\ServiceOrderService;
+use App\Services\PaymentWorkflowService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -27,6 +29,8 @@ class ServiceOrderController extends Controller
     public function __construct(
         private PaymentService $paymentService,
         private ServiceOrderService $serviceOrderService,
+        private PaymentWorkflowService $paymentWorkflowService,
+        private InvoiceService $invoiceService,
     ) {}
 
     public function myOrders(Request $request)
@@ -138,9 +142,8 @@ class ServiceOrderController extends Controller
         }
 
         $metadata = $order->metadata ?? [];
-        $paymentType = $metadata['payment_type'] ?? 'full';
-        $amountPaidNgn = $paymentType === 'deposit' ? $order->total_ngn / 2 : $order->total_ngn;
-        $balanceNgn = $order->total_ngn - $amountPaidNgn;
+        $amountPaidNgn = $order->getTotalPaidNgn();
+        $balanceNgn = $order->getBalanceNgn();
 
         $projectManager = $order->teamAssignments
             ?->where('role', 'project_manager')
@@ -160,6 +163,12 @@ class ServiceOrderController extends Controller
                 'total_ngn' => (float) $order->total_ngn,
                 'amount_paid_ngn' => $amountPaidNgn,
                 'balance_ngn' => $balanceNgn,
+                'payment_type' => $order->getPaymentTypeLabel(),
+                'last_payment_date' => $order->getLastPaymentDate()?->toIso8601String(),
+                'is_fully_paid' => $order->isFullyPaid(),
+                'is_partially_paid' => $order->isPartiallyPaid(),
+                'is_download_allowed' => $order->isDownloadAllowed(),
+                'can_download_delivery' => $order->canDownloadDelivery(),
                 'service' => ['title' => $order->service?->title, 'slug' => $order->service?->slug],
                 'projectType' => ['title' => $order->projectType?->title, 'slug' => $order->projectType?->slug],
                 'package' => ['name' => $order->package?->name, 'slug' => $order->package?->slug],
@@ -172,6 +181,7 @@ class ServiceOrderController extends Controller
                 'project_created_at' => $order->project_created_at?->toIso8601String(),
                 'kickoff_at' => $order->kickoff_at?->toIso8601String(),
                 'completed_at' => $order->completed_at?->toIso8601String(),
+                'delivered_at' => $order->delivered_at?->toIso8601String(),
                 'created_at' => $order->created_at->toIso8601String(),
                 'milestones' => $order->milestones->map(fn ($m) => [
                     'id' => $m->id,
@@ -333,6 +343,126 @@ class ServiceOrderController extends Controller
         ]);
     }
 
+    public function initializeBalancePayment(Request $request, string $id)
+    {
+        $order = ServiceOrder::with('user')->findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        if ($order->isFullyPaid()) {
+            return response()->json(['success' => false, 'error' => 'This project is already fully paid.'], 400);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'gateway' => ['required', 'string', 'in:paystack,flutterwave'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'error' => $validator->errors()->first()], 422);
+        }
+
+        try {
+            $result = $this->paymentWorkflowService->initializeBalancePayment($order, $request->gateway);
+
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+            ]);
+        } catch (\RuntimeException $e) {
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function timeline(Request $request, string $id)
+    {
+        $order = ServiceOrder::findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        $timeline = [];
+
+        $logs = ServiceActivityLog::where('service_order_id', $id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        foreach ($logs as $log) {
+            $event = [
+                'action' => $log->action,
+                'description' => $log->description,
+                'timestamp' => $log->created_at->toIso8601String(),
+                'user' => $log->user?->profile ? [
+                    'full_name' => $log->user->profile->full_name,
+                    'avatar_url' => $log->user->profile->avatar_url,
+                ] : null,
+            ];
+
+            $icon = match ($log->action) {
+                'payment_verified', 'balance_payment_verified' => 'payment',
+                'project_created', 'project_kickoff' => 'rocket',
+                'invoice_generated', 'invoice_updated' => 'receipt',
+                'requirements_reviewed' => 'checklist',
+                'status_changed' => 'refresh',
+                'milestone_completed' => 'check_circle',
+                'file_downloaded', 'delivery_available' => 'download',
+                'project_completed' => 'celebration',
+                'project_delivered' => 'delivery',
+                'payment_status_changed' => 'account_balance',
+                default => 'info',
+            };
+
+            $timeline[] = [
+                'icon' => $icon,
+                'title' => $log->action,
+                'description' => $log->description,
+                'timestamp' => $log->created_at->toIso8601String(),
+                'user' => $log->user?->profile ? [
+                    'full_name' => $log->user->profile->full_name,
+                ] : null,
+            ];
+        }
+
+        if ($order->project_created_at) {
+            $timeline[] = [
+                'icon' => 'rocket',
+                'title' => 'Project Started',
+                'description' => 'Project was initiated.',
+                'timestamp' => $order->project_created_at->toIso8601String(),
+                'user' => null,
+            ];
+        }
+
+        if ($order->completed_at) {
+            $timeline[] = [
+                'icon' => 'celebration',
+                'title' => 'Project Completed',
+                'description' => 'Project has been marked as completed.',
+                'timestamp' => $order->completed_at->toIso8601String(),
+                'user' => null,
+            ];
+        }
+
+        if ($order->delivered_at) {
+            $timeline[] = [
+                'icon' => 'delivery',
+                'title' => 'Files Delivered',
+                'description' => 'Final deliverables have been made available for download.',
+                'timestamp' => $order->delivered_at->toIso8601String(),
+                'user' => null,
+            ];
+        }
+
+        $timeline = collect($timeline)->sortBy('timestamp')->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => $timeline,
+        ]);
+    }
+
     public function downloadInvoice(Request $request, string $id, string $invoiceId)
     {
         $order = ServiceOrder::findOrFail($id);
@@ -345,9 +475,43 @@ class ServiceOrderController extends Controller
             ->where('id', $invoiceId)
             ->firstOrFail();
 
-        return response()->json([
-            'success' => true,
-            'data' => $invoice,
+        try {
+            $pdfContent = $this->invoiceService->generateServiceInvoicePdf($invoice, $order);
+
+            return response($pdfContent, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="CODEMAFIA-Invoice-' . $invoice->invoice_number . '.pdf"',
+                'Cache-Control' => 'no-cache',
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Invoice PDF generation failed', [
+                'invoice_id' => $invoiceId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to generate invoice PDF.',
+            ], 500);
+        }
+    }
+
+    public function previewInvoice(Request $request, string $id, string $invoiceId)
+    {
+        $order = ServiceOrder::with(['user.profile', 'service', 'projectType', 'package', 'addOns', 'payments'])
+            ->findOrFail($id);
+
+        if ($order->user_id !== $request->user()->id) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        $invoice = ServiceInvoice::where('service_order_id', $id)
+            ->where('id', $invoiceId)
+            ->firstOrFail();
+
+        return view('pdf.service-invoice', [
+            'invoice' => $invoice,
+            'order' => $order,
         ]);
     }
 
@@ -374,7 +538,7 @@ class ServiceOrderController extends Controller
 
             return response($pdf->output(), 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="receipt-' . $receipt->receipt_number . '.pdf"',
+                'Content-Disposition' => 'attachment; filename="CODEMAFIA-Receipt-' . $receipt->receipt_number . '.pdf"',
                 'Cache-Control' => 'no-cache',
             ]);
         } catch (\Exception $e) {
@@ -607,7 +771,9 @@ class ServiceOrderController extends Controller
                 return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
             }
 
-            if ($order->payment_status === 'paid' || $order->payment_status === 'completed') {
+            $isBalancePayment = str_starts_with($request->reference, 'BAL-');
+
+            if ($order->isFullyPaid()) {
                 Log::info('Payment verification - duplicate request', ['order_id' => $request->order_id]);
                 $existingInvoice = $order->invoices()->latest()->first();
                 $existingReceipt = $order->receipts()->latest()->first();
@@ -631,7 +797,8 @@ class ServiceOrderController extends Controller
                 ]);
             }
 
-            $verification = $this->paymentService->verifyPayment($order->payment_gateway, $request->reference);
+            $gateway = $isBalancePayment ? ($request->gateway ?? $order->payment_gateway) : $order->payment_gateway;
+            $verification = $this->paymentService->verifyPayment($gateway, $request->reference);
 
             Log::info('Payment verification result', [
                 'order_id' => $request->order_id,
@@ -640,7 +807,11 @@ class ServiceOrderController extends Controller
             ]);
 
             if ($verification['status'] === 'success' || $verification['status'] === 'completed') {
-                $this->serviceOrderService->processVerifiedPayment($order, $request->reference, $verification);
+                if ($isBalancePayment) {
+                    $this->paymentWorkflowService->processBalancePayment($order, $request->reference, $verification);
+                } else {
+                    $this->serviceOrderService->processVerifiedPayment($order, $request->reference, $verification);
+                }
 
                 $order->refresh();
                 $invoice = $order->invoices()->latest()->first();
@@ -648,7 +819,6 @@ class ServiceOrderController extends Controller
                 $metadata = $order->metadata ?? [];
                 $paymentType = $metadata['payment_type'] ?? 'full';
                 $projectName = $metadata['project_name'] ?? $order->projectType->title;
-                $balanceNgn = $order->total_ngn - ($paymentType === 'deposit' ? $order->total_ngn / 2 : $order->total_ngn);
 
                 return response()->json([
                     'success' => true,
@@ -657,15 +827,16 @@ class ServiceOrderController extends Controller
                         'order_number' => $order->order_number,
                         'project_number' => $order->project_number,
                         'project_status' => $order->project_status,
+                        'payment_status' => $order->payment_status,
                         'invoice_number' => $invoice?->invoice_number,
                         'receipt_number' => $receipt?->receipt_number,
                         'status' => $order->status,
-                        'payment_status' => $order->payment_status,
-                        'amount_paid_ngn' => (float) ($invoice?->amount_paid_ngn ?? $order->total_ngn),
-                        'balance_ngn' => (float) ($balanceNgn),
+                        'amount_paid_ngn' => (float) $order->getTotalPaidNgn(),
+                        'balance_ngn' => (float) $order->getBalanceNgn(),
                         'total_ngn' => (float) $order->total_ngn,
                         'payment_type' => $paymentType,
                         'project_name' => $projectName,
+                        'is_fully_paid' => $order->isFullyPaid(),
                         'created_at' => $order->created_at->toIso8601String(),
                     ],
                 ]);
@@ -719,22 +890,30 @@ class ServiceOrderController extends Controller
                 'order_status' => $order->payment_status,
             ]);
 
-            if ($order->payment_status === 'paid' || $order->payment_status === 'completed') {
+            $isBalancePayment = str_starts_with($reference, 'BAL-');
+
+            if ($order->isFullyPaid()) {
                 Log::info('Payment callback - already paid', ['order_id' => $id]);
                 $frontendUrl = config('app.frontend_url') . '/hire/order/' . $id . '/success?reference=' . $reference;
                 return redirect()->away($frontendUrl);
             }
 
-            $verification = $this->paymentService->verifyPayment($order->payment_gateway, $reference);
+            $gateway = $isBalancePayment ? ($order->payment_gateway ?? 'paystack') : $order->payment_gateway;
+            $verification = $this->paymentService->verifyPayment($gateway, $reference);
 
             Log::info('Payment callback verification result', [
                 'order_id' => $id,
                 'reference' => $reference,
                 'status' => $verification['status'],
+                'is_balance' => $isBalancePayment,
             ]);
 
             if ($verification['status'] === 'completed') {
-                $this->serviceOrderService->processVerifiedPayment($order, $reference, $verification);
+                if ($isBalancePayment) {
+                    $this->paymentWorkflowService->processBalancePayment($order, $reference, $verification);
+                } else {
+                    $this->serviceOrderService->processVerifiedPayment($order, $reference, $verification);
+                }
 
                 $frontendUrl = config('app.frontend_url') . '/hire/order/' . $id . '/success?reference=' . $reference;
                 Log::info('Payment callback redirecting to success', [

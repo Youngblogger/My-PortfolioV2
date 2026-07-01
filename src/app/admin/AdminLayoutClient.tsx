@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
 
 interface SidebarGroup {
   label: string;
@@ -192,11 +193,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
 
   const handleLogout = useCallback(async () => {
     try {
-      await fetch("/api/v1/admin/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: { Accept: "application/json" },
-      });
+      await api.adminLogout();
     } catch {
       // fire-and-forget
     }

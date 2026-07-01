@@ -101,6 +101,15 @@ class ProjectFileController extends Controller
             return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
         }
 
+        if (!$request->user()?->profile?->isAdmin()) {
+            if (!$order->isDownloadAllowed()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Project downloads are unavailable. Your project must be fully paid and marked as completed before downloads are enabled.',
+                ], 403);
+            }
+        }
+
         try {
             $filePath = $this->fileService->getFilePath($file);
 

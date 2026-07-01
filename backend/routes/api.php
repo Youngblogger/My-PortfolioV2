@@ -93,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/dashboard', [UserController::class, 'dashboard'])->middleware('throttle:api');
 
     Route::get('/invoice', [InvoiceController::class, 'show'])->middleware('throttle:api');
+    Route::get('/invoice/preview', [InvoiceController::class, 'preview'])->middleware('throttle:api');
     Route::get('/invoice/pdf', [InvoiceController::class, 'pdf'])->middleware('throttle:api');
 
     Route::get('/receipt', [ReceiptController::class, 'show'])->middleware('throttle:api');
@@ -109,8 +110,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/service-orders/{id}/workspace', [ServiceOrderController::class, 'workspace'])->middleware('throttle:api');
     Route::get('/service-orders/{id}/milestones', [ServiceOrderController::class, 'milestones'])->middleware('throttle:api');
     Route::get('/service-orders/{id}/activity', [ServiceOrderController::class, 'activityLog'])->middleware('throttle:api');
+    Route::get('/service-orders/{id}/timeline', [ServiceOrderController::class, 'timeline'])->middleware('throttle:api');
     Route::get('/service-orders/{id}/invoice/{invoiceId}', [ServiceOrderController::class, 'downloadInvoice'])->middleware('throttle:api');
+    Route::get('/service-orders/{id}/invoice/{invoiceId}/preview', [ServiceOrderController::class, 'previewInvoice'])->middleware('throttle:api');
     Route::get('/service-orders/{id}/receipt/{receiptId}', [ServiceOrderController::class, 'downloadReceipt'])->middleware('throttle:api');
+
+    // Balance Payment
+    Route::post('/service-orders/{id}/pay-balance', [ServiceOrderController::class, 'initializeBalancePayment'])->middleware('throttle:payments');
 
     // Requirements
     Route::get('/health', [\App\Http\Controllers\Api\HealthController::class, 'index']);
@@ -216,6 +222,10 @@ Route::get('/services/{serviceSlug}/requirements/questions', [RequirementControl
         Route::put('/projects/{id}', [AdminController::class, 'projectUpdate']);
         Route::patch('/projects/{id}/status', [AdminController::class, 'projectChangeStatus']);
         Route::get('/projects/{id}/activity', [AdminController::class, 'projectActivity']);
+
+        // ─── Project Completion & Delivery ─────────────────────
+        Route::post('/projects/{id}/complete', [AdminController::class, 'markComplete']);
+        Route::post('/projects/{id}/deliver', [AdminController::class, 'deliverProject']);
 
         // Milestone actions
         Route::post('/milestones/{milestoneId}/{action}', [AdminController::class, 'milestoneAction']);

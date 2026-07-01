@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { PageLoader } from "@/components/ui/LoadingSpinner";
+import { Copyright } from "@/components/Copyright";
 import { api } from "@/lib/api";
 
 function LoginForm() {
@@ -220,7 +221,7 @@ function LoginForm() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="max-w-7xl mx-auto px-6 h-10 flex items-center justify-between"
         >
-          <p className="text-xs text-muted">&copy; CODEMAFIA</p>
+          <p className="text-xs text-muted"><Copyright /></p>
           <div className="flex items-center gap-4">
             <Link href="/privacy" className="text-xs text-muted hover:text-white/70 transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="text-xs text-muted hover:text-white/70 transition-colors">Terms of Service</Link>

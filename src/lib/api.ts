@@ -64,9 +64,10 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
 
     if (!response.ok) {
       if (response.status === 401 && typeof window !== "undefined") {
-        if (!window.location.pathname.startsWith("/auth/login")) {
-          window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+        if (window.location.pathname.startsWith("/auth/login")) {
+          throw new ApiError("Invalid email or password.", 401);
         }
+        window.location.href = `/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`;
         throw new ApiError("Session expired. Please log in again.", 401);
       }
       throw new ApiError(data.error || data.message || "Request failed", response.status, data);
@@ -141,6 +142,10 @@ export const api = {
 
   logout: async () => {
     await apiRequest<ApiResponse>("/auth/logout", { method: "POST" });
+  },
+
+  adminLogout: async () => {
+    await apiRequest<ApiResponse>("/admin/logout", { method: "POST" });
   },
 
   getUser: () =>
@@ -300,6 +305,15 @@ export const api = {
 
   getServiceOrderActivity: (id: string) =>
     apiRequest<ApiResponse & { data: PaginatedActivityData }>(`/service-orders/${id}/activity`),
+
+  getServiceOrderTimeline: (id: string) =>
+    apiRequest<ApiResponse & { data: TimelineEventData[] }>(`/service-orders/${id}/timeline`),
+
+  initializeBalancePayment: (id: string, gateway: string) =>
+    apiRequest<ApiResponse & { data: BalancePaymentInitData }>(`/service-orders/${id}/pay-balance`, {
+      method: "POST",
+      body: JSON.stringify({ gateway }),
+    }),
 
   downloadServiceInvoice: (id: string, invoiceId: string) =>
     apiRequest<ApiResponse & { data: InvoiceDownloadData }>(`/service-orders/${id}/invoice/${invoiceId}`),
@@ -1470,6 +1484,12 @@ export interface WorkspaceDataResponse {
   total_ngn: number;
   amount_paid_ngn: number;
   balance_ngn: number;
+  payment_type: string;
+  last_payment_date: string | null;
+  is_fully_paid: boolean;
+  is_partially_paid: boolean;
+  is_download_allowed: boolean;
+  can_download_delivery: boolean;
   service: { title: string; slug: string };
   projectType: { title: string; slug: string };
   package: { name: string; slug: string };
@@ -1478,6 +1498,7 @@ export interface WorkspaceDataResponse {
   project_created_at: string | null;
   kickoff_at: string | null;
   completed_at: string | null;
+  delivered_at: string | null;
   created_at: string;
   milestones: WorkspaceMilestoneData[];
   invoices: WorkspaceInvoiceData[];
@@ -1487,6 +1508,14 @@ export interface WorkspaceDataResponse {
   projectManager: WorkspaceProjectManagerData | null;
   messages: ServiceMessageData[];
   files: ServiceFileData[];
+}
+
+export interface TimelineEventData {
+  icon: string;
+  title: string;
+  description: string;
+  timestamp: string;
+  user: { full_name: string | null } | null;
 }
 
 export interface MilestonesResponseData {
@@ -1527,6 +1556,13 @@ export interface ReceiptDownloadData {
     package: string;
     billing_details: Record<string, unknown>;
   };
+}
+
+export interface BalancePaymentInitData {
+  reference: string;
+  authorization_url: string;
+  gateway: string;
+  amount_ngn: number;
 }
 
 // ─── Admin Project Workspace Types ─────────────────────────────────

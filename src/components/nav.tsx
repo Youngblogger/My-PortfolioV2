@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { NotificationBell } from "@/components/ui/NotificationBell";
+import { api } from "@/lib/api";
 
 const navLinks = [
   { label: "Academy", href: "/academy" },
@@ -35,7 +36,7 @@ export default function Nav() {
   const router = useRouter();
   const isHome = pathname === "/";
   const isAdminPage = pathname.startsWith("/admin");
-  const portalPaths = ["/dashboard", "/academy/enrollment", "/academy/dashboard", "/proposals", "/notifications", "/auth", "/hire/checkout"];
+  const portalPaths = ["/dashboard", "/academy/enrollment", "/academy/dashboard", "/proposals", "/notifications", "/messages", "/payments", "/downloads", "/profile", "/settings", "/auth", "/hire/checkout"];
   const isPortalPage = portalPaths.some(p => pathname === p || pathname.startsWith(p + "/"));
 
   useEffect(() => {
@@ -105,11 +106,7 @@ export default function Nav() {
   async function handleLogout() {
     setLoggingOut(true);
     try {
-      await fetch("/api/v1/auth/logout", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
+      await api.logout();
     } catch {}
     setAuthenticated(false);
     setIsAdmin(false);
@@ -135,10 +132,15 @@ export default function Nav() {
         }`}
       >
         <nav className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
-            <Image src="/iconLogo.png" alt="CODEMAFIA" width={32} height={32} className="rounded-lg" unoptimized />
-            <span className="text-lg font-bold">
-              <span className="text-gradient">CODEMAFIA</span>
+          <Link href="/dashboard" className="flex flex-col shrink-0 self-start outline-none">
+            <span className="flex items-center gap-2">
+              <Image src="/iconLogo.png" alt="CODEMAFIA" width={32} height={32} className="rounded-lg" unoptimized />
+              <span className="text-lg font-bold">
+                <span className="text-gradient">CODEMAFIA</span>
+              </span>
+            </span>
+            <span className="text-[11px] md:text-xs text-muted/50 leading-tight mt-0.5 ml-1">
+              Engineering Excellence. Inspiring Innovation.
             </span>
           </Link>
 

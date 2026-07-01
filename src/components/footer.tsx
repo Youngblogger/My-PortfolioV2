@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Copyright } from "@/components/Copyright";
 
 const footerSections = [
   {
@@ -113,7 +114,7 @@ export default function Footer() {
 
         <div className="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted">
-            &copy; {new Date().getFullYear()} CODEMAFIA. All rights reserved.
+            <Copyright />
           </p>
           <div className="flex gap-6 text-xs text-muted">
             <Link href="/privacy" className="hover:text-white transition-colors">

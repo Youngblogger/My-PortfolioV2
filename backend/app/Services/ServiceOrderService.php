@@ -21,7 +21,7 @@ class ServiceOrderService
         try {
             $locked = ServiceOrder::where('id', $order->id)->lockForUpdate()->first();
 
-            if (!$locked || $locked->payment_status === 'paid' || $locked->payment_status === 'completed') {
+            if (!$locked || $locked->isFullyPaid()) {
                 DB::rollBack();
                 Log::info('processVerifiedPayment: skipped (already paid)', ['order_id' => $order->id]);
                 return;
@@ -40,10 +40,10 @@ class ServiceOrderService
             $projectNumber = 'PRJ-' . strtoupper(substr(uniqid(), -8));
 
             $order->update([
-                'payment_status' => $balanceNgn > 0 ? 'partially_paid' : 'paid',
+                'payment_status' => $balanceNgn > 0 ? ServiceOrder::PAYMENT_STATUS_DEPOSIT_PAID : ServiceOrder::PAYMENT_STATUS_FULLY_PAID,
                 'status' => 'active',
                 'project_number' => $projectNumber,
-                'project_status' => 'pending_review',
+                'project_status' => ServiceOrder::PROJECT_STATUS_PENDING,
                 'project_created_at' => $now,
             ]);
 
@@ -52,7 +52,7 @@ class ServiceOrderService
                 'invoice_number' => $invoiceNumber,
                 'service_order_id' => $order->id,
                 'user_id' => $order->user_id,
-                'status' => $balanceNgn > 0 ? 'partially_paid' : 'paid',
+                'status' => $balanceNgn > 0 ? ServiceOrder::INVOICE_STATUS_PARTIALLY_PAID : ServiceOrder::INVOICE_STATUS_PAID,
                 'subtotal_ngn' => $order->total_ngn,
                 'subtotal_usd' => $order->total_usd,
                 'total_ngn' => $order->total_ngn,
@@ -126,7 +126,6 @@ class ServiceOrderService
                 'invoice_number' => $invoiceNumber,
                 'receipt_number' => $receiptNumber,
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Payment processing failed', [

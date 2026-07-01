@@ -67,6 +67,7 @@ export default function AdminConversationPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastMsgTimeRef = useRef<string | null>(null);
+  const sentIdsRef = useRef<Set<string>>(new Set());
 
   const scrollToBottom = (smooth = true) => messagesEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
 
@@ -147,6 +148,7 @@ export default function AdminConversationPage() {
       const data = await res.json();
       if (data.success && data.data) {
         setMessages((prev) => [...prev, data.data]);
+        if (data.data.id) sentIdsRef.current.add(data.data.id);
         lastMsgTimeRef.current = data.data.created_at;
       }
       setText("");
@@ -193,8 +195,8 @@ export default function AdminConversationPage() {
             </div>
           ) : (
             messages.map((msg) => {
-              const isAdmin = msg.user?.is_admin === true;
-              const displayName = getAdminName(msg);
+              const isAdmin = sentIdsRef.current.has(msg.id);
+              const displayName = isAdmin ? "You" : getAdminName(msg);
               return (
                 <div
                   key={msg.id}

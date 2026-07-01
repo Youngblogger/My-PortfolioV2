@@ -753,6 +753,102 @@ class AdminController extends Controller
         return response()->json(['success' => true, 'data' => $logs]);
     }
 
+    // ─── Project Completion & Delivery ───────────────────────────────
+
+    public function markComplete(Request $request, string $id)
+    {
+        $order = ServiceOrder::findOrFail($id);
+
+        $order->update([
+            'project_status' => ServiceOrder::PROJECT_STATUS_COMPLETED,
+            'completed_at' => now(),
+        ]);
+
+        ServiceActivityLog::create([
+            'service_order_id' => $order->id,
+            'user_id' => $request->user()->id,
+            'action' => 'project_completed',
+            'description' => 'Project marked as completed.',
+            'metadata' => ['project_status' => ServiceOrder::PROJECT_STATUS_COMPLETED],
+        ]);
+
+        Notification::create([
+            'user_id' => $order->user_id,
+            'service_order_id' => $order->id,
+            'type' => 'project_completed',
+            'title' => 'Project Completed!',
+            'body' => 'Your project has been marked as completed. ' . ($order->isFullyPaid() ? 'Your files are now available for download.' : 'Downloads will be available once payment is completed.'),
+            'action_url' => '/hire/project/' . $order->id,
+            'action_text' => 'View Project',
+            'channel' => 'in_app',
+        ]);
+
+        if ($order->isFullyPaid()) {
+            Notification::create([
+                'user_id' => $order->user_id,
+                'service_order_id' => $order->id,
+                'type' => 'download_ready',
+                'title' => 'Downloads Available',
+                'body' => 'Your project files are now ready for download.',
+                'action_url' => '/hire/project/' . $order->id,
+                'action_text' => 'Download Files',
+                'channel' => 'in_app',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'project_status' => $order->project_status,
+                'completed_at' => $order->completed_at,
+            ],
+        ]);
+    }
+
+    public function deliverProject(Request $request, string $id)
+    {
+        $order = ServiceOrder::findOrFail($id);
+
+        if (!$order->isFullyPaid()) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Cannot deliver project. Payment is not yet fully received.',
+            ], 422);
+        }
+
+        $order->update([
+            'project_status' => ServiceOrder::PROJECT_STATUS_DELIVERED,
+            'delivered_at' => now(),
+        ]);
+
+        ServiceActivityLog::create([
+            'service_order_id' => $order->id,
+            'user_id' => $request->user()->id,
+            'action' => 'project_delivered',
+            'description' => 'Project delivered to client.',
+            'metadata' => ['project_status' => ServiceOrder::PROJECT_STATUS_DELIVERED],
+        ]);
+
+        Notification::create([
+            'user_id' => $order->user_id,
+            'service_order_id' => $order->id,
+            'type' => 'files_delivered',
+            'title' => 'Files Delivered!',
+            'body' => 'Your project files have been delivered and are available for download.',
+            'action_url' => '/hire/project/' . $order->id,
+            'action_text' => 'Download Files',
+            'channel' => 'in_app',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'project_status' => $order->project_status,
+                'delivered_at' => $order->delivered_at,
+            ],
+        ]);
+    }
+
     public function payments(Request $request)
     {
         $query = ServicePayment::with(['user.profile', 'serviceOrder.service', 'serviceOrder.projectType']);

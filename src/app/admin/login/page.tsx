@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
+import { Copyright } from "@/components/Copyright";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -134,7 +135,7 @@ export default function AdminLoginPage() {
         </div>
 
         <p className="text-center text-xs text-muted mt-6">
-          &copy; {new Date().getFullYear()} CODEMAFIA. All rights reserved.
+          <Copyright />
         </p>
       </motion.div>
     </div>

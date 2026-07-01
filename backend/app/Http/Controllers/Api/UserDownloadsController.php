@@ -40,10 +40,12 @@ class UserDownloadsController extends Controller
                     'project_name' => $metadata['project_name'] ?? $order?->projectType?->title ?? 'Project',
                     'service' => $order?->service?->title,
                     'uploaded_by' => $f->user?->profile?->full_name,
+                    'is_downloadable' => $order ? $order->canDownloadDelivery() : false,
+                    'payment_status' => $order?->payment_status,
+                    'project_status' => $order?->project_status,
                 ];
             });
 
-        // Group by project
         $grouped = $files->groupBy('order_id')->map(function ($items, $orderId) {
             $first = $items->first();
             return [
@@ -54,6 +56,9 @@ class UserDownloadsController extends Controller
                 'files' => $items->values()->toArray(),
                 'total_files' => $items->count(),
                 'total_size' => $items->sum('size'),
+                'payment_status' => $first['payment_status'],
+                'project_status' => $first['project_status'],
+                'is_downloadable' => $first['is_downloadable'],
             ];
         })->values();
 
@@ -73,6 +78,15 @@ class UserDownloadsController extends Controller
 
         if ($order->user_id !== $request->user()->id && !$request->user()?->profile?->isAdmin()) {
             return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
+        }
+
+        if (!$request->user()?->profile?->isAdmin()) {
+            if (!$order->isDownloadAllowed()) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Project downloads are unavailable. Your project must be fully paid and marked as completed before downloads are enabled.',
+                ], 403);
+            }
         }
 
         try {
