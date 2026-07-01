@@ -172,6 +172,8 @@ export default function ProjectTypePage() {
     );
   }
 
+  if (!data) return null;
+
   return (
     <>
       {/* Hero */}

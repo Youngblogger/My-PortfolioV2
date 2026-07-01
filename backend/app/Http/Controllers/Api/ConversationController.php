@@ -10,7 +10,7 @@ use App\Models\Notification;
 use App\Models\User;
 use App\Services\FileService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class ConversationController extends Controller
 {
@@ -25,40 +25,48 @@ class ConversationController extends Controller
         $orders = ServiceOrder::with(['service', 'projectType'])
             ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
+            ->get();
+
+        $orderIds = $orders->pluck('id');
+
+        $latestMessages = ServiceMessage::whereIn('service_order_id', $orderIds)
+            ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($order) {
-                $lastMessage = ServiceMessage::where('service_order_id', $order->id)
-                    ->latest()
-                    ->first();
+            ->groupBy('service_order_id')
+            ->map(fn ($msgs) => $msgs->first());
 
-                $unreadCount = ServiceMessage::where('service_order_id', $order->id)
-                    ->where('user_id', '!=', request()->user()->id)
-                    ->where('is_read', false)
-                    ->count();
+        $unreadCounts = ServiceMessage::whereIn('service_order_id', $orderIds)
+            ->where('user_id', '!=', $userId)
+            ->where('is_read', false)
+            ->groupBy('service_order_id')
+            ->select('service_order_id', DB::raw('count(*) as count'))
+            ->pluck('count', 'service_order_id');
 
-                $metadata = $order->metadata ?? [];
+        $result = $orders->map(function ($order) use ($latestMessages, $unreadCounts) {
+            $lastMessage = $latestMessages->get($order->id);
+            $metadata = $order->metadata ?? [];
 
-                return [
-                    'id' => $order->id,
-                    'order_number' => $order->order_number,
-                    'project_name' => $metadata['project_name'] ?? $order->projectType?->title ?? 'Project',
-                    'service' => $order->service?->title,
-                    'project_type' => $order->projectType?->title,
-                    'status' => $order->status,
-                    'project_status' => $order->project_status,
-                    'last_message' => $lastMessage ? [
-                        'id' => $lastMessage->id,
-                        'message' => substr($lastMessage->message, 0, 200),
-                        'created_at' => $lastMessage->created_at->toIso8601String(),
-                        'user_id' => $lastMessage->user_id,
-                        'has_attachments' => !empty($lastMessage->attachments),
-                    ] : null,
-                    'unread_count' => $unreadCount,
-                    'created_at' => $order->created_at->toIso8601String(),
-                ];
-            });
+            return [
+                'id' => $order->id,
+                'order_number' => $order->order_number,
+                'project_name' => $metadata['project_name'] ?? $order->projectType?->title ?? 'Project',
+                'service' => $order->service?->title,
+                'project_type' => $order->projectType?->title,
+                'status' => $order->status,
+                'project_status' => $order->project_status,
+                'last_message' => $lastMessage ? [
+                    'id' => $lastMessage->id,
+                    'message' => substr($lastMessage->message, 0, 200),
+                    'created_at' => $lastMessage->created_at->toIso8601String(),
+                    'user_id' => $lastMessage->user_id,
+                    'has_attachments' => !empty($lastMessage->attachments),
+                ] : null,
+                'unread_count' => (int) $unreadCounts->get($order->id, 0),
+                'created_at' => $order->created_at->toIso8601String(),
+            ];
+        });
 
-        return response()->json(['success' => true, 'data' => $orders]);
+        return response()->json(['success' => true, 'data' => $result]);
     }
 
     public function messages(Request $request, string $orderId)
@@ -185,26 +193,10 @@ class ConversationController extends Controller
             'metadata' => ['message_id' => $record->id],
         ]);
 
-        $recipientId = $isAdmin ? $order->user_id : null;
-        if (!$recipientId) {
-            $admins = User::whereHas('profile', fn ($q) => $q->where('role', 'admin'))->get();
-            foreach ($admins as $admin) {
-                Notification::create([
-                    'user_id' => $admin->id,
-                    'service_order_id' => $order->id,
-                    'type' => 'new_discussion_message',
-                    'title' => 'New Project Message',
-                    'body' => $isAdmin
-                        ? "A message was posted in project discussion."
-                        : "Client posted a message in project discussion.",
-                    'action_url' => $isAdmin ? "/admin/projects/{$order->id}" : "/hire/project/{$order->id}",
-                    'action_text' => 'View Discussion',
-                    'channel' => 'in_app',
-                ]);
-            }
-        } else {
+        $now = now();
+        if ($isAdmin) {
             Notification::create([
-                'user_id' => $recipientId,
+                'user_id' => $order->user_id,
                 'service_order_id' => $order->id,
                 'type' => 'new_discussion_message',
                 'title' => 'New Project Message',
@@ -212,7 +204,25 @@ class ConversationController extends Controller
                 'action_url' => "/hire/project/{$order->id}",
                 'action_text' => 'View Discussion',
                 'channel' => 'in_app',
+                'created_at' => $now,
+                'updated_at' => $now,
             ]);
+        } else {
+            $adminIds = User::whereHas('profile', fn ($q) => $q->where('role', 'admin'))
+                ->pluck('id');
+            $notifications = $adminIds->map(fn ($id) => [
+                'user_id' => $id,
+                'service_order_id' => $order->id,
+                'type' => 'new_discussion_message',
+                'title' => 'New Project Message',
+                'body' => "Client posted a message in project discussion.",
+                'action_url' => "/admin/projects/{$order->id}",
+                'action_text' => 'View Discussion',
+                'channel' => 'in_app',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])->toArray();
+            Notification::insert($notifications);
         }
 
         return response()->json([
@@ -225,57 +235,60 @@ class ConversationController extends Controller
     {
         $orders = ServiceOrder::with(['service', 'user.profile'])
             ->orderBy('created_at', 'desc')
+            ->get();
+
+        $orderIds = $orders->pluck('id');
+        $adminId = $request->user()->id;
+
+        $latestMessages = ServiceMessage::whereIn('service_order_id', $orderIds)
+            ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($order) use ($request) {
-                $lastMessage = ServiceMessage::where('service_order_id', $order->id)
-                    ->latest()
-                    ->first();
+            ->groupBy('service_order_id')
+            ->map(fn ($msgs) => $msgs->first());
 
-                $unreadCount = ServiceMessage::where('service_order_id', $order->id)
-                    ->where('user_id', '!=', $request->user()->id)
-                    ->where('is_read', false)
-                    ->count();
+        $unreadCounts = ServiceMessage::whereIn('service_order_id', $orderIds)
+            ->where('user_id', '!=', $adminId)
+            ->where('is_read', false)
+            ->groupBy('service_order_id')
+            ->select('service_order_id', DB::raw('count(*) as count'))
+            ->pluck('count', 'service_order_id');
 
-                $metadata = $order->metadata ?? [];
-                $clientProfile = $order->user?->profile;
+        $result = $orders->map(function ($order) use ($latestMessages, $unreadCounts) {
+            $lastMessage = $latestMessages->get($order->id);
+            $metadata = $order->metadata ?? [];
+            $clientProfile = $order->user?->profile;
 
-                return [
-                    'id' => $order->id,
-                    'order_number' => $order->order_number,
-                    'project_name' => $metadata['project_name'] ?? $order->projectType?->title ?? 'Project',
-                    'client_name' => $clientProfile?->full_name ?? 'Client',
-                    'service' => $order->service?->title,
-                    'project_status' => $order->project_status,
-                    'last_message' => $lastMessage ? substr($lastMessage->message, 0, 200) : null,
-                    'unread_count' => $unreadCount,
-                    'created_at' => $order->created_at->toIso8601String(),
-                ];
-            });
+            return [
+                'id' => $order->id,
+                'order_number' => $order->order_number,
+                'project_name' => $metadata['project_name'] ?? $order->projectType?->title ?? 'Project',
+                'client_name' => $clientProfile?->full_name ?? 'Client',
+                'service' => $order->service?->title,
+                'project_status' => $order->project_status,
+                'last_message' => $lastMessage ? substr($lastMessage->message, 0, 200) : null,
+                'unread_count' => (int) $unreadCounts->get($order->id, 0),
+                'created_at' => $order->created_at->toIso8601String(),
+            ];
+        });
 
-        return response()->json(['success' => true, 'data' => $orders]);
+        return response()->json(['success' => true, 'data' => $result]);
     }
 
     public function unreadCounts(Request $request)
     {
         $userId = $request->user()->id;
 
-        $orders = ServiceOrder::where('user_id', $userId)->pluck('id');
+        $orderIds = ServiceOrder::where('user_id', $userId)->pluck('id');
 
-        $totalUnread = ServiceMessage::whereIn('service_order_id', $orders)
+        $conversations = ServiceMessage::whereIn('service_order_id', $orderIds)
             ->where('user_id', '!=', $userId)
             ->where('is_read', false)
-            ->count();
+            ->groupBy('service_order_id')
+            ->select('service_order_id', DB::raw('count(*) as unread_count'))
+            ->get()
+            ->toArray();
 
-        $conversations = $orders->map(function ($orderId) use ($userId) {
-            $count = ServiceMessage::where('service_order_id', $orderId)
-                ->where('user_id', '!=', $userId)
-                ->where('is_read', false)
-                ->count();
-            return [
-                'service_order_id' => $orderId,
-                'unread_count' => $count,
-            ];
-        });
+        $totalUnread = array_sum(array_column($conversations, 'unread_count'));
 
         return response()->json([
             'success' => true,

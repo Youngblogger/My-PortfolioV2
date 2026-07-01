@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ServiceOrder;
-use App\Models\ServicePayment;
 use Illuminate\Http\Request;
 
 class UserPaymentsController extends Controller

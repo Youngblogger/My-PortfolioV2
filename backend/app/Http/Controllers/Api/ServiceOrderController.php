@@ -12,8 +12,6 @@ use App\Models\ServiceActivityLog;
 use App\Models\ServiceInvoice;
 use App\Models\ServicePayment;
 use App\Models\ServiceReceipt;
-use App\Models\ServiceMessage;
-use App\Models\ServiceFile;
 use App\Models\Milestone;
 use App\Models\TeamAssignment;
 use Barryvdh\DomPDF\Facade\Pdf;

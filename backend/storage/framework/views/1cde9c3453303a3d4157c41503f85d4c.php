@@ -26,4 +26,4 @@
   </table>
 </body>
 </html>
-<?php /**PATH C:\Users\USER\OneDrive\Desktop\portfolio V3\backend\resources\views/emails/quote-request.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\USER\OneDrive\Desktop\portfolio V3\backend\resources\views\emails\quote-request.blade.php ENDPATH**/ ?>

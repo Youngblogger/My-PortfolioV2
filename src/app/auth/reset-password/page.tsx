@@ -51,12 +51,16 @@ function ResetPasswordForm() {
     }
 
     try {
-      const result = await api.resetPassword(token, email, password);
-      if (result.success) {
-        setSuccess(true);
+      const result = await api.resetPassword(token, email, password, confirmPassword);
+      if (!result.success) {
+        setError(result.error || "Invalid or expired reset token. Please request a new one.");
+        setLoading(false);
+        return;
       }
+      setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Reset failed");
+      const message = err instanceof Error ? err.message : "";
+      setError(message || "Invalid or expired reset token. Please request a new one.");
     } finally {
       setLoading(false);
     }

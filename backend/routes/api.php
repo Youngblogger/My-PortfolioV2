@@ -113,7 +113,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/service-orders/{id}/receipt/{receiptId}', [ServiceOrderController::class, 'downloadReceipt'])->middleware('throttle:api');
 
     // Requirements
-    Route::get('/services/{serviceSlug}/requirements/questions', [RequirementController::class, 'questions']);
+    Route::get('/health', [\App\Http\Controllers\Api\HealthController::class, 'index']);
+
+Route::get('/services/{serviceSlug}/requirements/questions', [RequirementController::class, 'questions']);
     Route::post('/requirements/responses', [RequirementController::class, 'saveResponses']);
     Route::get('/requirements/responses/{orderId}', [RequirementController::class, 'getResponses']);
 

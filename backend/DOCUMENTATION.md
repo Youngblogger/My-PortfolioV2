@@ -324,3 +324,156 @@ php artisan test --filter CourseTest
 php artisan test --filter CheckoutTest
 php artisan test --filter PaymentTest
 ```
+
+---
+
+## Operations Runbook
+
+### Deployment
+
+```bash
+# Backend
+cd /var/www/codemafia/backend
+cp .env.production .env        # edit DB credentials, keys
+chmod +x deploy.sh && ./deploy.sh
+
+# Frontend
+cd /var/www/codemafia
+cp .env.production .env.local
+npm run build && npm start -p 3000
+```
+
+### Rollback
+
+```bash
+./rollback.sh <tag-or-commit>
+```
+
+Rolling back does NOT automatically restore the database. If migration rollback is required:
+
+```bash
+php artisan migrate:rollback --step=1
+# or restore from backup:
+gunzip < /var/backups/codemafia/codemafia_YYYYMMDD_HHMMSS.sql.gz | mysql codemafia
+```
+
+### Monitoring
+
+A health endpoint is available at `GET /api/v1/health`. Expected response:
+
+```json
+{
+  "success": true,
+  "status": "healthy",
+  "checks": {
+    "app_env": "production",
+    "app_debug": false,
+    "database": "connected",
+    "storage_symlink": "exists",
+    "cache": "reachable",
+    "queue_driver": "database"
+  }
+}
+```
+
+The `monitor.sh` script checks every 5 minutes via cron:
+
+```cron
+*/5 * * * * /var/www/codemafia/backend/monitor.sh
+```
+
+### Backup
+
+Daily database + storage backups run at 3 AM:
+
+```cron
+0 3 * * * /var/www/codemafia/backend/backup.sh
+```
+
+Backups are stored in `/var/backups/codemafia/` for 30 days.
+
+### Queue Worker (Supervisor)
+
+```bash
+sudo cp /var/www/codemafia/backend/supervisor.conf /etc/supervisor/conf.d/codemafia.conf
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start codemafia-queue:*
+sudo supervisorctl status
+```
+
+### Log Locations
+
+| Log | Path | Retention |
+|-----|------|-----------|
+| Laravel errors | `backend/storage/logs/laravel-YYYY-MM-DD.log` | 30 days (daily rotation) |
+| Queue worker | `/var/log/codemafia-queue.log` | 10 rotations of 50MB |
+| Failed jobs | `php artisan queue:failed` | Keep indefinitely |
+| Web server | `/var/log/nginx/error.log` | OS-configured |
+| Monitor | `/var/log/codemafia-monitor.log` | OS-configured |
+
+### Incident Response
+
+| Severity | Response Time | Examples |
+|----------|--------------|---------|
+| Critical | < 15 min | Site down, payments failing, data loss |
+| High | < 1 hour | Emails not sending, queue stopped, degraded performance |
+| Medium | < 4 hours | Broken UI, non-critical API errors |
+| Low | < 24 hours | Styling issues, typo, minor warnings |
+
+**Critical Incident Steps:**
+
+1. Verify with `curl https://codemafia.ng/api/v1/health`
+2. Check `storage/logs/laravel*.log` for stack traces
+3. Check queue: `php artisan queue:status` and `php artisan queue:failed`
+4. Check DB: `php artisan db:show`
+5. If needed, put app in maintenance: `php artisan down --retry=60`
+6. Fix, test, then: `php artisan up`
+7. Log the incident in the audit trail
+
+### Payment Recovery
+
+If a payment succeeds at the gateway but fails to process in the app:
+
+1. Find the transaction reference in the gateway dashboard
+2. Run: `php artisan tinker --execute="(new App\Services\Payments\PaymentService)->verifyPayment('paystack', 'REFERENCE')"`
+3. If the gateway confirms success, trigger `ServiceOrderService::processVerifiedPayment()`
+4. Verify the user's dashboard shows the payment and enrollment/order is active
+
+### Customer Support Workflow
+
+| Issue | Action |
+|-------|--------|
+| User can't register | Check `/api/v1/auth/register` logs, verify email not taken |
+| User can't login | Check `/api/v1/auth/login` logs, trigger password reset |
+| Payment failed | Check Paystack dashboard + `storage/logs/laravel*.log` |
+| Course not accessible | Verify enrollment status in admin, check `enrollments` table |
+| Email not received | Check `storage/logs/laravel*.log` for mail errors |
+| Project status wrong | Update via admin panel, check `service_orders` table |
+| Certificate missing | Generate via Admin > Academy > Certificates |
+
+---
+
+## Launch Readiness Checklist
+
+- [ ] `APP_ENV=production` and `APP_DEBUG=false`
+- [ ] SSL certificate valid and HTTPS enforced
+- [ ] `SESSION_SECURE_COOKIE=true`
+- [ ] Queue worker running via Supervisor
+- [ ] Scheduler running via cron
+- [ ] `QUEUE_CONNECTION=database`
+- [ ] `SESSION_DRIVER=database`
+- [ ] Database backups configured (daily + offsite)
+- [ ] Monitoring active (health endpoint + monitor.sh cron)
+- [ ] Paystack live keys configured
+- [ ] Email SMTP credentials verified
+- [ ] Storage symlink exists: `php artisan storage:link`
+- [ ] All caches loaded: `config:cache`, `route:cache`, `view:cache`, `event:cache`
+- [ ] robots.txt disallows admin/auth/api paths
+- [ ] sitemap.xml submitted to Google Search Console
+- [ ] Analytics tracking active
+- [ ] Social share previews working
+- [ ] Favicon and brand assets loading
+- [ ] No debug logging: `LOG_LEVEL=error`
+- [ ] Admin accounts created and tested
+- [ ] Test transactions processed and refunded

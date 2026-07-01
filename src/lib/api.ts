@@ -117,10 +117,10 @@ export const api = {
       body: JSON.stringify({ email }),
     }),
 
-  resetPassword: (token: string, email: string, password: string) =>
+  resetPassword: (token: string, email: string, password: string, passwordConfirmation: string) =>
     apiRequest<ApiResponse>("/auth/reset-password", {
       method: "POST",
-      body: JSON.stringify({ token, email, password, password_confirmation: password }),
+      body: JSON.stringify({ token, email, password, password_confirmation: passwordConfirmation }),
     }),
 
   // Auth

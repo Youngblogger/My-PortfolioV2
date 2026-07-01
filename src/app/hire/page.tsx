@@ -49,11 +49,11 @@ const techTags: Record<string, string[]> = {
 };
 
 const fallbackServices: ServiceData[] = [
-  { id: 1, slug: "web-development", title: "Web Development", short_description: "Full-stack web applications built with modern frameworks. React, Next.js, Node.js — deployed and scaled for production.", icon: "🌐", starting_price_ngn: 250000, project_types_count: 12 },
-  { id: 2, slug: "saas-development", title: "SaaS Development", short_description: "End-to-end SaaS platform development from concept to launch. Multi-tenant architecture, billing, and analytics included.", icon: "☁️", starting_price_ngn: 0, project_types_count: 8 },
-  { id: 3, slug: "mobile-development", title: "Mobile App Development", short_description: "Cross-platform mobile applications for iOS and Android. React Native and Flutter development with native performance.", icon: "📱", starting_price_ngn: 500000, project_types_count: 6 },
-  { id: 4, slug: "ui-ux-design", title: "UI/UX Design", short_description: "World-class user interfaces and experiences. Research-driven design that converts visitors into customers.", icon: "🎨", starting_price_ngn: 150000, project_types_count: 15 },
-  { id: 5, slug: "ai-solutions", title: "AI Engineering", short_description: "Custom AI solutions, LLM integrations, and machine learning models tailored to your business needs.", icon: "🤖", starting_price_ngn: 0, project_types_count: 4 },
+  { id: "1", slug: "web-development", title: "Web Development", subtitle: null, short_description: "Full-stack web applications built with modern frameworks. React, Next.js, Node.js — deployed and scaled for production.", icon: "🌐", image_url: null, starting_price_ngn: 250000, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 12 },
+  { id: "2", slug: "saas-development", title: "SaaS Development", subtitle: null, short_description: "End-to-end SaaS platform development from concept to launch. Multi-tenant architecture, billing, and analytics included.", icon: "☁️", image_url: null, starting_price_ngn: 0, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 8 },
+  { id: "3", slug: "mobile-development", title: "Mobile App Development", subtitle: null, short_description: "Cross-platform mobile applications for iOS and Android. React Native and Flutter development with native performance.", icon: "📱", image_url: null, starting_price_ngn: 500000, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 6 },
+  { id: "4", slug: "ui-ux-design", title: "UI/UX Design", subtitle: null, short_description: "World-class user interfaces and experiences. Research-driven design that converts visitors into customers.", icon: "🎨", image_url: null, starting_price_ngn: 150000, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 15 },
+  { id: "5", slug: "ai-solutions", title: "AI Engineering", subtitle: null, short_description: "Custom AI solutions, LLM integrations, and machine learning models tailored to your business needs.", icon: "🤖", image_url: null, starting_price_ngn: 0, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 4 },
 ];
 
 export default function HirePage() {

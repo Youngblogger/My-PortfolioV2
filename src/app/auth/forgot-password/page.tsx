@@ -13,6 +13,7 @@ function ForgotPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const [responseMessage, setResponseMessage] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,11 +22,16 @@ function ForgotPasswordForm() {
 
     try {
       const result = await api.sendPasswordResetLink(email);
-      if (result.success) {
-        setSent(true);
+      if (!result.success) {
+        setError(result.error || "We couldn't process your password reset request. Please try again later.");
+        setLoading(false);
+        return;
       }
+      setResponseMessage(result.message || "If an account with that email address exists, a password reset link has been sent.");
+      setSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      const message = err instanceof Error ? err.message : "";
+      setError(message || "We couldn't process your password reset request. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -42,9 +48,6 @@ function ForgotPasswordForm() {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mt-6">Check Your Email</h1>
-            <p className="text-muted mt-2">
-              If an account with that email exists, we&apos;ve sent password reset instructions.
-            </p>
           </div>
           <div className="glass rounded-2xl p-8 text-center">
             <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
@@ -53,7 +56,7 @@ function ForgotPasswordForm() {
               </svg>
             </div>
             <p className="text-sm text-muted mb-6">
-              A password reset link has been sent to <span className="text-white font-medium">{email}</span>.
+              {responseMessage}
             </p>
             <Link href="/auth/login">
               <Button variant="outline" fullWidth>Back to Login</Button>

@@ -184,7 +184,7 @@ const sections = [
   },
   {
     title: "Last Updated",
-    content: <p>January 2026</p>,
+    content: <p>July 2026</p>,
   },
   {
     title: "Final Note",
@@ -204,7 +204,7 @@ export default function PrivacyPage() {
         label="PRIVACY"
         title="Privacy"
         highlight="Policy"
-        description="Last updated: January 2026."
+        description="Last updated: July 2026."
       />
 
       <section className="relative py-16 md:py-24 overflow-hidden">

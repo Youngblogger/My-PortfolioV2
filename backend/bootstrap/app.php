@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ForceJsonResponse::class,
         ]);
 
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
@@ -43,5 +45,12 @@ return Application::configure(basePath: dirname(__DIR__))
                 'success' => false,
                 'error' => $e->errors(),
             ], 422);
+        });
+
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Too many attempts. Please try again later.',
+            ], 429);
         });
     })->create();

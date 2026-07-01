@@ -7,8 +7,8 @@ use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 
@@ -29,41 +29,48 @@ class PasswordResetController extends Controller
 
         $email = $request->email;
 
-        $rateKey = 'password-reset-send:' . $email;
-        if (RateLimiter::tooManyAttempts($rateKey, 1)) {
-            $seconds = RateLimiter::availableIn($rateKey);
-            return response()->json([
-                'success' => false,
-                'error' => 'Too many attempts. Please try again in ' . $seconds . ' seconds.',
-            ], 429);
-        }
-        RateLimiter::hit($rateKey, 60);
+        try {
+            $status = Password::sendResetLink(
+                ['email' => $email],
+            );
 
-        $user = User::where('email', $email)->first();
+            if ($status === Password::RESET_THROTTLED) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Too many attempts. Please try again later.',
+                ], 429);
+            }
 
-        if (!$user) {
+            if ($status === Password::RESET_LINK_SENT) {
+                $user = User::where('email', $email)->first();
+                if ($user) {
+                    AuditLog::create([
+                        'user_id' => $user->id,
+                        'action' => 'password_reset_requested',
+                        'entity_type' => 'user',
+                        'entity_id' => $user->id,
+                        'metadata' => ['email' => $email],
+                        'ip_address' => $request->ip(),
+                    ]);
+                }
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'If that email exists, a password reset link has been sent.',
+                'message' => 'If an account with that email address exists, a password reset link has been sent.',
             ]);
+        } catch (\Throwable $e) {
+            Log::error('Password reset email failed to send', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'We couldn\'t process your password reset request. Please try again later.',
+            ], 500);
         }
-
-        $token = Password::createToken($user);
-        $user->sendPasswordResetNotification($token);
-
-        AuditLog::create([
-            'user_id' => $user->id,
-            'action' => 'password_reset_requested',
-            'entity_type' => 'user',
-            'entity_id' => $user->id,
-            'metadata' => ['email' => $email],
-            'ip_address' => $request->ip(),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'If that email exists, a password reset link has been sent.',
-        ]);
     }
 
     public function reset(Request $request)
@@ -89,39 +96,42 @@ class PasswordResetController extends Controller
 
         $credentials = $request->only('email', 'password', 'password_confirmation', 'token');
 
-        $user = User::where('email', $credentials['email'])->first();
+        $status = Password::reset(
+            $credentials,
+            function ($user, $password) {
+                $user->password = Hash::make($password);
+                $user->save();
 
-        if (!$user) {
-            return response()->json([
+                $user->tokens()->delete();
+
+                AuditLog::create([
+                    'user_id' => $user->id,
+                    'action' => 'password_reset_completed',
+                    'entity_type' => 'user',
+                    'entity_id' => $user->id,
+                    'metadata' => ['email' => $user->email],
+                    'ip_address' => request()->ip(),
+                ]);
+            }
+        );
+
+        return match ($status) {
+            Password::PASSWORD_RESET => response()->json([
+                'success' => true,
+                'message' => 'Password has been reset successfully.',
+            ]),
+            Password::INVALID_TOKEN => response()->json([
                 'success' => false,
-                'error' => 'Invalid or expired reset token.',
-            ], 400);
-        }
-
-        if (!Password::exists($user, $credentials['token'])) {
-            return response()->json([
+                'error' => 'Invalid or expired reset token. Please request a new one.',
+            ], 400),
+            Password::INVALID_USER => response()->json([
                 'success' => false,
-                'error' => 'Invalid or expired reset token.',
-            ], 400);
-        }
-
-        $user->password = Hash::make($credentials['password']);
-        $user->save();
-
-        Password::deleteToken($user);
-
-        AuditLog::create([
-            'user_id' => $user->id,
-            'action' => 'password_reset_completed',
-            'entity_type' => 'user',
-            'entity_id' => $user->id,
-            'metadata' => ['email' => $credentials['email']],
-            'ip_address' => $request->ip(),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Password has been reset successfully.',
-        ]);
+                'error' => 'Invalid or expired reset token. Please request a new one.',
+            ], 400),
+            default => response()->json([
+                'success' => false,
+                'error' => 'We couldn\'t reset your password. Please try again.',
+            ], 500),
+        };
     }
 }
