@@ -39,7 +39,7 @@ function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-0 sm:px-6 py-20">
+    <div className="min-h-screen flex items-start justify-center px-0 sm:px-6 pt-10">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -47,7 +47,7 @@ function ForgotPasswordForm() {
           className="relative z-10 w-full max-w-md"
         >
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mt-6">Check Your Email</h1>
+            <h1 className="text-3xl font-bold text-white">Check Your Email</h1>
           </div>
           <div className="glass rounded-2xl p-8 text-center">
             <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-4">
@@ -68,7 +68,7 @@ function ForgotPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-0 sm:px-6 py-20">
+    <div className="min-h-screen flex items-start justify-center px-0 sm:px-6 pt-10">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -76,10 +76,7 @@ function ForgotPasswordForm() {
         className="relative z-10 w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <Link href="/academy" className="text-gold text-xl font-bold">
-            CODEMAFIA Academy
-          </Link>
-          <h1 className="text-3xl font-bold text-white mt-6">Reset Password</h1>
+          <h1 className="text-3xl font-bold text-white">Reset Password</h1>
           <p className="text-muted mt-2">
             Enter your email and we&apos;ll send you reset instructions
           </p>

@@ -114,10 +114,7 @@ function ResetPasswordForm() {
         className="relative z-10 w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <Link href="/academy" className="text-gold text-xl font-bold">
-            CODEMAFIA Academy
-          </Link>
-          <h1 className="text-3xl font-bold text-white mt-6">Set New Password</h1>
+          <h1 className="text-3xl font-bold text-white">Set New Password</h1>
           <p className="text-muted mt-2">Choose a strong password for your account</p>
         </div>
 
