@@ -27,6 +27,10 @@ use App\Http\Controllers\Api\VerificationController;
 use App\Http\Controllers\Api\ProjectFileController;
 use App\Http\Controllers\Api\ProjectMessageController;
 use App\Http\Controllers\Api\ProjectReviewController;
+use App\Http\Controllers\Api\ConversationController;
+use App\Http\Controllers\Api\UserPaymentsController;
+use App\Http\Controllers\Api\UserDownloadsController;
+use App\Http\Controllers\Api\UserSettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -144,6 +148,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/service-orders/{id}/review', [ProjectReviewController::class, 'show']);
     Route::post('/service-orders/{id}/review', [ProjectReviewController::class, 'submit']);
 
+    // Conversations (Unified Messaging)
+    Route::get('/conversations', [ConversationController::class, 'index']);
+    Route::get('/conversations/{orderId}/messages', [ConversationController::class, 'messages']);
+    Route::get('/conversations/{orderId}/messages/recent', [ConversationController::class, 'recentMessages']);
+    Route::post('/conversations/{orderId}/messages', [ConversationController::class, 'storeMessage']);
+    Route::get('/conversations/unread-counts', [ConversationController::class, 'unreadCounts']);
+
+    // Payments (Aggregated)
+    Route::get('/payments', [UserPaymentsController::class, 'index']);
+
+    // Downloads (Aggregated Files)
+    Route::get('/downloads', [UserDownloadsController::class, 'index']);
+    Route::get('/downloads/{fileId}/download', [UserDownloadsController::class, 'download']);
+
+    // User Settings
+    Route::get('/settings', [UserSettingsController::class, 'show']);
+    Route::put('/settings', [UserSettingsController::class, 'update']);
+
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
@@ -207,6 +229,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/projects/{id}/files', [ProjectFileController::class, 'upload']);
         Route::delete('/projects/{id}/files/{fileId}', [ProjectFileController::class, 'destroy']);
         Route::patch('/files/{fileId}', [ProjectFileController::class, 'update']);
+
+        // Messages — Admin Conversations List
+        Route::get('/conversations', [ConversationController::class, 'adminIndex']);
 
         // Collaboration — Admin Messages
         Route::get('/projects/{id}/messages', [ProjectMessageController::class, 'index']);

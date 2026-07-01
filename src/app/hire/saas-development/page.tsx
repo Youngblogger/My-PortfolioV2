@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 
 const types = [
-  { title: "CRM System", description: "Customer relationship management platform with lead tracking, pipeline management, and analytics.", price: "Custom Quote", icon: "📊" },
-  { title: "ERP Platform", description: "Enterprise resource planning system with inventory, HR, finance, and operations management.", price: "Custom Quote", icon: "🏗️" },
-  { title: "Internal Tools", description: "Custom internal tools for team management, workflow automation, and business operations.", price: "Custom Quote", icon: "🔧" },
-  { title: "Subscription Platform", description: "Recurring billing platform with tiered plans, user management, and payment integration.", price: "₦1,500,000+", icon: "🔄" },
-  { title: "Membership Platform", description: "Members-only platform with content gating, community features, and subscription billing.", price: "₦1,000,000+", icon: "🔐" },
-  { title: "Startup SaaS Product", description: "Full SaaS product development from concept to launch, including MVP and iteration support.", price: "Custom Quote", icon: "🚀" },
+  { slug: "crm-system", title: "CRM System", description: "Customer relationship management platform with lead tracking, pipeline management, and analytics.", price: "Custom Quote", icon: "📊" },
+  { slug: "erp-platform", title: "ERP Platform", description: "Enterprise resource planning system with inventory, HR, finance, and operations management.", price: "Custom Quote", icon: "🏗️" },
+  { slug: "internal-tools", title: "Internal Tools", description: "Custom internal tools for team management, workflow automation, and business operations.", price: "Custom Quote", icon: "🔧" },
+  { slug: "subscription-platform", title: "Subscription Platform", description: "Recurring billing platform with tiered plans, user management, and payment integration.", price: "₦1,500,000+", icon: "🔄" },
+  { slug: "membership-platform", title: "Membership Platform", description: "Members-only platform with content gating, community features, and subscription billing.", price: "₦1,000,000+", icon: "🔐" },
+  { slug: "startup-saas-product", title: "Startup SaaS Product", description: "Full SaaS product development from concept to launch, including MVP and iteration support.", price: "Custom Quote", icon: "🚀" },
 ];
 
 const staggerContainer = {
@@ -72,17 +72,18 @@ export default function SaasDevelopmentPage() {
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
           >
             {types.map((type) => (
-              <motion.div
-                key={type.title}
-                variants={fadeUp}
-                className="glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300"
-              >
-                <div className="text-3xl mb-4">{type.icon}</div>
-                <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
-                <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
-                <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
-                  {type.price}
-                </span>
+              <motion.div key={type.slug} variants={fadeUp} className="h-full">
+                <Link
+                  href={`/hire/saas-development/${type.slug}`}
+                  className="block glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300 cursor-pointer h-full"
+                >
+                  <div className="text-3xl mb-4">{type.icon}</div>
+                  <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
+                  <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
+                  <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
+                    {type.price}
+                  </span>
+                </Link>
               </motion.div>
             ))}
           </motion.div>

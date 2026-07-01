@@ -36,6 +36,13 @@ const sidebarGroups: SidebarGroup[] = [
     ],
   },
   {
+    label: "Communication",
+    links: [
+      { href: "/admin/messages", label: "Messages" },
+      { href: "/admin/notifications", label: "Notifications" },
+    ],
+  },
+  {
     label: "Payment & Finance",
     links: [
       { href: "/admin/payments", label: "Payments" },
@@ -81,10 +88,6 @@ const sidebarGroups: SidebarGroup[] = [
     links: [{ href: "/admin/reviews", label: "Project Reviews" }],
   },
   {
-    label: "Notifications",
-    links: [{ href: "/admin/notifications", label: "Notifications" }],
-  },
-  {
     label: "System",
     links: [
       { href: "/admin/media", label: "Media Library" },
@@ -94,6 +97,38 @@ const sidebarGroups: SidebarGroup[] = [
     ],
   },
 ];
+
+function AdminNotificationBell() {
+  const router = useRouter();
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchCount() {
+      try {
+        const res = await fetch("/api/v1/notifications/unread-count", { credentials: "include" });
+        const data = await res.json();
+        if (mounted && data.data) setCount(data.data.count);
+      } catch { if (mounted) setCount(0); }
+    }
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => { mounted = false; clearInterval(interval); };
+  }, []);
+
+  return (
+    <button onClick={() => router.push("/admin/notifications")} className="relative p-2 rounded-lg text-muted hover:text-white hover:bg-white/5 transition-colors" title="Notifications">
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+      </svg>
+      {count > 0 && (
+        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white px-1 shadow-lg">
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </button>
+  );
+}
 
 export default function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -333,6 +368,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
               </span>
             </div>
 
+            <AdminNotificationBell />
             <button
               onClick={handleLogout}
               className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all duration-200"

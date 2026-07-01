@@ -17,7 +17,7 @@ const sidebarLinks = [
   { label: "Settings", href: "/settings", icon: "settings" },
 ];
 
-const iconPaths: Record<string, JSX.Element> = {
+const iconPaths: Record<string, React.ReactNode> = {
   "layout-dashboard": (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zm0 9.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zm0 9.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
@@ -167,9 +167,12 @@ export default function ClientPortalLayout({
       {/* Desktop sidebar */}
       <aside className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-1 border-r border-white/5 bg-background/80 backdrop-blur-xl">
-          <div className="flex items-center gap-2.5 h-16 px-6 border-b border-white/5 shrink-0">
-            <Image src="/iconLogo.png" alt="CODEMAFIA" width={32} height={32} className="rounded-lg" unoptimized />
-            <span className="text-lg font-bold"><span className="text-gradient">CODEMAFIA</span></span>
+          <div className="flex items-center justify-between h-16 px-4 border-b border-white/5 shrink-0">
+            <div className="flex items-center gap-2.5">
+              <Image src="/iconLogo.png" alt="CODEMAFIA" width={32} height={32} className="rounded-lg" unoptimized />
+              <span className="text-lg font-bold"><span className="text-gradient">CODEMAFIA</span></span>
+            </div>
+            {authenticated && <NotificationBell />}
           </div>
           <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
             {sidebarLinks.map((link) => (

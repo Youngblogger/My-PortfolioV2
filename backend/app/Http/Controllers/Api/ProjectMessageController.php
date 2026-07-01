@@ -31,6 +31,8 @@ class ProjectMessageController extends Controller
                 'type' => $m->type,
                 'is_important' => $m->type === 'important',
                 'attachments' => $m->attachments,
+                'is_read' => (bool) $m->is_read,
+                'read_at' => $m->read_at?->toIso8601String(),
                 'created_at' => $m->created_at,
                 'user' => $m->user?->profile ? [
                     'id' => $m->user->id,
@@ -44,7 +46,7 @@ class ProjectMessageController extends Controller
         ServiceMessage::where('service_order_id', $orderId)
             ->where('user_id', '!=', $request->user()->id)
             ->where('is_read', false)
-            ->update(['is_read' => true]);
+            ->update(['is_read' => true, 'read_at' => now()]);
 
         return response()->json(['success' => true, 'data' => $messages]);
     }
@@ -126,6 +128,8 @@ class ProjectMessageController extends Controller
                 'type' => $message->type,
                 'is_important' => $message->type === 'important',
                 'attachments' => $message->attachments,
+                'is_read' => (bool) $message->is_read,
+                'read_at' => $message->read_at?->toIso8601String(),
                 'created_at' => $message->created_at,
                 'user' => $message->user?->profile ? [
                     'id' => $message->user->id,

@@ -46,7 +46,7 @@ function RegisterForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-20">
+    <div className="min-h-screen flex items-center justify-center px-0 sm:px-6 py-20">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}

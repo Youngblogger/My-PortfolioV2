@@ -746,6 +746,54 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
+
+  // ─── Conversations / Messages ──────────────────────────────
+  getConversations: () =>
+    apiRequest<ApiResponse & { data: ConversationData[] }>("/conversations"),
+
+  getConversationMessages: (orderId: string) =>
+    apiRequest<ApiResponse & { data: ConversationMessageData[] }>(
+      `/conversations/${orderId}/messages`
+    ),
+
+  getRecentConversationMessages: (orderId: string, since: string) =>
+    apiRequest<ApiResponse & { data: ConversationMessageData[] }>(
+      `/conversations/${orderId}/messages/recent?since=${encodeURIComponent(since)}`
+    ),
+
+  sendConversationMessage: (orderId: string, formData: FormData) =>
+    apiRequest<ApiResponse & { data: ConversationMessageData }>(
+      `/conversations/${orderId}/messages`,
+      { method: "POST", body: formData }
+    ),
+
+  getConversationUnreadCounts: () =>
+    apiRequest<ApiResponse & { data: { total_unread: number; conversations: { service_order_id: string; unread_count: number }[] } }>(
+      "/conversations/unread-counts"
+    ),
+
+  // ─── Payments (Aggregated) ─────────────────────────────────
+  getPayments: () =>
+    apiRequest<ApiResponse & { data: { payments: PaymentRecord[]; totals: { total_spent_ngn: number; total_paid: number; total_pending: number; total_failed: number } } }>(
+      "/payments"
+    ),
+
+  // ─── Downloads (Aggregated Files) ──────────────────────────
+  getDownloads: () =>
+    apiRequest<ApiResponse & { data: { grouped: DownloadGroup[]; all_files: DownloadFileItem[] } }>(
+      "/downloads"
+    ),
+
+  downloadFile: async (fileId: string) => {
+    const response = await fetch(`${API_BASE_URL}/downloads/${fileId}/download`, {
+      credentials: "include",
+    });
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new ApiError(errData.error || "Download failed", response.status);
+    }
+    return response;
+  },
 };
 
 // Types
@@ -1604,6 +1652,8 @@ export interface ServiceMessageData {
   type: string;
   is_important: boolean;
   attachments: string[] | null;
+  is_read: boolean;
+  read_at: string | null;
   created_at: string;
   user: {
     id: string;
@@ -1639,4 +1689,92 @@ export interface AdminMilestoneReviewData extends AdminMilestoneData {
   review_requested_at: string | null;
   review_status: string | null;
   review_feedback: string | null;
+}
+
+// ─── New Messaging & Payments Types ─────────────────────────
+export interface ConversationData {
+  id: string;
+  order_number: string;
+  project_name: string;
+  service: string;
+  project_type: string;
+  status: string;
+  project_status: string;
+  last_message: {
+    id: string;
+    message: string;
+    created_at: string;
+    user_id: string;
+    has_attachments: boolean;
+  } | null;
+  unread_count: number;
+  created_at: string;
+}
+
+export interface ConversationMessageData {
+  id: string;
+  message: string;
+  type: string;
+  is_important: boolean;
+  attachments: MessageAttachment[] | null;
+  is_read: boolean;
+  read_at: string | null;
+  created_at: string;
+  user: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    is_admin: boolean;
+  } | null;
+}
+
+export interface MessageAttachment {
+  id?: string;
+  name?: string;
+  size?: number;
+  type?: string;
+  category?: string;
+  url?: string;
+}
+
+export interface PaymentRecord {
+  id: string;
+  reference: string;
+  gateway: string;
+  amount_ngn: number;
+  amount_usd: number;
+  currency: string;
+  status: string;
+  payment_type: string;
+  paid_at: string | null;
+  created_at: string;
+  order_id: string;
+  order_number: string;
+  project_name: string;
+  service: string;
+}
+
+export interface DownloadFileItem {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  category: string;
+  description: string | null;
+  created_at: string;
+  order_id: string;
+  order_number: string;
+  project_name: string;
+  service: string;
+  uploaded_by: string | null;
+}
+
+export interface DownloadGroup {
+  order_id: string;
+  order_number: string;
+  project_name: string;
+  service: string;
+  files: DownloadFileItem[];
+  total_files: number;
+  total_size: number;
 }

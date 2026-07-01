@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 
 const types = [
-  { title: "Android Applications", description: "Native Android apps built with Kotlin and modern Android architecture components.", price: "Starting ₦500,000", icon: "🤖" },
-  { title: "iOS Applications", description: "Native iOS apps built with Swift and SwiftUI for iPhone and iPad.", price: "Starting ₦500,000", icon: "🍎" },
-  { title: "Cross-Platform Apps", description: "Cross-platform mobile apps built with React Native or Flutter for both iOS and Android.", price: "Starting ₦500,000", icon: "📱" },
-  { title: "Marketplace Apps", description: "Multi-vendor marketplace mobile apps with real-time messaging, payments, and reviews.", price: "₦1,500,000+", icon: "🛒" },
-  { title: "Fintech Apps", description: "Secure fintech applications with payment processing, budgeting tools, and financial analytics.", price: "Custom Quote", icon: "💰" },
+  { slug: "android-applications", title: "Android Applications", description: "Native Android apps built with Kotlin and modern Android architecture components.", price: "Starting ₦500,000", icon: "🤖" },
+  { slug: "ios-applications", title: "iOS Applications", description: "Native iOS apps built with Swift and SwiftUI for iPhone and iPad.", price: "Starting ₦500,000", icon: "🍎" },
+  { slug: "cross-platform-apps", title: "Cross-Platform Apps", description: "Cross-platform mobile apps built with React Native or Flutter for both iOS and Android.", price: "Starting ₦500,000", icon: "📱" },
+  { slug: "marketplace-apps", title: "Marketplace Apps", description: "Multi-vendor marketplace mobile apps with real-time messaging, payments, and reviews.", price: "₦1,500,000+", icon: "🛒" },
+  { slug: "fintech-apps", title: "Fintech Apps", description: "Secure fintech applications with payment processing, budgeting tools, and financial analytics.", price: "Custom Quote", icon: "💰" },
 ];
 
 const staggerContainer = {
@@ -71,17 +71,18 @@ export default function MobileAppsPage() {
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
           >
             {types.map((type) => (
-              <motion.div
-                key={type.title}
-                variants={fadeUp}
-                className="glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300"
-              >
-                <div className="text-3xl mb-4">{type.icon}</div>
-                <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
-                <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
-                <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
-                  {type.price}
-                </span>
+              <motion.div key={type.slug} variants={fadeUp} className="h-full">
+                <Link
+                  href={`/hire/mobile-apps/${type.slug}`}
+                  className="block glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300 cursor-pointer h-full"
+                >
+                  <div className="text-3xl mb-4">{type.icon}</div>
+                  <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
+                  <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
+                  <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
+                    {type.price}
+                  </span>
+                </Link>
               </motion.div>
             ))}
           </motion.div>

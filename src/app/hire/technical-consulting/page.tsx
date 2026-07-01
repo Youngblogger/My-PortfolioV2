@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 
 const types = [
-  { title: "Architecture Reviews", description: "Comprehensive review of your system architecture with recommendations for scalability, performance, and reliability.", price: "Starting ₦200,000", icon: "🏛️" },
-  { title: "Code Audits", description: "Detailed code audit covering security, performance, maintainability, and best practices compliance.", price: "Starting ₦150,000", icon: "🔍" },
-  { title: "Scaling Strategies", description: "Strategic guidance on scaling your infrastructure, team, and processes for growth.", price: "Custom Quote", icon: "📈" },
-  { title: "Product Consulting", description: "End-to-end product consulting from ideation to launch, including technical feasibility and roadmap planning.", price: "Custom Quote", icon: "💡" },
-  { title: "Technical Roadmaps", description: "Detailed technical roadmaps aligned with business goals, including technology selection and architecture decisions.", price: "Starting ₦200,000", icon: "🗺️" },
+  { slug: "architecture-reviews", title: "Architecture Reviews", description: "Comprehensive review of your system architecture with recommendations for scalability, performance, and reliability.", price: "Starting ₦200,000", icon: "🏛️" },
+  { slug: "code-audits", title: "Code Audits", description: "Detailed code audit covering security, performance, maintainability, and best practices compliance.", price: "Starting ₦150,000", icon: "🔍" },
+  { slug: "scaling-strategies", title: "Scaling Strategies", description: "Strategic guidance on scaling your infrastructure, team, and processes for growth.", price: "Custom Quote", icon: "📈" },
+  { slug: "product-consulting", title: "Product Consulting", description: "End-to-end product consulting from ideation to launch, including technical feasibility and roadmap planning.", price: "Custom Quote", icon: "💡" },
+  { slug: "technical-roadmaps", title: "Technical Roadmaps", description: "Detailed technical roadmaps aligned with business goals, including technology selection and architecture decisions.", price: "Starting ₦200,000", icon: "🗺️" },
 ];
 
 const staggerContainer = {
@@ -71,17 +71,18 @@ export default function TechnicalConsultingPage() {
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
           >
             {types.map((type) => (
-              <motion.div
-                key={type.title}
-                variants={fadeUp}
-                className="glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300"
-              >
-                <div className="text-3xl mb-4">{type.icon}</div>
-                <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
-                <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
-                <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
-                  {type.price}
-                </span>
+              <motion.div key={type.slug} variants={fadeUp} className="h-full">
+                <Link
+                  href={`/hire/technical-consulting/${type.slug}`}
+                  className="block glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300 cursor-pointer h-full"
+                >
+                  <div className="text-3xl mb-4">{type.icon}</div>
+                  <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
+                  <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
+                  <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
+                    {type.price}
+                  </span>
+                </Link>
               </motion.div>
             ))}
           </motion.div>

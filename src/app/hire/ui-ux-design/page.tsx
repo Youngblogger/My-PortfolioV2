@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 
 const types = [
-  { title: "Product Design", description: "End-to-end product design from concept to polished UI, including user flows and interaction design.", price: "Starting ₦250,000", icon: "🎨" },
-  { title: "Wireframes", description: "Low and high-fidelity wireframes to visualize layout, structure, and user flow before development.", price: "Starting ₦100,000", icon: "📐" },
-  { title: "Design Systems", description: "Comprehensive design systems with component libraries, style guides, and documentation for consistent branding.", price: "Starting ₦300,000", icon: "📦" },
-  { title: "User Research", description: "User research including interviews, surveys, usability testing, and data-driven design recommendations.", price: "Starting ₦150,000", icon: "🔍" },
-  { title: "Prototyping", description: "Interactive prototypes with realistic animations and transitions for user testing and stakeholder approval.", price: "Starting ₦150,000", icon: "⚡" },
+  { slug: "product-design", title: "Product Design", description: "End-to-end product design from concept to polished UI, including user flows and interaction design.", price: "Starting ₦250,000", icon: "🎨" },
+  { slug: "wireframes", title: "Wireframes", description: "Low and high-fidelity wireframes to visualize layout, structure, and user flow before development.", price: "Starting ₦100,000", icon: "📐" },
+  { slug: "design-systems", title: "Design Systems", description: "Comprehensive design systems with component libraries, style guides, and documentation for consistent branding.", price: "Starting ₦300,000", icon: "📦" },
+  { slug: "user-research", title: "User Research", description: "User research including interviews, surveys, usability testing, and data-driven design recommendations.", price: "Starting ₦150,000", icon: "🔍" },
+  { slug: "prototyping", title: "Prototyping", description: "Interactive prototypes with realistic animations and transitions for user testing and stakeholder approval.", price: "Starting ₦150,000", icon: "⚡" },
 ];
 
 const staggerContainer = {
@@ -71,17 +71,18 @@ export default function UiUxDesignPage() {
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
           >
             {types.map((type) => (
-              <motion.div
-                key={type.title}
-                variants={fadeUp}
-                className="glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300"
-              >
-                <div className="text-3xl mb-4">{type.icon}</div>
-                <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
-                <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
-                <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
-                  {type.price}
-                </span>
+              <motion.div key={type.slug} variants={fadeUp} className="h-full">
+                <Link
+                  href={`/hire/ui-ux-design/${type.slug}`}
+                  className="block glass rounded-2xl p-6 md:p-8 hover:border-gold/20 transition-all duration-300 cursor-pointer h-full"
+                >
+                  <div className="text-3xl mb-4">{type.icon}</div>
+                  <h3 className="text-lg font-bold text-white mb-2">{type.title}</h3>
+                  <p className="text-muted text-sm leading-relaxed mb-4">{type.description}</p>
+                  <span className="inline-block px-3 py-1.5 rounded-full glass text-xs text-gold font-semibold">
+                    {type.price}
+                  </span>
+                </Link>
               </motion.div>
             ))}
           </motion.div>

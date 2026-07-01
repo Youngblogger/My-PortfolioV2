@@ -100,7 +100,7 @@ export default function ContactPage() {
 
       <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent pointer-events-none" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
+        <div className="relative z-10 max-w-7xl mx-auto px-0 sm:px-6">
           <div className="grid md:grid-cols-2 gap-10 items-start">
             <motion.div
               initial={{ opacity: 0, y: 30 }}

@@ -91,6 +91,7 @@ export default function RequestQuotePage() {
     try {
       await api.sendQuoteRequest(form);
       setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("Something went wrong. Please try again or email us directly at admin@codemafia.ng.");
     } finally {
@@ -154,7 +155,7 @@ export default function RequestQuotePage() {
         />
       </div>
 
-      <div className="relative z-10 max-w-3xl mx-auto px-6">
+      <div className="relative z-10 max-w-3xl mx-auto px-0 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

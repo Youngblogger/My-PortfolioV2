@@ -33,7 +33,7 @@ function ForgotPasswordForm() {
 
   if (sent) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6 py-20">
+      <div className="min-h-screen flex items-center justify-center px-0 sm:px-6 py-20">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -53,13 +53,7 @@ function ForgotPasswordForm() {
               </svg>
             </div>
             <p className="text-sm text-muted mb-6">
-              Didn&apos;t receive the email? Check your spam folder or{" "}
-              <button
-                onClick={() => { setSent(false); setEmail(""); }}
-                className="text-gold hover:underline cursor-pointer"
-              >
-                try again
-              </button>
+              A password reset link has been sent to <span className="text-white font-medium">{email}</span>.
             </p>
             <Link href="/auth/login">
               <Button variant="outline" fullWidth>Back to Login</Button>
@@ -71,7 +65,7 @@ function ForgotPasswordForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-20">
+    <div className="min-h-screen flex items-center justify-center px-0 sm:px-6 py-20">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
       <motion.div
         initial={{ opacity: 0, y: 20 }}

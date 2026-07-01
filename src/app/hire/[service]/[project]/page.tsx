@@ -51,6 +51,7 @@ export default function ProjectTypePage() {
   const router = useRouter();
   const [data, setData] = useState<ProjectDetailData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [fallback, setFallback] = useState(false);
   const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
   const [relatedProjects, setRelatedProjects] = useState<ProjectTypeSummaryData[]>([]);
@@ -74,7 +75,7 @@ export default function ProjectTypePage() {
       setLoading(false);
     }).catch(() => {
       setLoading(false);
-      notFound();
+      setFallback(true);
     });
 
     api.getService(serviceSlug).then((res) => {
@@ -122,7 +123,54 @@ export default function ProjectTypePage() {
     );
   }
 
-  if (!data) return notFound();
+  if (fallback && !data) {
+    const projectTitle = projectSlug
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ");
+    return (
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 min-h-screen overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-surface" />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-3xl"
+          >
+            <Link
+              href={`/hire/${serviceSlug}`}
+              className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-8"
+            >
+              ← Back
+            </Link>
+            <h1 className="section-heading mt-2">
+              {projectTitle}
+            </h1>
+            <p className="section-subtitle mt-4">
+              Tell us about your {projectTitle.toLowerCase()} project and we&apos;ll create a custom proposal tailored to your needs.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Link
+                href={`/hire/request-quote`}
+                className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+              >
+                Request a Quote
+              </Link>
+              <Link
+                href={`/hire/${serviceSlug}`}
+                className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 transition-all duration-300"
+              >
+                View All {serviceSlug.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")} Projects
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>

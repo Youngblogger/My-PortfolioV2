@@ -2,8 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/nav";
-import Footer from "@/components/footer";
 import ClientLayout from "@/components/ClientLayout";
+import ConditionalFooter from "@/components/ConditionalFooter";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -74,7 +74,7 @@ export default function RootLayout({
         <main id="main-content">
           <ClientLayout>{children}</ClientLayout>
         </main>
-        <Footer />
+        <ConditionalFooter />
       </body>
     </html>
   );
