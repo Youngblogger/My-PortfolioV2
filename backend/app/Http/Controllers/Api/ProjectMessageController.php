@@ -21,32 +21,38 @@ class ProjectMessageController extends Controller
             return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
         }
 
-        $messages = ServiceMessage::with('user.profile')
-            ->where('service_order_id', $orderId)
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(fn ($m) => [
-                'id' => $m->id,
-                'message' => $m->message,
-                'type' => $m->type,
-                'is_important' => $m->type === 'important',
-                'attachments' => $m->attachments,
-                'is_read' => (bool) $m->is_read,
-                'read_at' => $m->read_at?->toIso8601String(),
-                'created_at' => $m->created_at,
-                'user' => $m->user?->profile ? [
-                    'id' => $m->user->id,
-                    'full_name' => $m->user->profile->full_name,
-                    'avatar_url' => $m->user->profile->avatar_url,
-                    'is_admin' => $m->user->profile->isAdmin(),
-                ] : null,
-            ]);
+        $currentUserId = $request->user()->id;
+        $since = $request->query('since');
 
-        // Mark messages as read for the current user
-        ServiceMessage::where('service_order_id', $orderId)
-            ->where('user_id', '!=', $request->user()->id)
-            ->where('is_read', false)
-            ->update(['is_read' => true, 'read_at' => now()]);
+        $query = ServiceMessage::with('user.profile')
+            ->where('service_order_id', $orderId);
+
+        if ($since) {
+            $query->where('created_at', '>', $since);
+        }
+
+        $messages = $query->orderBy('created_at', 'asc')
+            ->get()
+            ->map(fn ($m) => $this->formatMessage($m, $currentUserId));
+
+        if ($since) {
+            // Polling — mark as delivered only
+            ServiceMessage::where('service_order_id', $orderId)
+                ->where('user_id', '!=', $currentUserId)
+                ->whereNull('delivered_at')
+                ->update(['delivered_at' => now()]);
+        } else {
+            // Initial load — mark as delivered and read
+            ServiceMessage::where('service_order_id', $orderId)
+                ->where('user_id', '!=', $currentUserId)
+                ->whereNull('delivered_at')
+                ->update(['delivered_at' => now()]);
+
+            ServiceMessage::where('service_order_id', $orderId)
+                ->where('user_id', '!=', $currentUserId)
+                ->where('is_read', false)
+                ->update(['is_read' => true, 'read_at' => now()]);
+        }
 
         return response()->json(['success' => true, 'data' => $messages]);
     }
@@ -70,10 +76,11 @@ class ProjectMessageController extends Controller
         }
 
         $isAdmin = $request->user()?->profile?->isAdmin();
+        $currentUserId = $request->user()->id;
 
         $message = ServiceMessage::create([
             'service_order_id' => $order->id,
-            'user_id' => $request->user()->id,
+            'user_id' => $currentUserId,
             'message' => $request->message,
             'attachments' => $request->attachments,
             'type' => $request->input('type', 'text'),
@@ -83,7 +90,7 @@ class ProjectMessageController extends Controller
 
         ServiceActivityLog::create([
             'service_order_id' => $order->id,
-            'user_id' => $request->user()->id,
+            'user_id' => $currentUserId,
             'action' => 'discussion_message',
             'description' => ($isAdmin ? 'Admin' : 'Client') . " posted a message in project discussion.",
             'metadata' => ['message_id' => $message->id],
@@ -122,22 +129,7 @@ class ProjectMessageController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => [
-                'id' => $message->id,
-                'message' => $message->message,
-                'type' => $message->type,
-                'is_important' => $message->type === 'important',
-                'attachments' => $message->attachments,
-                'is_read' => (bool) $message->is_read,
-                'read_at' => $message->read_at?->toIso8601String(),
-                'created_at' => $message->created_at,
-                'user' => $message->user?->profile ? [
-                    'id' => $message->user->id,
-                    'full_name' => $message->user->profile->full_name,
-                    'avatar_url' => $message->user->profile->avatar_url,
-                    'is_admin' => $message->user->profile->isAdmin(),
-                ] : null,
-            ],
+            'data' => $this->formatMessage($message, $currentUserId),
         ], 201);
     }
 
@@ -154,5 +146,27 @@ class ProjectMessageController extends Controller
             'success' => true,
             'data' => ['is_important' => $message->type === 'important'],
         ]);
+    }
+
+    private function formatMessage($m, string $currentUserId): array
+    {
+        return [
+            'id' => $m->id,
+            'message' => $m->message,
+            'type' => $m->type,
+            'is_important' => $m->type === 'important',
+            'attachments' => $m->attachments,
+            'is_read' => (bool) $m->is_read,
+            'read_at' => $m->read_at?->toIso8601String(),
+            'delivered_at' => $m->delivered_at?->toIso8601String(),
+            'created_at' => $m->created_at,
+            'is_mine' => $m->user_id === $currentUserId,
+            'user' => $m->user?->profile ? [
+                'id' => $m->user->id,
+                'full_name' => $m->user->profile->full_name,
+                'avatar_url' => $m->user->profile->avatar_url,
+                'is_admin' => $m->user->profile->isAdmin(),
+            ] : null,
+        ];
     }
 }

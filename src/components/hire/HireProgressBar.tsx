@@ -36,11 +36,11 @@ export default function HireProgressBar() {
 
   return (
     <div className="fixed top-16 left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-white/5">
-      <div className="max-w-7xl mx-auto px-6 py-3">
-        <div className="flex items-center gap-1 md:gap-2">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-1 md:gap-2 min-w-max md:min-w-0">
           {stepLabels.map((label, i) => (
             <div key={label} className="flex-1 flex items-center">
-              <div className="flex items-center gap-1.5 md:gap-2 min-w-0">
+              <div className="flex items-center gap-1 md:gap-2 min-w-0">
                 <div
                   className={`w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
                     i === currentStep
@@ -59,7 +59,7 @@ export default function HireProgressBar() {
                   )}
                 </div>
                 <span
-                  className={`text-[10px] md:text-xs font-medium truncate transition-colors duration-300 ${
+                  className={`hidden md:inline text-[10px] md:text-xs font-medium truncate transition-colors duration-300 ${
                     i === currentStep ? "text-gold" : i < currentStep ? "text-white/60" : "text-muted"
                   }`}
                 >
@@ -67,7 +67,7 @@ export default function HireProgressBar() {
                 </span>
               </div>
               {i < stepLabels.length - 1 && (
-                <div className="flex-1 mx-1 md:mx-2 h-px bg-white/5 relative overflow-hidden">
+                <div className="flex-1 mx-1 md:mx-2 h-px bg-white/5 relative overflow-hidden min-w-[12px] md:min-w-0">
                   <motion.div
                     className="absolute inset-0 bg-gold-gradient"
                     initial={{ width: 0 }}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
@@ -58,18 +59,8 @@ function LoginForm() {
       </div>
 
       {/* Main */}
-      <main className="relative z-10 flex-1 px-0 sm:px-6 pt-0">
+      <main className="relative z-10 flex-1 px-0 sm:px-6 pt-12 sm:pt-20">
         <div className="w-full max-w-none sm:max-w-[440px] mx-auto px-0 sm:px-0">
-
-          {/* Badge */}
-          <div className="text-center pt-0 pb-1">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/10 text-gold text-[11px] font-semibold uppercase tracking-wider">
-              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Client Portal
-            </span>
-          </div>
 
           {/* Card */}
           <motion.div
@@ -81,6 +72,17 @@ function LoginForm() {
               <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
 
               <div className="p-4">
+                {/* Logo & Badge */}
+                <div className="text-center mb-6">
+                  <Image src="/CodemafiaLogo.png" alt="CODEMAFIA" width={180} height={50} className="mx-auto" priority />
+                  <p className="text-xs text-muted mt-1 mb-4">Engineering Excellence. Inspiring Innovation.</p>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/10 border border-gold/10 text-gold text-[11px] font-semibold uppercase tracking-wider">
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    Client Portal
+                  </span>
+                </div>
                 <form onSubmit={handleLogin} className="space-y-3">
                   <motion.div {...fadeUp(0.14)}>
                     <Input

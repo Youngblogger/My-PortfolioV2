@@ -75,10 +75,10 @@ export default function BookPage() {
   }
 
   return (
-    <section className="relative pt-32 pb-20 md:pt-40 overflow-hidden">
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+    <section className="relative pt-0 pb-16 overflow-hidden">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6">
         {/* Progress */}
-        <div className="mb-10 max-w-5xl mx-auto">
+        <div className="mb-6 max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs text-muted uppercase tracking-wider">
               Step {currentStep} of {steps.length}

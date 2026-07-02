@@ -335,8 +335,8 @@ export default function RequirementsPage() {
 
   if (loading) {
     return (
-      <section className="relative pt-32 pb-20 md:pt-40 overflow-hidden">
-        <div className="relative z-10 max-w-3xl mx-auto px-6">
+      <section className="relative pt-0 pb-16 overflow-hidden">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6">
           <Skeleton className="h-4 w-24 mb-6" />
           <Skeleton className="h-10 w-72 mb-3" />
           <Skeleton className="h-5 w-96 mb-10" />
@@ -359,8 +359,8 @@ export default function RequirementsPage() {
 
   if (fetchError) {
     return (
-      <section className="relative pt-32 pb-20 md:pt-40 overflow-hidden">
-        <div className="relative z-10 max-w-3xl mx-auto px-6">
+      <section className="relative pt-0 pb-16 overflow-hidden">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6">
           <ErrorMessage
             title="Failed to load requirements"
             message={fetchError}
@@ -387,8 +387,8 @@ export default function RequirementsPage() {
 
   if (questions.length === 0) {
     return (
-      <section className="relative pt-32 pb-20 md:pt-40 overflow-hidden">
-        <div className="relative z-10 max-w-3xl mx-auto px-6">
+      <section className="relative pt-0 pb-16 overflow-hidden">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6">
           <div className="glass rounded-2xl p-12 text-center">
             <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mx-auto mb-5">
               <svg className="w-8 h-8 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -410,7 +410,7 @@ export default function RequirementsPage() {
 
   if (completed) {
     return (
-      <section className="relative pt-32 pb-20 md:pt-40 overflow-hidden">
+      <section className="relative pt-0 pb-16 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-surface" />
           <motion.div
@@ -421,7 +421,7 @@ export default function RequirementsPage() {
           />
         </div>
 
-        <div className="relative z-10 max-w-3xl mx-auto px-6">
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -467,7 +467,7 @@ export default function RequirementsPage() {
   }
 
   return (
-    <section className="relative pt-32 pb-20 md:pt-40 overflow-hidden">
+    <section className="relative pt-0 pb-16 overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-surface" />
         <motion.div
@@ -478,29 +478,29 @@ export default function RequirementsPage() {
         />
       </div>
 
-      <div className="relative z-10 max-w-3xl mx-auto px-0 sm:px-6">
+      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-10"
+          className="mb-0"
         >
           <Link
             href={`/hire/${serviceSlug}/${projectSlug}`}
-            className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-0 mt-2"
           >
             ← Back
           </Link>
           <span className="section-label">REQUIREMENTS</span>
-          <h1 className="section-heading mt-2">
+          <h1 className="section-heading mt-0">
             Project <span className="text-gradient">Requirements</span>
           </h1>
-          <p className="section-subtitle mt-3">
+          <p className="section-subtitle mt-0">
             Help us understand your project better by answering a few questions.
           </p>
         </motion.div>
 
-        <div className="mb-10">
+        <div className="mt-3 mb-3">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs text-muted uppercase tracking-wider">
               Step {currentStep + 1} of {steps.length}
@@ -515,14 +515,14 @@ export default function RequirementsPage() {
               transition={{ duration: 0.5, ease: "easeInOut" }}
             />
           </div>
-          <div className="flex justify-between mt-3">
+          <div className="flex items-center gap-2 mt-3 overflow-x-auto scrollbar-none">
             {steps.map((_, i) => (
               <button
                 key={i}
                 onClick={() => handleStepClick(i)}
                 disabled={i > currentStep}
                 className={`
-                  w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium
+                  w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-[10px] md:text-xs font-medium shrink-0
                   transition-all duration-300
                   ${i === currentStep
                     ? "bg-gold-gradient text-background font-bold"
@@ -533,7 +533,7 @@ export default function RequirementsPage() {
                 `}
               >
                 {i < currentStep ? (
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <svg className="w-3 h-3 md:w-3.5 md:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
@@ -569,7 +569,7 @@ export default function RequirementsPage() {
               </div>
             </motion.div>
 
-            <div className="flex items-center justify-between mt-8">
+            <div className="flex items-center justify-between mt-4">
               <div>
                 {currentStep > 0 && (
                   <button

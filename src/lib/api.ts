@@ -1690,7 +1690,9 @@ export interface ServiceMessageData {
   attachments: string[] | null;
   is_read: boolean;
   read_at: string | null;
+  delivered_at: string | null;
   created_at: string;
+  is_mine: boolean;
   user: {
     id: string;
     full_name: string | null;
@@ -1755,7 +1757,9 @@ export interface ConversationMessageData {
   attachments: MessageAttachment[] | null;
   is_read: boolean;
   read_at: string | null;
+  delivered_at: string | null;
   created_at: string;
+  is_mine: boolean;
   user: {
     id: string;
     full_name: string | null;

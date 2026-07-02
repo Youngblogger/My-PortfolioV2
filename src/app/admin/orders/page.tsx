@@ -215,7 +215,7 @@ export default function AdminOrdersPage() {
                     >
                       <td className="px-6 py-4">
                         <Link
-                          href={`/hire/project/${order.id}`}
+                          href={`/admin/projects/${order.id}`}
                           className="text-sm font-medium text-gold hover:text-gold-secondary transition-colors"
                         >
                           {order.order_number}
@@ -248,7 +248,7 @@ export default function AdminOrdersPage() {
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <Link
-                            href={`/hire/project/${order.id}`}
+                            href={`/admin/projects/${order.id}`}
                             className="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-muted hover:text-white hover:border-gold/30 transition-all"
                           >
                             View
@@ -289,7 +289,7 @@ export default function AdminOrdersPage() {
               >
                 <div className="flex items-start justify-between">
                   <Link
-                    href={`/hire/project/${order.id}`}
+                    href={`/admin/projects/${order.id}`}
                     className="text-sm font-bold text-gold hover:text-gold-secondary transition-colors"
                   >
                     {order.order_number}
@@ -319,7 +319,7 @@ export default function AdminOrdersPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Link
-                      href={`/hire/project/${order.id}`}
+                      href={`/admin/projects/${order.id}`}
                       className="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-muted hover:text-white hover:border-gold/30 transition-all"
                     >
                       View

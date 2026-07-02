@@ -129,7 +129,7 @@ export default function ProjectTypePage() {
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(" ");
     return (
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 min-h-screen overflow-hidden">
+      <section className="relative pt-0 pb-16 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-surface" />
         </div>
@@ -142,17 +142,17 @@ export default function ProjectTypePage() {
           >
             <Link
               href={`/hire/${serviceSlug}`}
-              className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-8"
+              className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-0 mt-2"
             >
               ← Back
             </Link>
-            <h1 className="section-heading mt-2">
+            <h1 className="section-heading mt-0">
               {projectTitle}
             </h1>
-            <p className="section-subtitle mt-4">
+            <p className="section-subtitle mt-0">
               Tell us about your {projectTitle.toLowerCase()} project and we&apos;ll create a custom proposal tailored to your needs.
             </p>
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="mt-4 flex flex-wrap gap-4">
               <Link
                 href={`/hire/request-quote`}
                 className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
@@ -177,7 +177,7 @@ export default function ProjectTypePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+      <section className="relative pt-0 pb-16 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-surface" />
           <motion.div
@@ -196,19 +196,19 @@ export default function ProjectTypePage() {
           >
             <Link
               href={`/hire/${serviceSlug}`}
-              className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-8"
+              className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-0 mt-2"
             >
               ← Back to {data.service.title}
             </Link>
-            <div className="text-5xl mb-4">{data.icon || "📋"}</div>
+            <div className="text-5xl mb-2">{data.icon || "📋"}</div>
             <span className="section-label">{data.service.title.toUpperCase()}</span>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mt-4 mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mt-1 mb-2">
               {data.title}
             </h1>
             <p className="text-lg md:text-xl text-muted max-w-3xl leading-relaxed">
               {data.description || data.short_description}
             </p>
-            <div className="flex flex-wrap gap-4 mt-8">
+            <div className="flex flex-wrap gap-4 mt-4">
               <div className="glass rounded-xl px-5 py-3">
                 <span className="text-xs text-muted uppercase tracking-wider">Starting From</span>
                 <p className="text-xl font-bold text-gold mt-1">

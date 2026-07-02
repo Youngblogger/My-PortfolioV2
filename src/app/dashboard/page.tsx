@@ -342,11 +342,18 @@ export default function DashboardPage() {
                           </p>
                           <p className="text-xs text-muted mt-0.5 font-mono">#{order.order_number}</p>
                         </div>
-                        <div className="text-right shrink-0 ml-4">
-                          <p className="text-sm font-bold text-gold">{formatCurrency(order.total_ngn)}</p>
-                          <Badge variant={paymentVariant(order.payment_status)} className="mt-1">
-                            {paymentLabel(order.payment_status)}
-                          </Badge>
+                        <div className="text-right shrink-0 ml-4 flex items-center gap-3">
+                          {order.payment_status === "partially_paid" && (
+                            <span className="text-[11px] font-semibold text-gold bg-gold/10 px-2.5 py-1 rounded-full border border-gold/20 whitespace-nowrap">
+                              Pay Balance &rarr;
+                            </span>
+                          )}
+                          <div>
+                            <p className="text-sm font-bold text-gold">{formatCurrency(order.total_ngn)}</p>
+                            <Badge variant={paymentVariant(order.payment_status)} className="mt-1">
+                              {paymentLabel(order.payment_status)}
+                            </Badge>
+                          </div>
                         </div>
                       </motion.div>
                     </Link>
@@ -362,6 +369,8 @@ export default function DashboardPage() {
 }
 
 function ProjectCard({ order }: { order: ServiceOrderListItem }) {
+  const needsBalancePayment = order.payment_status === "partially_paid";
+
   return (
     <motion.div variants={fadeUp}>
       <Link
@@ -395,7 +404,14 @@ function ProjectCard({ order }: { order: ServiceOrderListItem }) {
             </div>
             <p className="text-[11px] text-muted">Created {formatDate(order.created_at)}</p>
           </div>
-          <span className="text-gold text-lg" aria-hidden="true">&rarr;</span>
+          <div className="flex items-center gap-2">
+            {needsBalancePayment && (
+              <span className="text-[11px] font-semibold text-gold bg-gold/10 px-2.5 py-1 rounded-full border border-gold/20">
+                Pay Balance &rarr;
+              </span>
+            )}
+            <span className="text-gold text-lg" aria-hidden="true">&rarr;</span>
+          </div>
         </div>
       </Link>
     </motion.div>

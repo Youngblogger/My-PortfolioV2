@@ -118,23 +118,23 @@ function DiscoveryCallForm() {
   }
 
   return (
-    <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 overflow-hidden">
+    <section className="relative pt-0 pb-16 overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 opacity-20"
           style={{ background: "radial-gradient(circle at 50% 50%, rgba(212,175,55,0.08) 0%, transparent 50%)" }}
         />
       </div>
 
-      <div className="relative z-10 max-w-3xl mx-auto px-0 sm:px-6">
+      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-          className="mb-10"
+          className="mb-0"
         >
           <Link
             href="/hire"
-            className="inline-flex items-center gap-2 text-sm text-muted hover:text-gold transition-colors duration-300 mb-6"
+            className="inline-flex items-center gap-2 text-sm text-muted hover:text-gold transition-colors duration-300 mb-0 mt-2"
           >
             ← Back to Services
           </Link>
@@ -143,8 +143,8 @@ function DiscoveryCallForm() {
             <br />
             <span className="text-gradient">Discovery Call</span>
           </h1>
-          <p className="section-subtitle mt-4">
-            Let&apos;s chat about your project. Pick a time that works for you.
+          <p className="section-subtitle mt-0">
+            Let&apos;s chat about your project idea, goals, and how we can help bring it to life.
           </p>
         </motion.div>
 

@@ -131,6 +131,37 @@ function AdminNotificationBell() {
   );
 }
 
+function AdminChatBell() {
+  const router = useRouter();
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchCount() {
+      try {
+        const res = await api.getConversationUnreadCounts();
+        if (mounted && res.data?.total_unread) setCount(res.data.total_unread);
+      } catch { if (mounted) setCount(0); }
+    }
+    fetchCount();
+    const interval = setInterval(fetchCount, 30000);
+    return () => { mounted = false; clearInterval(interval); };
+  }, []);
+
+  return (
+    <button onClick={() => router.push("/admin/messages")} className="relative p-2 rounded-lg text-muted hover:text-white hover:bg-white/5 transition-colors" title="Messages">
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+      </svg>
+      {count > 0 && (
+        <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white px-1 shadow-lg">
+          {count > 99 ? "99+" : count}
+        </span>
+      )}
+    </button>
+  );
+}
+
 export default function AdminLayoutClient({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -264,8 +295,8 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
         <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      <aside className={`${sidebarOpen ? "block" : "hidden"} lg:block shrink-0 lg:w-[280px]`}>
-        <div className="fixed lg:static z-50 h-screen w-[280px] glass border-r border-white/10 flex flex-col">
+      <aside className={`${sidebarOpen ? "block" : "hidden"} lg:block shrink-0 lg:w-[220px]`}>
+        <div className="fixed z-50 h-screen w-[220px] glass border-r border-white/10 flex flex-col">
           <div className="p-5 border-b border-white/10 shrink-0">
             <Link href="/admin" className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-gold-gradient flex items-center justify-center">
@@ -365,16 +396,19 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
               </span>
             </div>
 
-            <AdminNotificationBell />
-            <button
-              onClick={handleLogout}
-              className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all duration-200"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-              </svg>
-              Logout
-            </button>
+            <div className="flex items-center gap-1">
+              <AdminChatBell />
+              <AdminNotificationBell />
+              <button
+                onClick={handleLogout}
+                className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all duration-200"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+              </button>
+            </div>
           </div>
         </header>
 

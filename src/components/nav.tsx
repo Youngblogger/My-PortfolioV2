@@ -135,12 +135,6 @@ export default function Nav() {
           <Link href="/dashboard" className="flex flex-col shrink-0 self-start outline-none">
             <span className="flex items-center gap-2">
               <Image src="/iconLogo.png" alt="CODEMAFIA" width={32} height={32} className="rounded-lg" unoptimized />
-              <span className="text-lg font-bold">
-                <span className="text-gradient">CODEMAFIA</span>
-              </span>
-            </span>
-            <span className="text-[11px] md:text-xs text-muted/50 leading-tight mt-0.5 ml-1">
-              Engineering Excellence. Inspiring Innovation.
             </span>
           </Link>
 
@@ -266,9 +260,6 @@ export default function Nav() {
         <Link href="/" className="flex flex-col shrink-0 self-start outline-none">
             <span className="flex items-center gap-2">
             <Image src="/CodemafiaLogo.png" alt="CODEMAFIA" width={128} height={32} className="w-28 sm:w-32 h-auto" unoptimized />
-          </span>
-          <span className="text-[10px] md:text-[11px] text-muted/50 leading-tight mt-0.5">
-            Engineering Excellence. Inspiring Innovation.
           </span>
         </Link>
 

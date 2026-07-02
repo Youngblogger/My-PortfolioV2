@@ -702,17 +702,17 @@ function MessagesSection({ w, milestones, completedMilestones, totalMilestones, 
           </div>
         ) : (
           msgs.map((msg) => (
-            <div key={msg.id} className={`flex gap-3 ${msg.user?.is_admin ? "" : "flex-row-reverse"}`}>
+            <div key={msg.id} className={`flex gap-3 ${msg.is_mine ? "flex-row-reverse" : ""}`}>
               <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center shrink-0 text-xs font-bold text-gold">
                 {msg.user?.full_name?.charAt(0) || "?"}
               </div>
-              <div className={`max-w-[75%] ${msg.user?.is_admin ? "" : "items-end"} flex flex-col`}>
+              <div className={`max-w-[75%] ${msg.is_mine ? "items-end" : ""} flex flex-col`}>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-medium text-white/80">{msg.user?.full_name || "Unknown"}</span>
                   {msg.is_important && <span className="text-[10px] text-gold">📌</span>}
                   <span className="text-[10px] text-muted">{formatDate(msg.created_at)}</span>
                 </div>
-                <div className={`rounded-2xl px-4 py-2.5 text-sm ${msg.user?.is_admin ? "bg-gold/10 text-white rounded-tl-sm" : "bg-white/10 text-white/90 rounded-tr-sm"}`}>
+                <div className={`rounded-2xl px-4 py-2.5 text-sm ${msg.is_mine ? "bg-gold/10 text-white rounded-tr-sm" : "bg-white/10 text-white/90 rounded-tl-sm"}`}>
                   {msg.message}
                 </div>
               </div>
@@ -1458,7 +1458,7 @@ export default function ProjectWorkspacePage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-1"
           >
             &larr; Back to Dashboard
           </Link>
@@ -1498,7 +1498,7 @@ export default function ProjectWorkspacePage() {
 
         <div className="flex gap-8">
           {/* Desktop sidebar */}
-          <nav className="hidden md:flex flex-col gap-1 w-56 shrink-0">
+          <nav className="hidden md:flex flex-col gap-1 w-56 shrink-0 self-start">
             <div className="sticky top-28 space-y-1">
               {TABS.map((tab) => (
                 <button

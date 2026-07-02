@@ -12,7 +12,7 @@ class ServiceMessage extends Model
 
     protected $fillable = [
         'service_order_id', 'user_id', 'message',
-        'attachments', 'type', 'is_read', 'read_at',
+        'attachments', 'type', 'is_read', 'read_at', 'delivered_at',
     ];
 
     protected function casts(): array
@@ -21,6 +21,7 @@ class ServiceMessage extends Model
             'attachments' => 'array',
             'is_read' => 'boolean',
             'read_at' => 'datetime',
+            'delivered_at' => 'datetime',
         ];
     }
 

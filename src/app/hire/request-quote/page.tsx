@@ -147,7 +147,7 @@ export default function RequestQuotePage() {
   }
 
   return (
-    <section className="relative pt-20 pb-16 md:pt-24 md:pb-20 overflow-hidden">
+    <section className="relative pt-0 pb-16 overflow-hidden">
       <div className="absolute inset-0">
         <div
           className="absolute inset-0 opacity-20"
@@ -155,16 +155,16 @@ export default function RequestQuotePage() {
         />
       </div>
 
-      <div className="relative z-10 max-w-3xl mx-auto px-0 sm:px-6">
+      <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-          className="mb-10"
+          className="mb-0"
         >
           <Link
             href="/hire"
-            className="inline-flex items-center gap-2 text-sm text-muted hover:text-gold transition-colors duration-300 mb-6"
+            className="inline-flex items-center gap-2 text-sm text-muted hover:text-gold transition-colors duration-300 mb-0 mt-2"
           >
             ← Back to Services
           </Link>
@@ -173,7 +173,7 @@ export default function RequestQuotePage() {
             <br />
             <span className="text-gradient">Custom Quote</span>
           </h1>
-          <p className="section-subtitle mt-4">
+          <p className="section-subtitle mt-0">
             Tell us about your project and we&apos;ll put together a tailored proposal for you.
           </p>
         </motion.div>

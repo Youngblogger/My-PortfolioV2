@@ -77,16 +77,25 @@ class ConversationController extends Controller
             return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
         }
 
+        $currentUserId = $request->user()->id;
+
+        // Mark unread messages from others as delivered (if not already)
+        ServiceMessage::where('service_order_id', $orderId)
+            ->where('user_id', '!=', $currentUserId)
+            ->whereNull('delivered_at')
+            ->update(['delivered_at' => now()]);
+
+        // Mark unread messages from others as read
+        ServiceMessage::where('service_order_id', $orderId)
+            ->where('user_id', '!=', $currentUserId)
+            ->where('is_read', false)
+            ->update(['is_read' => true, 'read_at' => now()]);
+
         $messages = ServiceMessage::with('user.profile')
             ->where('service_order_id', $orderId)
             ->orderBy('created_at', 'asc')
             ->get()
-            ->map(fn ($m) => $this->formatMessage($m));
-
-        ServiceMessage::where('service_order_id', $orderId)
-            ->where('user_id', '!=', $request->user()->id)
-            ->where('is_read', false)
-            ->update(['is_read' => true, 'read_at' => now()]);
+            ->map(fn ($m) => $this->formatMessage($m, $currentUserId));
 
         return response()->json(['success' => true, 'data' => $messages]);
     }
@@ -99,6 +108,8 @@ class ConversationController extends Controller
             return response()->json(['success' => false, 'error' => 'Unauthorized.'], 403);
         }
 
+        $currentUserId = $request->user()->id;
+
         $since = $request->query('since');
 
         $query = ServiceMessage::with('user.profile')
@@ -108,12 +119,13 @@ class ConversationController extends Controller
             $query->where('created_at', '>', $since);
         }
 
-        $messages = $query->orderBy('created_at', 'asc')->get()->map(fn ($m) => $this->formatMessage($m));
+        $messages = $query->orderBy('created_at', 'asc')->get()->map(fn ($m) => $this->formatMessage($m, $currentUserId));
 
+        // Mark as delivered only — NOT as read (that happens on explicit conversation open)
         ServiceMessage::where('service_order_id', $orderId)
-            ->where('user_id', '!=', $request->user()->id)
-            ->where('is_read', false)
-            ->update(['is_read' => true, 'read_at' => now()]);
+            ->where('user_id', '!=', $currentUserId)
+            ->whereNull('delivered_at')
+            ->update(['delivered_at' => now()]);
 
         return response()->json(['success' => true, 'data' => $messages]);
     }
@@ -127,6 +139,7 @@ class ConversationController extends Controller
         }
 
         $isAdmin = $request->user()?->profile?->isAdmin();
+        $currentUserId = $request->user()->id;
 
         $message = $request->input('message', '');
 
@@ -177,7 +190,7 @@ class ConversationController extends Controller
 
         $record = ServiceMessage::create([
             'service_order_id' => $order->id,
-            'user_id' => $request->user()->id,
+            'user_id' => $currentUserId,
             'message' => $message,
             'attachments' => !empty($attachmentData) ? $attachmentData : null,
             'type' => $request->input('type', 'text'),
@@ -187,7 +200,7 @@ class ConversationController extends Controller
 
         ServiceActivityLog::create([
             'service_order_id' => $order->id,
-            'user_id' => $request->user()->id,
+            'user_id' => $currentUserId,
             'action' => 'discussion_message',
             'description' => ($isAdmin ? 'Admin' : 'Client') . " posted a message in project discussion.",
             'metadata' => ['message_id' => $record->id],
@@ -227,7 +240,7 @@ class ConversationController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $this->formatMessage($record),
+            'data' => $this->formatMessage($record, $currentUserId),
         ], 201);
     }
 
@@ -299,7 +312,7 @@ class ConversationController extends Controller
         ]);
     }
 
-    private function formatMessage($m): array
+    private function formatMessage($m, string $currentUserId): array
     {
         return [
             'id' => $m->id,
@@ -309,7 +322,9 @@ class ConversationController extends Controller
             'attachments' => $m->attachments,
             'is_read' => (bool) $m->is_read,
             'read_at' => $m->read_at?->toIso8601String(),
+            'delivered_at' => $m->delivered_at?->toIso8601String(),
             'created_at' => $m->created_at->toIso8601String(),
+            'is_mine' => $m->user_id === $currentUserId,
             'user' => $m->user?->profile ? [
                 'id' => $m->user->id,
                 'full_name' => $m->user->profile->full_name,

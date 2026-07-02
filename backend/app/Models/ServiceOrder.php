@@ -140,11 +140,13 @@ class ServiceOrder extends Model
         return max(0, (float) $this->total_usd - $this->getTotalPaidUsd());
     }
 
-    public function getLastPaymentDate()
+    public function getLastPaymentDate(): ?\Carbon\Carbon
     {
-        return $this->payments()
+        $date = $this->payments()
             ->whereIn('status', ['success', 'completed'])
             ->max('paid_at');
+
+        return $date ? \Carbon\Carbon::parse($date) : null;
     }
 
     public function getPaymentTypeLabel(): string

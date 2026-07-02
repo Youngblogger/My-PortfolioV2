@@ -1,35 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { AdminPageHeader, DataTable, AdminModal } from "@/components/admin";
-import type { Column } from "@/components/admin";
+import { AdminPageHeader, AdminModal } from "@/components/admin";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { formatDate, truncate } from "@/lib/utils";
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: string;
-  channel: string;
-  users: string;
-  status: string;
-  created_at: string;
-}
-
-interface NotificationListResponse {
-  data: Notification[];
-  current_page: number;
-  last_page: number;
-  total: number;
-}
+import { api, type NotificationData } from "@/lib/api";
 
 interface ExistingUser {
   id: string;
@@ -37,27 +16,43 @@ interface ExistingUser {
   email: string;
 }
 
-const TYPE_OPTIONS = [
-  { value: "", label: "All Types" },
-  { value: "general", label: "General" },
-  { value: "project", label: "Project" },
-  { value: "payment", label: "Payment" },
-  { value: "course", label: "Course" },
-  { value: "system", label: "System" },
-];
-
-const CHANNEL_BADGE: Record<string, "info" | "success" | "gold"> = {
-  in_app: "info",
-  email: "success",
-  both: "gold",
+const NOTIFICATION_ICONS: Record<string, string> = {
+  proposal_created: "\uD83D\uDCC4",
+  status_changed: "\uD83D\uDD04",
+  team_assigned: "\uD83D\uDC64",
+  payment_received: "\uD83D\uDCB0",
+  message_received: "\uD83D\uDCAC",
+  order_created: "\uD83D\uDCCB",
+  meeting_scheduled: "\uD83D\uDCC5",
+  file_uploaded: "\uD83D\uDCC1",
+  new_discussion_message: "\uD83D\uDCAC",
+  milestone_review_requested: "\uD83D\uDCDD",
+  milestone_changes_requested: "\uD83D\uDD04",
+  milestone_review_approved: "\u2705",
+  delivery_available: "\uD83D\uDCE6",
+  project_completed: "\uD83C\uDF89",
+  review_submitted: "\u2B50",
+  milestone_completed: "\u2705",
+  milestone_delayed: "\u23F0",
+  milestone_blocked: "\u26D4",
 };
 
-const STATUS_BADGE: Record<string, "success" | "gold" | "error" | "info"> = {
-  sent: "success",
-  pending: "gold",
-  failed: "error",
-  delivered: "info",
-};
+function getIcon(type: string): string {
+  return NOTIFICATION_ICONS[type] || "\uD83D\uDD14";
+}
+
+function timeAgo(dateStr: string): string {
+  const now = Date.now();
+  const diff = now - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
 
 async function adminFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const headers: Record<string, string> = { Accept: "application/json" };
@@ -70,15 +65,23 @@ async function adminFetch<T>(endpoint: string, options?: RequestInit): Promise<T
   return data;
 }
 
+const stagger = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const } },
+};
+
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const router = useRouter();
+  const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
+  const [markingAll, setMarkingAll] = useState(false);
 
   const [showSend, setShowSend] = useState(false);
   const [sendType, setSendType] = useState<"individual" | "broadcast">("broadcast");
@@ -93,22 +96,59 @@ export default function NotificationsPage() {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      params.set("page", String(page));
-      if (search.trim()) params.set("search", search.trim());
-      if (typeFilter) params.set("type", typeFilter);
-      const res = await adminFetch<NotificationListResponse>(`/notifications?${params.toString()}`);
-      setNotifications(res.data);
-      setLastPage(res.last_page);
-      setTotal(res.total);
+      const [notifRes, countRes] = await Promise.all([
+        api.getNotifications(),
+        api.getUnreadNotificationCount(),
+      ]);
+      setNotifications(notifRes.data);
+      setUnreadCount(countRes.data.count);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load notifications");
     } finally {
       setLoading(false);
     }
-  }, [page, search, typeFilter]);
+  }, []);
 
   useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
+
+  const handleMarkAllRead = async () => {
+    setMarkingAll(true);
+    try {
+      await api.markAllNotificationsRead();
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+      setUnreadCount(0);
+    } catch {
+      // silent
+    } finally {
+      setMarkingAll(false);
+    }
+  };
+
+  function toAdminUrl(url: string): string {
+    if (url.startsWith("/hire/project/")) return url.replace("/hire/project/", "/admin/projects/");
+    if (url.startsWith("/hire/order/")) return url.replace("/hire/order/", "/admin/orders/");
+    if (url.startsWith("/messages/")) return url.replace("/messages/", "/admin/messages/");
+    if (url.startsWith("/dashboard")) return url.replace("/dashboard", "/admin");
+    if (url.startsWith("/payments")) return url.replace("/payments", "/admin/payments");
+    return url;
+  }
+
+  const handleClick = async (notif: NotificationData) => {
+    if (!notif.is_read) {
+      try {
+        await api.markNotificationRead(notif.id);
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === notif.id ? { ...n, is_read: true } : n))
+        );
+        setUnreadCount((c) => Math.max(0, c - 1));
+      } catch {
+        // silent
+      }
+    }
+    if (notif.action_url) {
+      router.push(toAdminUrl(notif.action_url));
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -154,7 +194,6 @@ export default function NotificationsPage() {
         body: JSON.stringify(payload),
       });
       setShowSend(false);
-      fetchNotifications();
     } catch (err) {
       console.error("Failed to send notification:", err);
     } finally {
@@ -162,110 +201,97 @@ export default function NotificationsPage() {
     }
   };
 
-  const columns: Column<Notification>[] = [
-    {
-      key: "title",
-      header: "Title",
-      render: (n) => <span className="text-sm font-medium text-white">{n.title}</span>,
-    },
-    {
-      key: "message",
-      header: "Message",
-      render: (n) => <span className="text-sm text-muted">{truncate(n.message, 60)}</span>,
-    },
-    {
-      key: "type",
-      header: "Type",
-      render: (n) => (
-        <Badge variant="info">
-          {n.type.charAt(0).toUpperCase() + n.type.slice(1)}
-        </Badge>
-      ),
-    },
-    {
-      key: "channel",
-      header: "Channel",
-      render: (n) => (
-        <Badge variant={CHANNEL_BADGE[n.channel] || "info"}>
-          {n.channel === "both" ? "In-App & Email" : n.channel === "in_app" ? "In-App" : "Email"}
-        </Badge>
-      ),
-    },
-    {
-      key: "users",
-      header: "User(s)",
-      hideOnMobile: true,
-      render: (n) => <span className="text-sm text-muted">{n.users}</span>,
-    },
-    {
-      key: "status",
-      header: "Status",
-      render: (n) => (
-        <Badge variant={STATUS_BADGE[n.status] || "info"}>
-          {n.status.charAt(0).toUpperCase() + n.status.slice(1)}
-        </Badge>
-      ),
-    },
-    {
-      key: "created_at",
-      header: "Sent Date",
-      hideOnMobile: true,
-      render: (n) => <span className="text-sm text-muted whitespace-nowrap">{formatDate(n.created_at)}</span>,
-    },
-  ];
-
   return (
     <div>
       <AdminPageHeader
         title="Notifications"
-        description="View and send notifications to users."
+        description="View your personal notifications."
         actions={
-          <Button onClick={openSend} icon={
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          <div className="flex gap-2">
+            {unreadCount > 0 && (
+              <Button
+                variant="secondary"
+                onClick={handleMarkAllRead}
+                loading={markingAll}
+              >
+                Mark All as Read
+              </Button>
+            )}
+            <Button onClick={openSend} icon={
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+            }>
+              Send Notification
+            </Button>
+          </div>
+        }
+      />
+
+      {loading ? (
+        <div className="flex items-center justify-center min-h-[40vh]">
+          <div className="text-center space-y-4">
+            <svg className="animate-spin h-8 w-8 text-gold mx-auto" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-          }>
-            Send Notification
-          </Button>
-        }
-      />
-
-      <div className="mb-6 w-48">
-        <Select
-          value={typeFilter}
-          onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-          options={TYPE_OPTIONS}
-        />
-      </div>
-
-      <DataTable
-        columns={columns}
-        data={notifications}
-        loading={loading}
-        searchable
-        searchPlaceholder="Search notifications..."
-        onSearch={(val) => { setSearch(val); setPage(1); }}
-        keyExtractor={(n) => n.id}
-        pagination={{
-          currentPage: page,
-          lastPage,
-          total,
-          perPage: notifications.length || 10,
-          onPageChange: (p) => setPage(p),
-        }}
-        emptyState={
-          <EmptyState
-            icon="🔔"
-            title={search || typeFilter ? "No matching notifications" : "No notifications yet"}
-            description={search || typeFilter ? "Try adjusting your filters." : "Send your first notification to get started."}
-          />
-        }
-      />
-
-      {error && !loading && (
-        <div className="mt-4">
-          <ErrorMessage title="Failed to load notifications" message={error} onRetry={fetchNotifications} />
+            <p className="text-muted text-sm">Loading notifications...</p>
+          </div>
         </div>
+      ) : error ? (
+        <div className="glass rounded-2xl p-12 text-center">
+          <div className="text-4xl mb-4" aria-hidden="true">⚠️</div>
+          <h3 className="text-lg font-bold text-white mb-2">Oops</h3>
+          <p className="text-muted text-sm mb-6">{error}</p>
+          <button
+            onClick={fetchNotifications}
+            className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+          >
+            Try Again
+          </button>
+        </div>
+      ) : notifications.length === 0 ? (
+        <EmptyState
+          icon="🔔"
+          title="No Notifications Yet"
+          description="We'll notify you when something happens."
+        />
+      ) : (
+        <motion.div variants={stagger} initial="hidden" animate="visible" className="space-y-3">
+          {notifications.map((notif) => (
+            <motion.button
+              key={notif.id}
+              variants={fadeUp}
+              onClick={() => handleClick(notif)}
+              className={`w-full text-left glass rounded-2xl p-5 flex items-start gap-4 transition-all duration-300 hover:border-gold/20 ${
+                !notif.is_read ? "border-l-2 border-l-gold" : ""
+              }`}
+            >
+              <span className="text-xl shrink-0 mt-0.5" aria-hidden="true">
+                {getIcon(notif.type)}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p
+                  className={`text-sm ${!notif.is_read ? "font-bold text-white" : "text-white/80"}`}
+                >
+                  {notif.title}
+                </p>
+                {notif.body && (
+                  <p className="text-xs text-muted mt-0.5 line-clamp-2">{notif.body}</p>
+                )}
+                <div className="flex items-center gap-3 mt-2">
+                  <span className="text-[11px] text-muted/60">{timeAgo(notif.created_at)}</span>
+                  {notif.action_text && notif.action_url && (
+                    <span className="text-[11px] text-gold">{notif.action_text}</span>
+                  )}
+                </div>
+              </div>
+              {!notif.is_read && (
+                <span className="shrink-0 w-2.5 h-2.5 rounded-full bg-gold mt-2" aria-label="Unread" />
+              )}
+            </motion.button>
+          ))}
+        </motion.div>
       )}
 
       <AdminModal

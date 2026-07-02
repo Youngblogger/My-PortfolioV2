@@ -67,9 +67,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable}`} data-scroll-behavior="smooth">
       <body className="min-h-screen bg-background font-sans antialiased">
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-gold focus:text-background focus:rounded-lg focus:font-bold focus:outline-none">
-          Skip to content
-        </a>
+
         <Nav />
         <main id="main-content">
           <ClientLayout>{children}</ClientLayout>

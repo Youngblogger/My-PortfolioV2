@@ -55,7 +55,7 @@ export default function ReviewPage() {
   };
 
   return (
-    <section className="relative pt-20 pb-20 md:pt-28 overflow-hidden">
+    <section className="relative pt-0 pb-16 overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-surface" />
         <motion.div
@@ -66,29 +66,29 @@ export default function ReviewPage() {
         />
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto px-6">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-10"
+          className="mb-0"
         >
           <Link
             href={`/hire/${state.service.slug}/${state.projectType.slug}/book`}
-            className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-sm text-muted hover:text-white transition-colors mb-0 mt-2"
           >
             ← Back
           </Link>
           <span className="section-label">REVIEW</span>
-          <h1 className="section-heading mt-2">
+          <h1 className="mt-0 text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight tracking-tight text-nowrap">
             Project Review & <span className="text-gradient">Cost Estimate</span>
           </h1>
-          <p className="section-subtitle mt-3">
+          <p className="section-subtitle mt-0">
             Review your complete project details before proceeding to checkout.
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-8 mt-3">
           <div className="lg:col-span-2 space-y-4">
             {/* Service & Project */}
             <motion.div

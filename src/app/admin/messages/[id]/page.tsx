@@ -11,7 +11,9 @@ interface Msg {
   attachments: any[] | null;
   is_read: boolean;
   read_at: string | null;
+  delivered_at: string | null;
   created_at: string;
+  is_mine: boolean;
   user: {
     id: string;
     full_name: string | null;
@@ -43,16 +45,7 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const ADMIN_NAMES = ["David Robert", "Justin Bradon", "Eve Ryan", "Alex Mark", "Donald Paul"];
-
-function getAdminName(msg: Msg): string {
-  if (msg.user?.full_name) return msg.user.full_name;
-  if (msg.user?.is_admin) {
-    const hash = msg.user.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-    return ADMIN_NAMES[hash % ADMIN_NAMES.length];
-  }
-  return "Unknown";
-}
+type LocalStatus = "sending" | "failed";
 
 export default function AdminConversationPage() {
   const params = useParams();
@@ -63,11 +56,12 @@ export default function AdminConversationPage() {
   const [sending, setSending] = useState(false);
   const [text, setText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-  const [projectName, setProjectName] = useState("Chat");
+  const [clientName, setClientName] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastMsgTimeRef = useRef<string | null>(null);
-  const sentIdsRef = useRef<Set<string>>(new Set());
+  const localStatusRef = useRef<Map<string, LocalStatus>>(new Map());
+  const [localStatusVer, setLocalStatusVer] = useState(0);
 
   const scrollToBottom = (smooth = true) => messagesEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto" });
 
@@ -79,56 +73,118 @@ export default function AdminConversationPage() {
 
   useEffect(() => {
     if (!loading && messages.length > 0) scrollToBottom(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading]);
 
-  const loadMessages = useCallback(async () => {
+  const getStatus = (msg: Msg): string => {
+    const local = localStatusRef.current.get(msg.id);
+    if (local === "sending") return "sending";
+    if (local === "failed") return "failed";
+    if (msg.is_read && msg.read_at) return "read";
+    if (msg.delivered_at) return "delivered";
+    return "sent";
+  };
+
+  const loadMessages = useCallback(async (isPoll = false) => {
     try {
-      const res = await fetch(`/api/v1/admin/projects/${orderId}/messages`, { credentials: "include" });
+      const sinceParam = isPoll && lastMsgTimeRef.current ? `?since=${encodeURIComponent(lastMsgTimeRef.current)}` : "";
+      const res = await fetch(`/api/v1/admin/projects/${orderId}/messages${sinceParam}`, { credentials: "include" });
       const data = await res.json();
       if (data.success) {
-        setMessages(data.data || []);
         const msgs = data.data || [];
+        setMessages((prev) => {
+          if (prev.length === 0) return msgs;
+          const existingIds = new Set(prev.map((m) => m.id));
+          const unique = msgs.filter((m: Msg) => !existingIds.has(m.id));
+          if (unique.length === 0) return prev;
+          unique.forEach((m: Msg) => {
+            const local = localStatusRef.current.get(m.id);
+            if (local === "sending" || local === "failed") {
+              localStatusRef.current.delete(m.id);
+            }
+          });
+          return [...prev, ...unique];
+        });
         if (msgs.length > 0) lastMsgTimeRef.current = msgs[msgs.length - 1].created_at;
       }
     } catch {} finally {
-      setLoading(false);
+      if (!isPoll) setLoading(false);
     }
   }, [orderId]);
 
-  useEffect(() => { if (orderId) loadMessages(); }, [orderId, loadMessages]);
+  useEffect(() => { if (orderId) loadMessages(false); }, [orderId, loadMessages]);
+
+  useEffect(() => {
+    if (!orderId) return;
+    fetch(`/api/v1/admin/projects/${orderId}`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) {
+          const p = d.data;
+          if (p?.client?.full_name) setClientName(p.client.full_name);
+        }
+      })
+      .catch(() => {});
+  }, [orderId]);
 
   // Polling
   useEffect(() => {
     if (!orderId) return;
-    const interval = setInterval(async () => {
-      try {
-        const since = lastMsgTimeRef.current;
-        if (!since) return;
-        const res = await fetch(`/api/v1/admin/projects/${orderId}/messages`, { credentials: "include" });
-        const data = await res.json();
-        if (data.success && data.data) {
-          const nearBottom = isNearBottom();
-          setMessages((prev) => {
-            const existingIds = new Set(prev.map((m) => m.id));
-            const unique = data.data.filter((m: Msg) => !existingIds.has(m.id));
-            if (unique.length > 0) {
-              lastMsgTimeRef.current = unique[unique.length - 1].created_at;
-              return [...prev, ...unique];
-            }
-            return prev;
-          });
-          if (nearBottom) setTimeout(() => scrollToBottom(true), 50);
-        }
-      } catch {}
+    const interval = setInterval(() => {
+      loadMessages(true);
     }, 5000);
     return () => clearInterval(interval);
+  }, [orderId, loadMessages]);
+
+  const retrySend = useCallback(async (failedMsg: Msg) => {
+    localStatusRef.current.set(failedMsg.id, "sending");
+    setLocalStatusVer((v) => v + 1);
+    try {
+      await fetch("/sanctum/csrf-cookie", { credentials: "include" });
+      const csrfMatch = document.cookie.match(/(^| )XSRF-TOKEN=([^;]+)/);
+      const token = csrfMatch ? decodeURIComponent(csrfMatch[2]) : null;
+
+      const formData = new FormData();
+      if (failedMsg.message) formData.append("message", failedMsg.message);
+      const res = await fetch(`/api/v1/admin/projects/${orderId}/messages`, {
+        method: "POST",
+        credentials: "include",
+        headers: token ? { "X-XSRF-TOKEN": token } : {},
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setMessages((prev) => prev.map((m) => (m.id === failedMsg.id ? data.data : m)));
+        localStatusRef.current.delete(data.data.id);
+        lastMsgTimeRef.current = data.data.created_at;
+      }
+    } catch {
+      localStatusRef.current.set(failedMsg.id, "failed");
+    } finally {
+      setLocalStatusVer((v) => v + 1);
+    }
   }, [orderId]);
 
   const handleSend = async () => {
     if (!text.trim() && files.length === 0) return;
     if (sending) return;
     setSending(true);
+
+    const optimisticMsg: Msg = {
+      id: `temp-${Date.now()}`,
+      message: text.trim(),
+      type: "text",
+      attachments: null,
+      is_read: false,
+      read_at: null,
+      delivered_at: null,
+      created_at: new Date().toISOString(),
+      is_mine: true,
+      user: { id: "", full_name: "You", is_admin: true },
+    };
+    localStatusRef.current.set(optimisticMsg.id, "sending");
+    setMessages((prev) => [...prev, optimisticMsg]);
+    setTimeout(() => scrollToBottom(true), 50);
+
     try {
       const formData = new FormData();
       if (text.trim()) formData.append("message", text.trim());
@@ -147,14 +203,17 @@ export default function AdminConversationPage() {
       });
       const data = await res.json();
       if (data.success && data.data) {
-        setMessages((prev) => [...prev, data.data]);
-        if (data.data.id) sentIdsRef.current.add(data.data.id);
+        setMessages((prev) => prev.map((m) => (m.id === optimisticMsg.id ? data.data : m)));
+        localStatusRef.current.delete(optimisticMsg.id);
         lastMsgTimeRef.current = data.data.created_at;
       }
       setText("");
       setFiles([]);
       setTimeout(() => scrollToBottom(true), 50);
-    } catch {} finally {
+    } catch {
+      localStatusRef.current.set(optimisticMsg.id, "failed");
+      setLocalStatusVer((v) => v + 1);
+    } finally {
       setSending(false);
     }
   };
@@ -195,8 +254,9 @@ export default function AdminConversationPage() {
             </div>
           ) : (
             messages.map((msg) => {
-              const isAdmin = sentIdsRef.current.has(msg.id);
-              const displayName = isAdmin ? "You" : getAdminName(msg);
+              const isAdmin = msg.is_mine;
+              const displayName = isAdmin ? "You" : (clientName || "Client");
+              const status = getStatus(msg);
               return (
                 <div
                   key={msg.id}
@@ -209,11 +269,14 @@ export default function AdminConversationPage() {
                   </div>
                   <div className={`max-w-[75%] ${isAdmin ? "items-end" : ""}`}>
                     <div className={`rounded-2xl px-4 py-2.5 ${
-                      isAdmin ? "bg-gold/10 border border-gold/10" : "bg-blue-500/10 border border-blue-500/10"
+                      status === "failed"
+                        ? "bg-red-500/10 border border-red-500/20"
+                        : isAdmin
+                          ? "bg-gold/10 border border-gold/10"
+                          : "bg-blue-500/10 border border-blue-500/10"
                     }`}>
                       <p className="text-xs font-medium text-white/50 mb-1">
                         {displayName}
-                        {isAdmin ? "" : " (Client)"}
                       </p>
                       {msg.message && (
                         <p className="text-sm text-white whitespace-pre-wrap break-words">{msg.message}</p>
@@ -230,9 +293,51 @@ export default function AdminConversationPage() {
                         </div>
                       )}
                     </div>
-                    <p className={`text-[10px] text-white/30 mt-1 px-1 ${isAdmin ? "text-right" : ""}`}>
-                      {timeAgo(msg.created_at)}
-                    </p>
+                    <div className={`flex items-center gap-1.5 mt-1 px-1 ${isAdmin ? "flex-row-reverse" : ""}`}>
+                      <p className="text-[10px] text-white/30">{timeAgo(msg.created_at)}</p>
+                      {isAdmin && (
+                        <span
+                          className={`inline-flex items-center text-xs leading-none ${
+                            status === "sending" ? "text-white/20" :
+                            status === "failed" ? "text-red-400" :
+                            msg.is_read && msg.read_at ? "text-blue-400" : "text-white/40"
+                          }`}
+                          title={
+                            status === "sending" ? "Sending..." :
+                            status === "failed" ? "Failed — tap to retry" :
+                            msg.is_read && msg.read_at ? "Read" : "Delivered"
+                          }
+                        >
+                          {status === "sending" && (
+                            <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                            </svg>
+                          )}
+                          {status === "failed" && (
+                            <button
+                              onClick={() => retrySend(msg)}
+                              className="hover:opacity-80 transition-opacity flex items-center gap-1"
+                            >
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </button>
+                          )}
+                          {status === "sent" && (
+                            <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M13.78 4.22a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06 0L2.22 9.72a.75.75 0 011.06-1.06L5.5 11.94l6.72-6.72a.75.75 0 011.06 0z"/>
+                            </svg>
+                          )}
+                          {(status === "delivered" || status === "read") && (
+                            <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+                              <path d="M15.78 3.78a.75.75 0 010 1.06l-7.5 7.5a.75.75 0 01-1.06 0L2.22 7.28a.75.75 0 011.06-1.06L7.5 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
+                              <path d="M11.28 3.78a.75.75 0 010 1.06l-4.72 4.72a.75.75 0 01-1.06-1.06l4.72-4.72a.75.75 0 011.06 0z"/>
+                            </svg>
+                          )}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

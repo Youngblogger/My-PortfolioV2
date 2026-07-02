@@ -22,6 +22,7 @@ class Milestone extends Model
         return [
             'due_date' => 'date',
             'completed_at' => 'date',
+            'review_requested_at' => 'datetime',
             'deliverables' => 'array',
             'is_automatic' => 'boolean',
             'metadata' => 'array',
