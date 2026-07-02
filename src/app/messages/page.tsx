@@ -31,11 +31,11 @@ function timeAgo(dateStr: string): string {
 }
 
 const statusColors: Record<string, string> = {
-  active: "bg-green-500/20 text-green-400",
-  in_progress: "bg-blue-500/20 text-blue-400",
-  completed: "bg-white/10 text-white/60",
-  on_hold: "bg-yellow-500/20 text-yellow-400",
-  cancelled: "bg-red-500/20 text-red-400",
+  active: "bg-green-500/10 text-green-600",
+  in_progress: "bg-blue-500/10 text-blue-600",
+  completed: "bg-[#ECEFF5]/50 text-[#667085]",
+  on_hold: "bg-yellow-500/10 text-yellow-600",
+  cancelled: "bg-red-500/10 text-red-600",
 };
 
 export default function MessagesPage() {
@@ -62,11 +62,11 @@ export default function MessagesPage() {
   const totalUnread = conversations.reduce((s, c) => s + (c.unread_count || 0), 0);
 
   return (
-    <div className="min-h-screen py-20 px-6">
+    <div className="min-h-screen bg-[#F7F9FC] py-20 px-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Messages</h1>
-          <p className="text-muted mt-1">
+          <h1 className="text-3xl font-bold text-[#101828]">Messages</h1>
+          <p className="text-[#98A2B3] mt-1">
             {totalUnread > 0
               ? `${totalUnread} unread conversation${totalUnread !== 1 ? "s" : ""}`
               : "No unread messages"}
@@ -76,38 +76,38 @@ export default function MessagesPage() {
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="glass rounded-xl p-5 animate-pulse">
+              <div key={i} className="bg-white shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-xl p-5 animate-pulse">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-white/5 shrink-0" />
+                  <div className="w-12 h-12 rounded-full bg-[#ECEFF5]/50 shrink-0" />
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-white/5 rounded w-48" />
-                    <div className="h-3 bg-white/5 rounded w-64" />
+                    <div className="h-4 bg-[#ECEFF5]/50 rounded w-48" />
+                    <div className="h-3 bg-[#ECEFF5]/50 rounded w-64" />
                   </div>
-                  <div className="h-3 bg-white/5 rounded w-16" />
+                  <div className="h-3 bg-[#ECEFF5]/50 rounded w-16" />
                 </div>
               </div>
             ))}
           </div>
         ) : error ? (
-          <div className="glass rounded-2xl p-12 text-center">
+          <div className="bg-white shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-12 text-center">
             <div className="text-4xl mb-4" aria-hidden="true">⚠️</div>
-            <h3 className="text-lg font-bold text-white mb-2">Oops</h3>
-            <p className="text-muted text-sm mb-6">{error}</p>
+            <h3 className="text-lg font-bold text-[#101828] mb-2">Oops</h3>
+            <p className="text-[#98A2B3] text-sm mb-6">{error}</p>
             <button
               onClick={load}
-              className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+              className="px-6 py-3 rounded-xl bg-[#5B4CF0] text-white font-bold text-sm hover:shadow-[0_0_20px_rgba(91,76,240,0.3)] hover:scale-[1.02] transition-all duration-300"
             >
               Try Again
             </button>
           </div>
         ) : conversations.length === 0 ? (
-          <div className="glass rounded-2xl p-12 text-center">
+          <div className="bg-white shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-12 text-center">
             <div className="text-4xl mb-4" aria-hidden="true">💬</div>
-            <h3 className="text-lg font-bold text-white mb-2">No Conversations Yet</h3>
-            <p className="text-muted text-sm">Start a project and we&apos;ll connect you with your team.</p>
+            <h3 className="text-lg font-bold text-[#101828] mb-2">No Conversations Yet</h3>
+            <p className="text-[#98A2B3] text-sm">Start a project and we&apos;ll connect you with your team.</p>
             <Link
               href="/hire"
-              className="inline-block mt-6 px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+              className="inline-block mt-6 px-6 py-3 rounded-xl bg-[#5B4CF0] text-white font-bold text-sm hover:shadow-[0_0_20px_rgba(91,76,240,0.3)] hover:scale-[1.02] transition-all duration-300"
             >
               Start a Project
             </Link>
@@ -118,42 +118,42 @@ export default function MessagesPage() {
               <motion.div key={conv.id} variants={fadeUp}>
                 <Link
                   href={`/messages/${conv.id}`}
-                  className="block glass rounded-xl p-5 hover:border-gold/20 transition-all duration-300"
+                  className="block bg-white shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-xl p-5 hover:border-[#5B4CF0]/20 transition-all duration-300"
                 >
                   <div className="flex items-start gap-4">
                     <div className={`w-12 h-12 rounded-full shrink-0 flex items-center justify-center text-lg ${
-                      conv.project_status === "completed" ? "bg-green-500/20" : "bg-gold/20"
+                      conv.project_status === "completed" ? "bg-green-500/10" : "bg-[#5B4CF0]/10"
                     }`}>
                       {conv.project_status === "completed" ? "✅" : "💬"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2 min-w-0">
-                          <p className="font-semibold text-white truncate">{conv.project_name}</p>
+                          <p className="font-semibold text-[#101828] truncate">{conv.project_name}</p>
                           {conv.unread_count > 0 && (
-                            <span className="shrink-0 px-2 py-0.5 rounded-full bg-gold text-[10px] font-bold text-background">
+                            <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#5B4CF0] text-[10px] font-bold text-white">
                               {conv.unread_count}
                             </span>
                           )}
                         </div>
                         {conv.last_message && (
-                          <span className="shrink-0 text-[11px] text-muted/60">
+                          <span className="shrink-0 text-[11px] text-[#98A2B3]/60">
                             {timeAgo(conv.last_message.created_at)}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-muted mt-0.5">{conv.service} &mdash; {conv.project_type}</p>
+                      <p className="text-xs text-[#98A2B3] mt-0.5">{conv.service} &mdash; {conv.project_type}</p>
                       {conv.last_message ? (
-                        <p className="text-sm text-white/60 mt-2 line-clamp-1">
+                        <p className="text-sm text-[#667085] mt-2 line-clamp-1">
                           {conv.last_message.has_attachments ? "📎 " : ""}
                           {conv.last_message.message || (conv.last_message.has_attachments ? "Sent an attachment" : "")}
                         </p>
                       ) : (
-                        <p className="text-sm text-white/30 mt-2 italic">No messages yet</p>
+                        <p className="text-sm text-[#98A2B3] mt-2 italic">No messages yet</p>
                       )}
                     </div>
                     <span className={`shrink-0 px-2 py-1 rounded-full text-[10px] font-medium ${
-                      statusColors[conv.project_status || conv.status] || "bg-white/5 text-white/40"
+                      statusColors[conv.project_status || conv.status] || "bg-[#ECEFF5]/50 text-[#667085]"
                     }`}>
                       {(conv.project_status || conv.status || "").replace(/_/g, " ")}
                     </span>

@@ -80,7 +80,7 @@ export default function SettingsPage() {
 
   const toggleStyle = (on: boolean) =>
     `relative w-11 h-6 rounded-full transition-colors duration-300 ${
-      on ? "bg-gold" : "bg-white/10"
+      on ? "bg-[#5B4CF0]" : "bg-[#F7F9FC]"
     }`;
 
   const knobStyle = (on: boolean) =>
@@ -92,11 +92,11 @@ export default function SettingsPage() {
     return (
       <div className="min-h-screen py-20 px-6">
         <div className="max-w-2xl mx-auto">
-          <div className="h-8 bg-white/5 rounded w-48 mb-2 animate-pulse" />
-          <div className="h-5 bg-white/5 rounded w-64 mb-10 animate-pulse" />
-          <div className="glass rounded-2xl p-6 space-y-6">
+          <div className="h-8 bg-[#F7F9FC] rounded w-48 mb-2 animate-pulse" />
+          <div className="h-5 bg-[#F7F9FC] rounded w-64 mb-10 animate-pulse" />
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-6 space-y-6">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-14 bg-white/5 rounded animate-pulse" />
+              <div key={i} className="h-14 bg-[#F7F9FC] rounded animate-pulse" />
             ))}
           </div>
         </div>
@@ -108,8 +108,8 @@ export default function SettingsPage() {
     <div className="min-h-screen py-20 px-6">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Settings</h1>
-          <p className="text-muted mt-1">Manage your notification preferences.</p>
+          <h1 className="text-3xl font-bold text-[#101828]">Settings</h1>
+          <p className="text-[#98A2B3] mt-1">Manage your notification preferences.</p>
         </div>
 
         {error && (
@@ -126,10 +126,10 @@ export default function SettingsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl p-6 md:p-8 space-y-6"
+          className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-6 md:p-8 space-y-6"
         >
-          <h2 className="text-lg font-bold text-white">Notification Preferences</h2>
-          <p className="text-xs text-muted -mt-4">Choose how you receive updates about your projects.</p>
+          <h2 className="text-lg font-bold text-[#101828]">Notification Preferences</h2>
+          <p className="text-xs text-[#98A2B3] -mt-4">Choose how you receive updates about your projects.</p>
 
           {[
             { key: "email_notifications" as keyof Settings, label: "Email Notifications", desc: "Receive project updates via email" },
@@ -139,8 +139,8 @@ export default function SettingsPage() {
           ].map((item) => (
             <div key={item.key} className="flex items-center justify-between py-3">
               <div>
-                <p className="text-sm text-white">{item.label}</p>
-                <p className="text-xs text-muted mt-0.5">{item.desc}</p>
+                <p className="text-sm text-[#101828]">{item.label}</p>
+                <p className="text-xs text-[#98A2B3] mt-0.5">{item.desc}</p>
               </div>
               <button
                 onClick={() => toggle(item.key)}
@@ -153,11 +153,11 @@ export default function SettingsPage() {
             </div>
           ))}
 
-          <div className="pt-4 border-t border-white/5">
+          <div className="pt-4 border-t border-[#ECEFF5]">
             <button
               onClick={handleSave}
               disabled={saving}
-              className="w-full px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100"
+              className="w-full px-6 py-3 rounded-xl bg-[#5B4CF0] text-white font-bold text-sm hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100"
             >
               {saving ? "Saving..." : "Save Preferences"}
             </button>

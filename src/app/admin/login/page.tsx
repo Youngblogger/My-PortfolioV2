@@ -96,7 +96,7 @@ export default function AdminLoginPage() {
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-3">
+                <form onSubmit={handleSubmit} className="space-y-2">
                   <Input
                     label="Email"
                     type="email"

@@ -5,19 +5,18 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { api, type PaymentRecord } from "@/lib/api";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 
-const paymentVariant = (status: string): "gold" | "success" | "error" | "info" => {
-  const map: Record<string, "gold" | "success" | "error" | "info"> = {
-    paid: "success",
-    completed: "success",
-    pending: "info",
-    failed: "error",
-    refunded: "info",
-    cancelled: "error",
+const paymentBadgeClass = (status: string): string => {
+  const map: Record<string, string> = {
+    paid: "bg-green-500/10 text-green-400 border border-green-500/20",
+    completed: "bg-green-500/10 text-green-400 border border-green-500/20",
+    pending: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+    failed: "bg-red-500/10 text-red-400 border border-red-500/20",
+    refunded: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+    cancelled: "bg-red-500/10 text-red-400 border border-red-500/20",
   };
-  return map[status] || "info";
+  return map[status] || "bg-[#5B4CF0]/10 text-[#5B4CF0] border border-[#5B4CF0]/20";
 };
 
 const paymentLabel = (status: string): string => {
@@ -64,14 +63,14 @@ export default function PaymentsPage() {
       <div className="min-h-screen py-20 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <div className="h-8 bg-white/5 rounded w-48 mb-2 animate-pulse" />
-            <div className="h-5 bg-white/5 rounded w-64 animate-pulse" />
+            <div className="h-8 bg-[#F7F9FC] rounded w-48 mb-2 animate-pulse" />
+            <div className="h-5 bg-[#F7F9FC] rounded w-64 animate-pulse" />
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="glass rounded-xl p-5 animate-pulse space-y-2">
-                <div className="h-3 bg-white/5 rounded w-16" />
-                <div className="h-7 bg-white/5 rounded w-24" />
+              <div key={i} className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-xl p-5 animate-pulse space-y-2">
+                <div className="h-3 bg-[#F7F9FC] rounded w-16" />
+                <div className="h-7 bg-[#F7F9FC] rounded w-24" />
               </div>
             ))}
           </div>
@@ -84,11 +83,11 @@ export default function PaymentsPage() {
     return (
       <div className="min-h-screen py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
-          <div className="glass rounded-2xl p-12">
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-12">
             <div className="text-4xl mb-4">⚠️</div>
-            <h3 className="text-lg font-bold text-white mb-2">Oops</h3>
-            <p className="text-muted text-sm mb-6">{error}</p>
-            <button onClick={load} className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all">
+            <h3 className="text-lg font-bold text-[#101828] mb-2">Oops</h3>
+            <p className="text-[#98A2B3] text-sm mb-6">{error}</p>
+            <button onClick={load} className="px-6 py-3 rounded-xl bg-[#5B4CF0] text-white font-bold text-sm hover:shadow-[0_0_20px_rgba(91,76,240,0.3)] transition-all">
               Try Again
             </button>
           </div>
@@ -101,25 +100,25 @@ export default function PaymentsPage() {
     <div className="min-h-screen py-20 px-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Payments</h1>
-          <p className="text-muted mt-1">Your payment history across all projects.</p>
+          <h1 className="text-3xl font-bold text-[#101828]">Payments</h1>
+          <p className="text-[#98A2B3] mt-1">Your payment history across all projects.</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <div className="glass rounded-xl p-5">
-            <p className="text-xs text-muted mb-1">Total Spent</p>
-            <p className="text-2xl font-bold text-gold">{formatCurrency(totals.total_spent_ngn)}</p>
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-xl p-5">
+            <p className="text-xs text-[#98A2B3] mb-1">Total Spent</p>
+            <p className="text-2xl font-bold text-[#5B4CF0]">{formatCurrency(totals.total_spent_ngn)}</p>
           </div>
-          <div className="glass rounded-xl p-5">
-            <p className="text-xs text-muted mb-1">Paid</p>
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-xl p-5">
+            <p className="text-xs text-[#98A2B3] mb-1">Paid</p>
             <p className="text-2xl font-bold text-green-400">{totals.total_paid}</p>
           </div>
-          <div className="glass rounded-xl p-5">
-            <p className="text-xs text-muted mb-1">Pending</p>
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-xl p-5">
+            <p className="text-xs text-[#98A2B3] mb-1">Pending</p>
             <p className="text-2xl font-bold text-yellow-400">{totals.total_pending}</p>
           </div>
-          <div className="glass rounded-xl p-5">
-            <p className="text-xs text-muted mb-1">Failed</p>
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-xl p-5">
+            <p className="text-xs text-[#98A2B3] mb-1">Failed</p>
             <p className="text-2xl font-bold text-red-400">{totals.total_failed}</p>
           </div>
         </div>
@@ -137,29 +136,29 @@ export default function PaymentsPage() {
               <motion.div key={payment.id} variants={fadeUp}>
                 <Link
                   href={`/hire/project/${payment.order_id}`}
-                  className="block glass rounded-xl p-5 hover:border-gold/20 transition-all duration-300"
+                  className="block bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-xl p-5 hover:border-[#5B4CF0]/20 transition-all duration-300"
                 >
                   <div className="flex items-center justify-between">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-white truncate">
+                      <p className="text-sm font-semibold text-[#101828] truncate">
                         {payment.project_name}
                       </p>
-                      <p className="text-xs text-muted mt-0.5">
+                      <p className="text-xs text-[#98A2B3] mt-0.5">
                         {payment.service} &middot; Ref: {payment.reference.slice(0, 12)}...
                       </p>
                       <div className="flex items-center gap-3 mt-2">
-                        <Badge variant={paymentVariant(payment.status)}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${paymentBadgeClass(payment.status)}`}>
                           {paymentLabel(payment.status)}
-                        </Badge>
-                        <span className="text-xs text-muted/60">
+                        </span>
+                        <span className="text-xs text-[#98A2B3]/60">
                           {payment.paid_at ? formatDate(payment.paid_at) : formatDate(payment.created_at)}
                         </span>
-                        <span className="text-xs text-muted/60">{payment.gateway}</span>
+                        <span className="text-xs text-[#98A2B3]/60">{payment.gateway}</span>
                       </div>
                     </div>
                     <div className="text-right shrink-0 ml-4">
-                      <p className="text-sm font-bold text-gold">{formatCurrency(payment.amount_ngn)}</p>
-                      <p className="text-[10px] text-muted/60 mt-0.5">{payment.currency}</p>
+                      <p className="text-sm font-bold text-[#5B4CF0]">{formatCurrency(payment.amount_ngn)}</p>
+                      <p className="text-[10px] text-[#98A2B3]/60 mt-0.5">{payment.currency}</p>
                     </div>
                   </div>
                 </Link>

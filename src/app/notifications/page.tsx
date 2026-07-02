@@ -115,10 +115,10 @@ export default function NotificationsPage() {
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white">
+            <h1 className="text-3xl font-bold text-[#101828]">
               Notifications
             </h1>
-            <p className="text-muted mt-1">
+            <p className="text-[#98A2B3] mt-1">
               {unreadCount > 0
                 ? `You have ${unreadCount} unread notification${unreadCount !== 1 ? "s" : ""}`
                 : "You're all caught up"}
@@ -128,7 +128,7 @@ export default function NotificationsPage() {
             <button
               onClick={handleMarkAllRead}
               disabled={markingAll}
-              className="px-4 py-2 rounded-xl bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300 disabled:opacity-50"
+              className="px-4 py-2 rounded-xl bg-[#5B4CF0] text-white font-semibold text-sm hover:shadow-[0_0_20px_rgba(91,76,240,0.3)] hover:scale-[1.02] transition-all duration-300 disabled:opacity-50"
             >
               {markingAll ? "Marking..." : "Mark All as Read"}
             </button>
@@ -138,30 +138,30 @@ export default function NotificationsPage() {
         {loading ? (
           <div className="flex items-center justify-center min-h-[40vh]">
             <div className="text-center space-y-4">
-              <svg className="animate-spin h-8 w-8 text-gold mx-auto" viewBox="0 0 24 24">
+              <svg className="animate-spin h-8 w-8 text-[#5B4CF0] mx-auto" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              <p className="text-muted text-sm">Loading notifications...</p>
+              <p className="text-[#98A2B3] text-sm">Loading notifications...</p>
             </div>
           </div>
         ) : error ? (
-          <div className="glass rounded-2xl p-12 text-center">
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-12 text-center">
             <div className="text-4xl mb-4" aria-hidden="true">⚠️</div>
-            <h3 className="text-lg font-bold text-white mb-2">Oops</h3>
-            <p className="text-muted text-sm mb-6">{error}</p>
+            <h3 className="text-lg font-bold text-[#101828] mb-2">Oops</h3>
+            <p className="text-[#98A2B3] text-sm mb-6">{error}</p>
             <button
               onClick={load}
-              className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+              className="px-6 py-3 rounded-xl bg-[#5B4CF0] text-white font-bold text-sm hover:shadow-[0_0_20px_rgba(91,76,240,0.3)] hover:scale-[1.02] transition-all duration-300"
             >
               Try Again
             </button>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="glass rounded-2xl p-12 text-center">
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-12 text-center">
             <div className="text-4xl mb-4" aria-hidden="true">🔔</div>
-            <h3 className="text-lg font-bold text-white mb-2">No Notifications Yet</h3>
-            <p className="text-muted text-sm">We'll notify you when something happens.</p>
+            <h3 className="text-lg font-bold text-[#101828] mb-2">No Notifications Yet</h3>
+            <p className="text-[#98A2B3] text-sm">We'll notify you when something happens.</p>
           </div>
         ) : (
           <motion.div variants={stagger} initial="hidden" animate="visible" className="space-y-3">
@@ -170,8 +170,8 @@ export default function NotificationsPage() {
                 key={notif.id}
                 variants={fadeUp}
                 onClick={() => handleClick(notif)}
-                className={`w-full text-left glass rounded-2xl p-5 flex items-start gap-4 transition-all duration-300 hover:border-gold/20 ${
-                  !notif.is_read ? "border-l-2 border-l-gold" : ""
+                className={`w-full text-left bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-5 flex items-start gap-4 transition-all duration-300 hover:border-[#5B4CF0]/20 ${
+                  !notif.is_read ? "border-l-2 border-l-[#5B4CF0]" : ""
                 }`}
               >
                 <span className="text-xl shrink-0 mt-0.5" aria-hidden="true">
@@ -179,22 +179,22 @@ export default function NotificationsPage() {
                 </span>
                 <div className="flex-1 min-w-0">
                   <p
-                    className={`text-sm ${!notif.is_read ? "font-bold text-white" : "text-white/80"}`}
+                    className={`text-sm ${!notif.is_read ? "font-bold text-[#101828]" : "text-[#101828]"}`}
                   >
                     {notif.title}
                   </p>
                   {notif.body && (
-                    <p className="text-xs text-muted mt-0.5 line-clamp-2">{notif.body}</p>
+                    <p className="text-xs text-[#98A2B3] mt-0.5 line-clamp-2">{notif.body}</p>
                   )}
                   <div className="flex items-center gap-3 mt-2">
-                    <span className="text-[11px] text-muted/60">{timeAgo(notif.created_at)}</span>
+                    <span className="text-[11px] text-[#98A2B3]/60">{timeAgo(notif.created_at)}</span>
                     {notif.action_text && notif.action_url && (
-                      <span className="text-[11px] text-gold">{notif.action_text}</span>
+                      <span className="text-[11px] text-[#5B4CF0]">{notif.action_text}</span>
                     )}
                   </div>
                 </div>
                 {!notif.is_read && (
-                  <span className="shrink-0 w-2.5 h-2.5 rounded-full bg-gold mt-2" aria-label="Unread" />
+                  <span className="shrink-0 w-2.5 h-2.5 rounded-full bg-[#5B4CF0] mt-2" aria-label="Unread" />
                 )}
               </motion.button>
             ))}

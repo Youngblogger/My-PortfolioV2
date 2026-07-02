@@ -75,11 +75,11 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen py-20 px-6">
         <div className="max-w-2xl mx-auto">
-          <div className="h-8 bg-white/5 rounded w-48 mb-2 animate-pulse" />
-          <div className="h-5 bg-white/5 rounded w-64 mb-10 animate-pulse" />
-          <div className="glass rounded-2xl p-6 space-y-4">
+          <div className="h-8 bg-[#F7F9FC] rounded w-48 mb-2 animate-pulse" />
+          <div className="h-5 bg-[#F7F9FC] rounded w-64 mb-10 animate-pulse" />
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-6 space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-white/5 rounded animate-pulse" />
+              <div key={i} className="h-12 bg-[#F7F9FC] rounded animate-pulse" />
             ))}
           </div>
         </div>
@@ -91,14 +91,14 @@ export default function ProfilePage() {
     <div className="min-h-screen py-20 px-6">
       <div className="max-w-2xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Profile</h1>
-          <p className="text-muted mt-1">Manage your personal information and contact details.</p>
+          <h1 className="text-3xl font-bold text-[#101828]">Profile</h1>
+          <p className="text-[#98A2B3] mt-1">Manage your personal information and contact details.</p>
         </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-2xl p-6 md:p-8"
+          className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-6 md:p-8"
         >
           {error && (
             <div className="mb-6 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-400">
@@ -112,119 +112,119 @@ export default function ProfilePage() {
           )}
 
           {/* Avatar */}
-          <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/5">
-            <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center text-2xl font-bold text-gold shrink-0">
+          <div className="flex items-center gap-4 mb-8 pb-6 border-b border-[#ECEFF5]">
+            <div className="w-16 h-16 rounded-full bg-[#5B4CF0]/20 flex items-center justify-center text-2xl font-bold text-[#5B4CF0] shrink-0">
               {form.full_name?.charAt(0)?.toUpperCase() || "U"}
             </div>
             <div>
-              <p className="text-white font-semibold text-lg">{form.full_name || "Your Name"}</p>
-              <p className="text-sm text-muted">{profile?.email || ""}</p>
-              <p className="text-xs text-muted/60 mt-0.5 capitalize">Role: {profile?.role || "client"}</p>
+              <p className="text-[#101828] font-semibold text-lg">{form.full_name || "Your Name"}</p>
+              <p className="text-sm text-[#98A2B3]">{profile?.email || ""}</p>
+              <p className="text-xs text-[#667085] mt-0.5 capitalize">Role: {profile?.role || "client"}</p>
             </div>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-muted mb-1.5">Full Name</label>
+              <label className="block text-xs text-[#101828] mb-1.5">Full Name</label>
               <input
                 name="full_name"
                 value={form.full_name}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors"
                 placeholder="Your full name"
               />
             </div>
             <div>
-              <label className="block text-xs text-muted mb-1.5">Phone</label>
+              <label className="block text-xs text-[#101828] mb-1.5">Phone</label>
               <input
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors"
                 placeholder="+234..."
               />
             </div>
             <div>
-              <label className="block text-xs text-muted mb-1.5">Country</label>
+              <label className="block text-xs text-[#101828] mb-1.5">Country</label>
               <input
                 name="country"
                 value={form.country}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors"
                 placeholder="Nigeria"
               />
             </div>
             <div>
-              <label className="block text-xs text-muted mb-1.5">State</label>
+              <label className="block text-xs text-[#101828] mb-1.5">State</label>
               <input
                 name="state"
                 value={form.state}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors"
                 placeholder="Lagos"
               />
             </div>
             <div>
-              <label className="block text-xs text-muted mb-1.5">City</label>
+              <label className="block text-xs text-[#101828] mb-1.5">City</label>
               <input
                 name="city"
                 value={form.city}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors"
                 placeholder="Ikeja"
               />
             </div>
             <div>
-              <label className="block text-xs text-muted mb-1.5">Company</label>
+              <label className="block text-xs text-[#101828] mb-1.5">Company</label>
               <input
                 name="company"
                 value={form.company}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors"
                 placeholder="Company name"
               />
             </div>
             <div>
-              <label className="block text-xs text-muted mb-1.5">Tax ID</label>
+              <label className="block text-xs text-[#101828] mb-1.5">Tax ID</label>
               <input
                 name="tax_id"
                 value={form.tax_id}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors"
                 placeholder="Optional"
               />
             </div>
             <div>
-              <label className="block text-xs text-muted mb-1.5">Avatar URL</label>
+              <label className="block text-xs text-[#101828] mb-1.5">Avatar URL</label>
               <input
                 name="avatar_url"
                 value={form.avatar_url}
                 onChange={handleChange}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors"
                 placeholder="https://example.com/avatar.jpg"
               />
             </div>
           </div>
 
           <div className="mt-4">
-            <label className="block text-xs text-muted mb-1.5">Address</label>
+            <label className="block text-xs text-[#101828] mb-1.5">Address</label>
             <input
               name="address"
               value={form.address}
               onChange={handleChange}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors"
+              className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors"
               placeholder="Your address"
             />
           </div>
 
           <div className="mt-4">
-            <label className="block text-xs text-muted mb-1.5">Bio</label>
+            <label className="block text-xs text-[#101828] mb-1.5">Bio</label>
             <textarea
               name="bio"
               value={form.bio}
               onChange={handleChange}
               rows={3}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-gold/50 transition-colors resize-none"
+              className="w-full bg-white border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 transition-colors resize-none"
               placeholder="Tell us about yourself..."
             />
           </div>
@@ -232,7 +232,7 @@ export default function ProfilePage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="mt-8 w-full px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100"
+            className="mt-8 w-full px-6 py-3 rounded-xl bg-[#5B4CF0] text-white font-bold text-sm hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>

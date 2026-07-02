@@ -4,7 +4,7 @@ export function ListPageSkeleton({ count = 6 }: { count?: number }) {
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="glass rounded-2xl p-6 space-y-4">
+        <div key={i} className="bg-white rounded-2xl p-6 space-y-4 shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5]">
           <div className="flex items-start justify-between">
             <Skeleton className="h-5 w-32" />
             <Skeleton className="h-5 w-16 rounded-full" />

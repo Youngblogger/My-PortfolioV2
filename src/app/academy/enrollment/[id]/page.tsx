@@ -49,8 +49,8 @@ function EnrollmentDetail() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Enrollment Not Found</h2>
-          <Link href="/academy/dashboard" className="text-gold hover:underline">Go to Dashboard</Link>
+          <h2 className="text-2xl font-bold text-[#101828] mb-2">Enrollment Not Found</h2>
+          <Link href="/academy/dashboard" className="text-[#5B4CF0] hover:underline">Go to Dashboard</Link>
         </div>
       </div>
     );
@@ -63,74 +63,74 @@ function EnrollmentDetail() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass rounded-2xl p-8 text-center border-gold/20"
+            className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-8 text-center border-[#5B4CF0]/20"
           >
             <div className="text-6xl mb-4" aria-hidden="true">🎉</div>
-            <h1 className="text-3xl font-bold text-white mb-2">Congratulations!</h1>
-            <p className="text-muted">You have successfully enrolled in the course.</p>
+            <h1 className="text-3xl font-bold text-[#101828] mb-2">Congratulations!</h1>
+            <p className="text-[#98A2B3]">You have successfully enrolled in the course.</p>
           </motion.div>
         )}
 
-        <div className="glass rounded-2xl p-6 space-y-4">
-          <h2 className="text-xl font-bold text-white">Enrollment Details</h2>
+        <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-6 space-y-4">
+          <h2 className="text-xl font-bold text-[#101828]">Enrollment Details</h2>
           <div className="grid sm:grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-muted text-xs">Enrollment ID</p>
-              <p className="text-white font-mono text-xs">{enrollment.enrollment_number}</p>
+              <p className="text-[#98A2B3] text-xs">Enrollment ID</p>
+              <p className="text-[#101828] font-mono text-xs">{enrollment.enrollment_number}</p>
             </div>
             <div>
-              <p className="text-muted text-xs">Status</p>
+              <p className="text-[#98A2B3] text-xs">Status</p>
               <Badge variant={enrollment.status === "active" ? "success" : "info"}>{enrollment.status}</Badge>
             </div>
             <div>
-              <p className="text-muted text-xs">Course</p>
-              <p className="text-white">{course?.title || "N/A"}</p>
+              <p className="text-[#98A2B3] text-xs">Course</p>
+              <p className="text-[#101828]">{course?.title || "N/A"}</p>
             </div>
             <div>
-              <p className="text-muted text-xs">Enrolled</p>
-              <p className="text-white">{formatDate(enrollment.created_at)}</p>
+              <p className="text-[#98A2B3] text-xs">Enrolled</p>
+              <p className="text-[#101828]">{formatDate(enrollment.created_at)}</p>
             </div>
           </div>
 
           <div>
-            <p className="text-muted text-xs mb-1">Progress</p>
+            <p className="text-[#98A2B3] text-xs mb-1">Progress</p>
             <div className="flex items-center gap-3">
-              <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+              <div className="flex-1 h-2 bg-[#ECEFF5] rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gold rounded-full transition-all duration-500"
+                  className="h-full bg-[#5B4CF0] rounded-full transition-all duration-500"
                   style={{ width: `${enrollment.progress}%` }}
                 />
               </div>
-              <span className="text-white text-xs">{enrollment.progress}%</span>
+              <span className="text-[#101828] text-xs">{enrollment.progress}%</span>
             </div>
           </div>
 
           <div>
-            <p className="text-muted text-xs">Certificate</p>
-            <p className="text-white font-medium">
+            <p className="text-[#98A2B3] text-xs">Certificate</p>
+            <p className="text-[#101828] font-medium">
               {enrollment.certificate_url ? "Issued" : "In Progress"}
             </p>
           </div>
         </div>
 
         {transaction && (
-          <div className="glass rounded-2xl p-6 space-y-4">
-            <h3 className="text-lg font-bold text-white">Payment Information</h3>
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-6 space-y-4">
+            <h3 className="text-lg font-bold text-[#101828]">Payment Information</h3>
             <div className="grid sm:grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="text-muted text-xs">Transaction Ref</p>
-                <p className="text-white font-mono text-xs">{transaction.transaction_reference}</p>
+                <p className="text-[#98A2B3] text-xs">Transaction Ref</p>
+                <p className="text-[#101828] font-mono text-xs">{transaction.transaction_reference}</p>
               </div>
               <div>
-                <p className="text-muted text-xs">Amount</p>
-                <p className="text-gold font-bold">{formatCurrency(transaction.amount, transaction.currency)}</p>
+                <p className="text-[#98A2B3] text-xs">Amount</p>
+                <p className="text-[#5B4CF0] font-bold">{formatCurrency(transaction.amount, transaction.currency)}</p>
               </div>
               <div>
-                <p className="text-muted text-xs">Payment Method</p>
-                <p className="text-white capitalize">{transaction.payment_gateway}</p>
+                <p className="text-[#98A2B3] text-xs">Payment Method</p>
+                <p className="text-[#101828] capitalize">{transaction.payment_gateway}</p>
               </div>
               <div>
-                <p className="text-muted text-xs">Status</p>
+                <p className="text-[#98A2B3] text-xs">Status</p>
                 <Badge variant={transaction.status === "completed" ? "success" : "info"}>{transaction.status}</Badge>
               </div>
             </div>

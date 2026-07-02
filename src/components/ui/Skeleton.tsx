@@ -1,14 +1,14 @@
 export function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse bg-white/5 rounded-lg ${className}`}
+      className={`animate-pulse rounded-lg ${className}`} style={{ backgroundColor: "#ECEFF5" }}
     />
   );
 }
 
 export function CardSkeleton() {
   return (
-    <div className="glass rounded-2xl p-6 space-y-4">
+    <div className="bg-white rounded-2xl p-6 space-y-4 shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5]">
       <Skeleton className="h-6 w-3/4" />
       <Skeleton className="h-10 w-1/2" />
       <Skeleton className="h-4 w-full" />

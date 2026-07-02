@@ -257,15 +257,15 @@ export default function ConversationPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen py-14 px-4 sm:px-6">
+      <div className="min-h-screen bg-[#F7F9FC] py-14 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <div className="glass rounded-2xl min-h-[60vh] flex items-center justify-center">
+          <div className="bg-white shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl min-h-[60vh] flex items-center justify-center">
             <div className="text-center space-y-4">
-              <svg className="animate-spin h-8 w-8 text-gold mx-auto" viewBox="0 0 24 24">
+              <svg className="animate-spin h-8 w-8 text-[#5B4CF0] mx-auto" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
-              <p className="text-muted text-sm">Loading messages...</p>
+              <p className="text-[#98A2B3] text-sm">Loading messages...</p>
             </div>
           </div>
         </div>
@@ -275,15 +275,15 @@ export default function ConversationPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen py-14 px-4 sm:px-6">
+      <div className="min-h-screen bg-[#F7F9FC] py-14 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <div className="glass rounded-2xl p-12 text-center">
+          <div className="bg-white shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-12 text-center">
             <div className="text-4xl mb-4">⚠️</div>
-            <h3 className="text-lg font-bold text-white mb-2">Oops</h3>
-            <p className="text-muted text-sm mb-6">{error}</p>
+            <h3 className="text-lg font-bold text-[#101828] mb-2">Oops</h3>
+            <p className="text-[#98A2B3] text-sm mb-6">{error}</p>
             <button
               onClick={loadMessages}
-              className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+              className="px-6 py-3 rounded-xl bg-[#5B4CF0] text-white font-bold text-sm hover:shadow-[0_0_20px_rgba(91,76,240,0.3)] hover:scale-[1.02] transition-all duration-300"
             >
               Try Again
             </button>
@@ -294,12 +294,12 @@ export default function ConversationPage() {
   }
 
   return (
-    <div className="min-h-screen py-14 px-4 sm:px-6">
+    <div className="min-h-screen bg-[#F7F9FC] py-14 px-4 sm:px-6">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-3 mb-4 sm:mb-6">
           <Link
             href="/messages"
-            className="text-white/40 hover:text-white transition-colors"
+            className="text-[#667085] hover:text-[#101828] transition-colors"
             aria-label="Back to conversations"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -307,18 +307,18 @@ export default function ConversationPage() {
             </svg>
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-white">Chat Developer</h1>
-            <p className="text-xs text-muted">{messages.length} message{messages.length !== 1 ? "s" : ""}</p>
+            <h1 className="text-xl font-bold text-[#101828]">Chat Developer</h1>
+            <p className="text-xs text-[#98A2B3]">{messages.length} message{messages.length !== 1 ? "s" : ""}</p>
           </div>
         </div>
 
-        <div className="glass rounded-2xl flex flex-col min-h-[65vh] max-h-[65vh]">
+        <div className="bg-white shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl flex flex-col min-h-[65vh] max-h-[65vh]">
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.length === 0 && !loading && (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center py-12">
                   <div className="text-4xl mb-4" aria-hidden="true">💬</div>
-                  <p className="text-muted text-sm">No messages yet. Start the conversation.</p>
+                  <p className="text-[#98A2B3] text-sm">No messages yet. Start the conversation.</p>
                 </div>
               </div>
             )}
@@ -335,8 +335,8 @@ export default function ConversationPage() {
                 >
                   <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold ${
                     isMe
-                      ? "bg-gold/20 text-gold"
-                      : "bg-blue-500/20 text-blue-400"
+                      ? "bg-[#5B4CF0]/10 text-[#5B4CF0]"
+                      : "bg-blue-500/10 text-blue-600"
                   }`}>
                     {displayName.charAt(0).toUpperCase()}
                   </div>
@@ -345,23 +345,40 @@ export default function ConversationPage() {
                       status === "failed"
                         ? "bg-red-500/10 border border-red-500/20"
                         : isMe
-                          ? "bg-gold/10 border border-gold/10"
-                          : "bg-blue-500/10 border border-blue-500/10"
+                          ? "bg-[#5B4CF0] text-white"
+                          : "bg-white border border-[#ECEFF5] text-[#101828]"
                     }`}>
-                      <p className="text-xs font-medium text-white/50 mb-1">
+                      <p className={`text-xs font-medium mb-1 ${
+                        status === "failed" ? "text-red-500" : isMe ? "text-white/80" : "text-[#667085]"
+                      }`}>
                         {displayName}
                       </p>
                       {msg.message && (
-                        <p className="text-sm text-white whitespace-pre-wrap break-words">{msg.message}</p>
+                        <p className={`text-sm whitespace-pre-wrap break-words ${
+                          status === "failed" ? "text-[#101828]" : isMe ? "text-white" : "text-[#101828]"
+                        }`}>{msg.message}</p>
                       )}
                       {msg.attachments && msg.attachments.length > 0 && (
-                        <div className={`mt-2 space-y-1.5 ${msg.message ? "border-t border-white/5 pt-2" : ""}`}>
+                        <div className={`mt-2 space-y-1.5 ${
+                          msg.message
+                            ? isMe ? "border-t border-white/10 pt-2" : "border-t border-[#ECEFF5] pt-2"
+                            : ""
+                        }`}>
                           {msg.attachments.map((att: any, i: number) => (
-                            <div key={i} className="flex items-center gap-2 text-xs bg-white/5 rounded-lg px-3 py-2">
+                            <div
+                              key={i}
+                              className={`flex items-center gap-2 text-xs rounded-lg px-3 py-2 ${
+                                isMe ? "bg-white/10" : "bg-[#F7F9FC]"
+                              }`}
+                            >
                               <span>{getFileIcon(att.type || "")}</span>
-                              <span className="text-white/70 truncate flex-1">{att.name || "Attachment"}</span>
+                              <span className={`truncate flex-1 ${
+                                isMe ? "text-white/80" : "text-[#667085]"
+                              }`}>{att.name || "Attachment"}</span>
                               {att.size && (
-                                <span className="text-muted/60 shrink-0">{formatFileSize(att.size)}</span>
+                                <span className={`shrink-0 ${
+                                  isMe ? "text-white/60" : "text-[#98A2B3]"
+                                }`}>{formatFileSize(att.size)}</span>
                               )}
                               {att.id && (
                                 <button
@@ -378,7 +395,11 @@ export default function ConversationPage() {
                                       URL.revokeObjectURL(url);
                                     } catch {}
                                   }}
-                                  className="text-gold hover:text-gold/80 shrink-0"
+                                  className={`shrink-0 ${
+                                    isMe
+                                      ? "text-white/80 hover:text-white"
+                                      : "text-[#5B4CF0] hover:text-[#5B4CF0]/80"
+                                  }`}
                                   title="Download"
                                 >
                                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -392,13 +413,13 @@ export default function ConversationPage() {
                       )}
                     </div>
                     <div className={`flex items-center gap-1.5 mt-1 px-1 ${isMe ? "flex-row-reverse" : ""}`}>
-                      <p className="text-[10px] text-muted/60">{timeAgo(msg.created_at)}</p>
+                      <p className="text-[10px] text-[#98A2B3]/60">{timeAgo(msg.created_at)}</p>
                       {isMe && (
                         <span
                           className={`inline-flex items-center text-xs leading-none ${
-                            status === "sending" ? "text-white/20" :
-                            status === "failed" ? "text-red-400" :
-                            isRead ? "text-blue-400" : "text-white/40"
+                            status === "sending" ? "text-[#98A2B3]" :
+                            status === "failed" ? "text-red-500" :
+                            isRead ? "text-blue-500" : "text-[#98A2B3]"
                           }`}
                           title={
                             status === "sending" ? "Sending..." :
@@ -443,14 +464,14 @@ export default function ConversationPage() {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="border-t border-white/5 p-4">
+          <div className="border-t border-[#ECEFF5] p-4 bg-white rounded-b-2xl">
             {files.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-3">
                 {files.map((file, i) => (
-                  <div key={i} className="flex items-center gap-1.5 bg-white/5 rounded-lg px-2.5 py-1.5 text-xs">
+                  <div key={i} className="flex items-center gap-1.5 bg-[#F7F9FC] rounded-lg px-2.5 py-1.5 text-xs">
                     <span>{getFileIcon(file.type)}</span>
-                    <span className="text-white/70 max-w-[120px] truncate">{file.name}</span>
-                    <span className="text-muted/60">{formatFileSize(file.size)}</span>
+                    <span className="text-[#667085] max-w-[120px] truncate">{file.name}</span>
+                    <span className="text-[#98A2B3]">{formatFileSize(file.size)}</span>
                     <button
                       onClick={() => removeFile(i)}
                       className="text-red-400 hover:text-red-300 ml-1"
@@ -466,7 +487,7 @@ export default function ConversationPage() {
             <div className="flex items-end gap-3">
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="shrink-0 w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all"
+                className="shrink-0 w-10 h-10 rounded-xl bg-[#F7F9FC] hover:bg-[#ECEFF5]/50 flex items-center justify-center text-[#667085] hover:text-[#101828] transition-all"
                 title="Attach files"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -487,7 +508,7 @@ export default function ConversationPage() {
                 onKeyDown={handleKeyDown}
                 placeholder="Type your message..."
                 rows={1}
-                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold/50 resize-none min-h-[42px] max-h-[120px]"
+                className="flex-1 bg-white border border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-[#98A2B3] focus:outline-none focus:border-[#5B4CF0]/50 resize-none min-h-[42px] max-h-[120px]"
                 style={{ height: "auto" }}
                 onInput={(e) => {
                   const target = e.currentTarget;
@@ -498,7 +519,7 @@ export default function ConversationPage() {
               <button
                 onClick={handleSend}
                 disabled={sending || (!text.trim() && files.length === 0)}
-                className="shrink-0 px-5 h-10 rounded-xl bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300 disabled:opacity-40 disabled:scale-100 disabled:shadow-none flex items-center gap-2"
+                className="shrink-0 px-5 h-10 rounded-xl bg-[#5B4CF0] text-white font-semibold text-sm hover:shadow-[0_0_20px_rgba(91,76,240,0.3)] hover:scale-[1.02] transition-all duration-300 disabled:opacity-40 disabled:scale-100 disabled:shadow-none flex items-center gap-2"
               >
                 {sending ? (
                   <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -519,7 +540,7 @@ export default function ConversationPage() {
         <div className="mt-4 text-center">
           <Link
             href={`/hire/project/${orderId}`}
-            className="text-xs text-gold hover:text-gold/80 transition-colors"
+            className="text-xs text-[#5B4CF0] hover:text-[#5B4CF0]/80 transition-colors"
           >
             View full project workspace &rarr;
           </Link>

@@ -76,13 +76,13 @@ export default function DownloadsPage() {
     return (
       <div className="min-h-screen py-20 px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="h-8 bg-white/5 rounded w-48 mb-2 animate-pulse" />
-          <div className="h-5 bg-white/5 rounded w-64 mb-10 animate-pulse" />
+          <div className="h-8 bg-[#F7F9FC] rounded w-48 mb-2 animate-pulse" />
+          <div className="h-5 bg-[#F7F9FC] rounded w-64 mb-10 animate-pulse" />
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="glass rounded-xl p-5 mb-4 animate-pulse">
-              <div className="h-5 bg-white/5 rounded w-48 mb-3" />
-              <div className="h-4 bg-white/5 rounded w-64 mb-2" />
-              <div className="h-4 bg-white/5 rounded w-32" />
+            <div key={i} className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-xl p-5 mb-4 animate-pulse">
+              <div className="h-5 bg-[#F7F9FC] rounded w-48 mb-3" />
+              <div className="h-4 bg-[#F7F9FC] rounded w-64 mb-2" />
+              <div className="h-4 bg-[#F7F9FC] rounded w-32" />
             </div>
           ))}
         </div>
@@ -94,11 +94,11 @@ export default function DownloadsPage() {
     return (
       <div className="min-h-screen py-20 px-6">
         <div className="max-w-xl mx-auto text-center">
-          <div className="glass rounded-2xl p-12">
+          <div className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-12">
             <div className="text-4xl mb-4">⚠️</div>
-            <h3 className="text-lg font-bold text-white mb-2">Oops</h3>
-            <p className="text-muted text-sm mb-6">{error}</p>
-            <button onClick={load} className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold transition-all">
+            <h3 className="text-lg font-bold text-[#101828] mb-2">Oops</h3>
+            <p className="text-[#98A2B3] text-sm mb-6">{error}</p>
+            <button onClick={load} className="px-6 py-3 rounded-xl bg-[#5B4CF0] text-white font-bold text-sm hover:scale-[1.02] transition-all duration-300">
               Try Again
             </button>
           </div>
@@ -111,8 +111,8 @@ export default function DownloadsPage() {
     <div className="min-h-screen py-20 px-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">Downloads</h1>
-          <p className="text-muted mt-1">
+          <h1 className="text-3xl font-bold text-[#101828]">Downloads</h1>
+          <p className="text-[#98A2B3] mt-1">
             {allFiles.length} file{allFiles.length !== 1 ? "s" : ""} across {grouped.length} project{grouped.length !== 1 ? "s" : ""}
           </p>
         </div>
@@ -127,15 +127,15 @@ export default function DownloadsPage() {
         ) : (
           <motion.div variants={stagger} initial="hidden" animate="visible" className="space-y-6">
             {grouped.map((group) => (
-              <motion.div key={group.order_id} variants={fadeUp} className="glass rounded-2xl p-6">
+              <motion.div key={group.order_id} variants={fadeUp} className="bg-white rounded-2xl shadow-[0_10px_35px_rgba(16,24,40,0.06)] border border-[#ECEFF5] rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-white font-semibold">{group.project_name}</h3>
-                    <p className="text-xs text-muted mt-0.5">
+                    <h3 className="text-[#101828] font-semibold">{group.project_name}</h3>
+                    <p className="text-xs text-[#98A2B3] mt-0.5">
                       #{group.order_number} &middot; {group.service} &middot; {group.total_files} file{group.total_files !== 1 ? "s" : ""}
                     </p>
                   </div>
-                  <div className="text-xs text-muted/60">
+                  <div className="text-xs text-[#667085]">
                     {formatFileSize(group.total_size)}
                   </div>
                 </div>
@@ -143,13 +143,13 @@ export default function DownloadsPage() {
                   {group.files.map((file) => (
                     <div
                       key={file.id}
-                      className="flex items-center justify-between bg-white/5 rounded-xl px-4 py-3 hover:bg-white/10 transition-colors"
+                      className="flex items-center justify-between bg-[#F7F9FC] rounded-xl px-4 py-3 transition-colors"
                     >
                       <div className="flex items-center gap-3 min-w-0 flex-1">
                         <span className="text-lg shrink-0">{getFileIcon(file.type)}</span>
                         <div className="min-w-0">
-                          <p className="text-sm text-white truncate">{file.name}</p>
-                          <p className="text-[10px] text-muted/60">
+                          <p className="text-sm text-[#101828] truncate">{file.name}</p>
+                          <p className="text-[10px] text-[#667085]">
                             {formatFileSize(file.size)} &middot; {file.category?.replace(/_/g, " ")}
                             {file.created_at && ` · ${formatDate(file.created_at)}`}
                           </p>
@@ -158,7 +158,7 @@ export default function DownloadsPage() {
                       <button
                         onClick={() => handleDownload(file.id, file.name)}
                         disabled={downloading === file.id}
-                        className="shrink-0 ml-4 px-3 py-1.5 rounded-lg bg-gold-gradient text-background text-xs font-semibold hover:shadow-gold hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100"
+                        className="shrink-0 ml-4 px-3 py-1.5 rounded-lg bg-[#5B4CF0] text-white text-xs font-semibold hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 disabled:scale-100"
                       >
                         {downloading === file.id ? (
                           <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">

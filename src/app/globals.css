@@ -181,3 +181,19 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(212, 175, 55, 0.5);
 }
+
+/* Portal Light Theme */
+.portal-bg { background-color: #F7F9FC; }
+.portal-card { background-color: #FFFFFF; border-radius: 22px; box-shadow: 0 10px 35px rgba(16,24,40,.06); border: 1px solid #ECEFF5; }
+.portal-sidebar { background-color: #081120; }
+.portal-primary { color: #5B4CF0; }
+.portal-primary-bg { background-color: #5B4CF0; }
+.portal-primary-hover { background-color: #4B3EEA; }
+.portal-text { color: #101828; }
+.portal-text-secondary { color: #667085; }
+.portal-text-muted { color: #98A2B3; }
+.portal-border { border-color: #ECEFF5; }
+.portal-sidebar-hover { background-color: rgba(91,76,240,.15); }
+.portal-input-radius { border-radius: 16px; }
+.portal-btn-radius { border-radius: 14px; }
+.portal-card-radius { border-radius: 22px; }

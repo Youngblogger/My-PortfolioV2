@@ -28,16 +28,16 @@ export function Checkbox({ label, checked, onChange, error, id }: CheckboxProps)
           <div className={`
             w-5 h-5 rounded-md border-2 flex items-center justify-center
             transition-all duration-200
-            ${checked ? "bg-gold border-gold" : "border-white/20 group-hover:border-white/40"}
+            ${checked ? "bg-[#5B4CF0] border-[#5B4CF0]" : "border-[#ECEFF5] group-hover:border-[#98A2B3]"}
           `}>
             {checked && (
-              <svg className="w-3 h-3 text-background" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+              <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             )}
           </div>
         </div>
-        <span className="text-sm text-white/70 group-hover:text-white/90 transition-colors">
+        <span className="text-sm transition-colors" style={{ color: checked ? "#101828" : "#667085" }}>
           {label}
         </span>
       </label>
