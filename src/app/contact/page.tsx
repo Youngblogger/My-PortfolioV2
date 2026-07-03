@@ -175,7 +175,6 @@ export default function ContactPage() {
                 <label htmlFor="subject" className={labelClasses}>Subject</label>
                 <select id="subject" name="subject" required value={form.subject} onChange={handleChange} className={inputClasses}>
                   <option value="" disabled className="bg-surface">Select a subject</option>
-                  <option value="academy" className="bg-surface">Academy Inquiry</option>
                   <option value="project" className="bg-surface">Project Inquiry</option>
                   <option value="partnership" className="bg-surface">Partnership</option>
                   <option value="general" className="bg-surface">General Inquiry</option>

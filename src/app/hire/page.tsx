@@ -49,11 +49,11 @@ const techTags: Record<string, string[]> = {
 };
 
 const fallbackServices: ServiceData[] = [
-  { id: "1", slug: "web-development", title: "Web Development", subtitle: null, short_description: "Full-stack web applications built with modern frameworks. React, Next.js, Node.js — deployed and scaled for production.", icon: "🌐", image_url: null, starting_price_ngn: 250000, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 12 },
-  { id: "2", slug: "saas-development", title: "SaaS Development", subtitle: null, short_description: "End-to-end SaaS platform development from concept to launch. Multi-tenant architecture, billing, and analytics included.", icon: "☁️", image_url: null, starting_price_ngn: 0, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 8 },
-  { id: "3", slug: "mobile-development", title: "Mobile App Development", subtitle: null, short_description: "Cross-platform mobile applications for iOS and Android. React Native and Flutter development with native performance.", icon: "📱", image_url: null, starting_price_ngn: 500000, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 6 },
-  { id: "4", slug: "ui-ux-design", title: "UI/UX Design", subtitle: null, short_description: "World-class user interfaces and experiences. Research-driven design that converts visitors into customers.", icon: "🎨", image_url: null, starting_price_ngn: 150000, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 15 },
-  { id: "5", slug: "ai-solutions", title: "AI Engineering", subtitle: null, short_description: "Custom AI solutions, LLM integrations, and machine learning models tailored to your business needs.", icon: "🤖", image_url: null, starting_price_ngn: 0, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 4 },
+  { id: "1", slug: "web-development", title: "Web Development", subtitle: null, short_description: "Full-stack web applications built with modern frameworks. React, Next.js, Node.js — deployed and scaled for production.", icon: "🌐", gradient: "from-gold/5 to-gold/10", duration: "", level: "", featured: false, order: 0, image_url: null, starting_price_ngn: 250000, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 12 },
+  { id: "2", slug: "saas-development", title: "SaaS Development", subtitle: null, short_description: "End-to-end SaaS platform development from concept to launch. Multi-tenant architecture, billing, and analytics included.", icon: "☁️", gradient: "from-gold/5 to-gold/10", duration: "", level: "", featured: false, order: 0, image_url: null, starting_price_ngn: 0, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 8 },
+  { id: "3", slug: "mobile-development", title: "Mobile App Development", subtitle: null, short_description: "Cross-platform mobile applications for iOS and Android. React Native and Flutter development with native performance.", icon: "📱", gradient: "from-gold/5 to-gold/10", duration: "", level: "", featured: false, order: 0, image_url: null, starting_price_ngn: 500000, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 6 },
+  { id: "4", slug: "ui-ux-design", title: "UI/UX Design", subtitle: null, short_description: "World-class user interfaces and experiences. Research-driven design that converts visitors into customers.", icon: "🎨", gradient: "from-gold/5 to-gold/10", duration: "", level: "", featured: false, order: 0, image_url: null, starting_price_ngn: 150000, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 15 },
+  { id: "5", slug: "ai-solutions", title: "AI Engineering", subtitle: null, short_description: "Custom AI solutions, LLM integrations, and machine learning models tailored to your business needs.", icon: "🤖", gradient: "from-gold/5 to-gold/10", duration: "", level: "", featured: false, order: 0, image_url: null, starting_price_ngn: 0, starting_price_usd: 0, estimated_delivery: null, features: null, project_types_count: 4 },
 ];
 
 export default function HirePage() {
@@ -142,7 +142,7 @@ export default function HirePage() {
                     </div>
                     <div className="flex items-center justify-between pt-4 border-t border-white/5">
                       <span className="text-sm text-gold font-semibold">
-                        {service.starting_price_ngn > 0
+                        {service.starting_price_ngn && service.starting_price_ngn > 0
                           ? `From ₦${service.starting_price_ngn.toLocaleString()}`
                           : "Custom Quote"}
                       </span>

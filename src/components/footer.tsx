@@ -2,20 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Copyright } from "@/components/Copyright";
 
 const footerSections = [
-  {
-    title: "Academy",
-    links: [
-      { label: "Frontend Engineering", href: "/academy/frontend" },
-      { label: "Backend Engineering", href: "/academy/backend" },
-      { label: "Full-Stack Development", href: "/academy/fullstack" },
-      { label: "Mobile Development", href: "/academy/mobile" },
-      { label: "AI Engineering", href: "/academy/ai" },
-    ],
-  },
   {
     title: "Projects",
     links: [
@@ -50,11 +39,6 @@ const footerSections = [
 ];
 
 export default function Footer() {
-  const pathname = usePathname();
-  const portalPaths = ["/dashboard", "/academy/enrollment", "/academy/dashboard", "/proposals", "/notifications", "/auth", "/hire/checkout"];
-  const isPortalPage = portalPaths.some(p => pathname === p || pathname.startsWith(p + "/"));
-  if (pathname.startsWith("/admin") || isPortalPage) return null;
-
   return (
     <footer role="contentinfo" aria-label="Site footer" className="relative border-t border-white/5">
       <div className="absolute inset-0 bg-gradient-to-b from-surface/50 to-background pointer-events-none" />

@@ -3,16 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\EmailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class QuoteController extends Controller
 {
-    public function __construct(
-        private EmailService $emailService,
-    ) {}
-
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -33,17 +28,8 @@ class QuoteController extends Controller
             ], 422);
         }
 
-        try {
-            $this->emailService->sendQuoteRequest($request->all());
-
-            return response()->json([
-                'success' => true,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error' => 'Failed to send email',
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

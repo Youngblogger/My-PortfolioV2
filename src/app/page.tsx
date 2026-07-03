@@ -5,15 +5,6 @@ import Link from "next/link";
 import Hero from "@/components/hero";
 import Tech from "@/components/tech";
 
-const learningPaths = [
-  { id: "frontend", title: "Frontend Engineering", description: "Master React, Next.js, and modern frontend frameworks to build stunning user interfaces.", icon: "🖥", gradient: "from-blue-500/10 to-cyan-500/10" },
-  { id: "backend", title: "Backend Engineering", description: "Design scalable APIs, microservices, and serverless architectures.", icon: "⚙", gradient: "from-green-500/10 to-emerald-500/10" },
-  { id: "fullstack", title: "Full-Stack Development", description: "Become a complete developer capable of building production-ready applications end-to-end.", icon: "🚀", gradient: "from-purple-500/10 to-violet-500/10" },
-  { id: "mobile", title: "Mobile Development", description: "Build cross-platform mobile apps for iOS and Android with React Native.", icon: "📱", gradient: "from-orange-500/10 to-amber-500/10" },
-  { id: "ai", title: "AI Engineering", description: "Dive into machine learning, LLMs, and AI-powered applications that solve real problems.", icon: "🤖", gradient: "from-pink-500/10 to-rose-500/10" },
-  { id: "ui-ux", title: "UI/UX Design", description: "Design intuitive user interfaces and seamless experiences with modern design tools and frameworks.", icon: "🎨", gradient: "from-rose-500/10 to-pink-500/10" },
-];
-
 const featuredProjects = [
   { id: "marketplace-platform", title: "Marketplace Platform", description: "Multi-vendor marketplace connecting artisans across Africa with global buyers.", icon: "🛒", tech: ["Next.js", "Node.js", "PostgreSQL"], results: "10,000+ vendors, 50,000+ monthly transactions" },
   { id: "lms-platform", title: "Learning Management System", description: "Comprehensive LMS supporting 10,000+ concurrent students with live coding environments.", icon: "📚", tech: ["React", "Python", "Django"], results: "8,000+ active students, 95% completion rate" },
@@ -77,75 +68,6 @@ export default function Home() {
   return (
     <>
       <Hero />
-
-      {/* Academy Overview */}
-      <section id="learn" className="relative py-24 md:py-32">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent pointer-events-none" />
-        <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
-            className="text-center mb-16"
-          >
-            <span className="section-label">ACADEMY</span>
-            <h2 className="section-heading">
-              Master Modern <span className="text-gradient">Software Development</span>
-            </h2>
-            <p className="section-subtitle mt-4 mx-auto">
-              Industry-led courses designed to take you from beginner to production-ready engineer.
-            </p>
-          </motion.div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-3 gap-5"
-          >
-            {learningPaths.map((program) => (
-              <motion.div
-                key={program.id}
-                variants={cardVariants}
-                className="group relative rounded-2xl glass glass-hover overflow-hidden"
-              >
-                <Link
-                  href={["frontend", "backend", "fullstack", "mobile", "ai"].includes(program.id) ? `/academy/${program.id}` : "/academy"}
-                  className="block relative p-6 md:p-8"
-                >
-                  <div className={`absolute inset-0 bg-gradient-to-br ${program.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                  <div className="relative">
-                    <div className="text-3xl mb-4">{program.icon}</div>
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gold transition-colors">{program.title}</h3>
-                    <p className="text-muted text-sm leading-relaxed mb-6">{program.description}</p>
-                    <span className="text-sm text-gold flex items-center gap-1 group/link">
-                      View Program
-                      <span className="transition-transform duration-300 group-hover/link:translate-x-1">→</span>
-                    </span>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
-            className="text-center mt-12"
-          >
-            <Link
-              href="/academy"
-              className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300 inline-block"
-            >
-              Explore All Programs
-            </Link>
-          </motion.div>
-        </div>
-      </section>
 
       {/* Featured Projects */}
       <section id="build" className="relative py-24 md:py-32 overflow-hidden">
@@ -435,12 +357,6 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
             className="mt-10 flex flex-wrap justify-center gap-4"
           >
-            <Link
-              href="/academy"
-              className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
-            >
-              Enroll Now
-            </Link>
             <Link
               href="/community"
               className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"

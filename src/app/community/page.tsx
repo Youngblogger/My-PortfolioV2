@@ -168,20 +168,7 @@ export default function CommunityPage() {
             </p>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] as const }}
-            className="mt-10"
-          >
-            <Link
-              href="/academy"
-              className="inline-block px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
-            >
-              Join Community Free
-            </Link>
-          </motion.div>
+
         </div>
       </section>
     </>

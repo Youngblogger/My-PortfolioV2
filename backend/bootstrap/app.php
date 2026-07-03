@@ -15,14 +15,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->api(prepend: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
-            \App\Http\Middleware\ForceJsonResponse::class,
-        ]);
-
-        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
-
-        $middleware->alias([
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
-            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

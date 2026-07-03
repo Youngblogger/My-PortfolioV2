@@ -39,8 +39,5 @@ class Service extends Model
         return $this->hasMany(ProjectType::class)->where('is_active', true);
     }
 
-    public function orders()
-    {
-        return $this->hasMany(ServiceOrder::class);
-    }
+
 }

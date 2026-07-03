@@ -3,23 +3,28 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\CreateDiscoveryCallRequest;
 use App\Models\DiscoveryCall;
 use Illuminate\Http\Request;
 
 class DiscoveryCallController extends Controller
 {
-    public function store(CreateDiscoveryCallRequest $request)
+    public function store(Request $request)
     {
+        $validated = $request->validate([
+            'preferred_date' => ['required', 'date', 'after:today'],
+            'preferred_time' => ['required', 'date_format:H:i'],
+            'timezone' => ['nullable', 'string', 'max:64'],
+            'meeting_type' => ['nullable', 'string', 'max:64'],
+            'project_summary' => ['nullable', 'string', 'max:5000'],
+        ]);
+
         $call = DiscoveryCall::create([
-            'user_id' => $request->user()->id,
-            'service_order_id' => $request->service_order_id,
             'status' => 'pending',
-            'preferred_date' => $request->preferred_date,
-            'preferred_time' => $request->preferred_time,
-            'timezone' => $request->timezone ?? 'Africa/Lagos',
-            'meeting_type' => $request->meeting_type,
-            'project_summary' => $request->project_summary,
+            'preferred_date' => $validated['preferred_date'],
+            'preferred_time' => $validated['preferred_time'],
+            'timezone' => $validated['timezone'] ?? 'Africa/Lagos',
+            'meeting_type' => $validated['meeting_type'] ?? 'google_meet',
+            'project_summary' => $validated['project_summary'] ?? null,
         ]);
 
         return response()->json([
@@ -29,23 +34,5 @@ class DiscoveryCallController extends Controller
                 'status' => 'pending',
             ],
         ]);
-    }
-
-    public function myCalls(Request $request)
-    {
-        $calls = DiscoveryCall::where('user_id', $request->user()->id)
-            ->orderBy('preferred_date', 'desc')
-            ->get()
-            ->map(fn ($c) => [
-                'id' => $c->id,
-                'preferred_date' => $c->preferred_date,
-                'preferred_time' => $c->preferred_time,
-                'meeting_type' => $c->meeting_type,
-                'meeting_link' => $c->meeting_link,
-                'status' => $c->status,
-                'created_at' => $c->created_at,
-            ]);
-
-        return response()->json(['success' => true, 'data' => $calls]);
     }
 }

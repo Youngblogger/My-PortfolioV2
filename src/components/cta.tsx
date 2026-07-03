@@ -38,8 +38,8 @@ export default function CTA() {
             <span className="text-gradient">The Future?</span>
           </h2>
           <p className="text-lg md:text-xl text-muted mt-6 max-w-2xl mx-auto leading-relaxed">
-            Join CODEMAFIA Academy, explore real-world projects, or partner with
-            us to build your next product.
+            Explore our portfolio, partner with us, or start your next project
+            with a team that delivers.
           </p>
         </motion.div>
 
@@ -51,19 +51,13 @@ export default function CTA() {
           className="mt-10 flex flex-wrap justify-center gap-4"
         >
           <a
-            href="#learn"
+            href="/projects"
             className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
-          >
-            Start Learning
-          </a>
-          <a
-            href="#build"
-            className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 transition-all duration-300"
           >
             View Projects
           </a>
           <a
-            href="#hire"
+            href="/hire"
             className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 transition-all duration-300"
           >
             Work With Us

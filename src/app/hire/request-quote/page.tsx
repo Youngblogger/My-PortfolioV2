@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, type QuoteData } from "@/lib/api";
 
 const serviceStructure: Record<string, { label: string; options: string[] }> = {
   "business-website": { label: "Business Website", options: ["Corporate Website", "Company Profile Website", "Startup Website", "Landing Page Website", "Personal Brand Website"] },
@@ -89,7 +89,16 @@ export default function RequestQuotePage() {
     setSending(true);
     setError("");
     try {
-      await api.sendQuoteRequest(form);
+      const quoteData: QuoteData = {
+        full_name: form.name,
+        email: form.email,
+        phone: form.phone,
+        project_type: form.subService || form.service,
+        budget_range: form.budget,
+        timeline: form.timeline,
+        description: form.project,
+      };
+      await api.sendQuoteRequest(quoteData);
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {

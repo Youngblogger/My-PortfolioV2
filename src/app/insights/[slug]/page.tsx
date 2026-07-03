@@ -141,14 +141,14 @@ export default function BlogPostPage() {
             <div className="glass rounded-2xl p-8 text-center">
               <h3 className="text-xl font-bold text-white mb-3">Ready to Start Building?</h3>
               <p className="text-muted text-sm mb-6 max-w-md mx-auto">
-                Join CODEMAFIA Academy and learn the skills you need to build production-ready applications.
+                Let&apos;s work together to bring your next project to life.
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 <Link
-                  href="/academy"
+                  href="/hire"
                   className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold transition-all duration-300"
                 >
-                  Explore Programs
+                  Hire Us
                 </Link>
                 <Link
                   href="/projects"

@@ -171,10 +171,10 @@ export default function Hero() {
           className="mt-10 flex flex-wrap justify-center gap-4"
         >
           <a
-            href="#learn"
+            href="/hire"
             className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
           >
-            Join Academy
+            Hire Us
           </a>
           <a
             href="#build"

@@ -183,17 +183,17 @@
 }
 
 /* Portal Light Theme */
-.portal-bg { background-color: #F7F9FC; }
+.portal-bg { background-color: #FAFAFC; }
 .portal-card { background-color: #FFFFFF; border-radius: 22px; box-shadow: 0 10px 35px rgba(16,24,40,.06); border: 1px solid #ECEFF5; }
-.portal-sidebar { background-color: #081120; }
-.portal-primary { color: #5B4CF0; }
-.portal-primary-bg { background-color: #5B4CF0; }
-.portal-primary-hover { background-color: #4B3EEA; }
-.portal-text { color: #101828; }
+.portal-sidebar { background-color: #031025; }
+.portal-primary { color: #4836EA; }
+.portal-primary-bg { background-color: #4836EA; }
+.portal-primary-hover { background-color: #3E2DD5; }
+.portal-text { color: #1A1A2E; }
 .portal-text-secondary { color: #667085; }
 .portal-text-muted { color: #98A2B3; }
-.portal-border { border-color: #ECEFF5; }
-.portal-sidebar-hover { background-color: rgba(91,76,240,.15); }
+.portal-border { border-color: #E8E8F0; }
+.portal-sidebar-hover { background-color: rgba(72,54,234,.12); }
 .portal-input-radius { border-radius: 16px; }
 .portal-btn-radius { border-radius: 14px; }
 .portal-card-radius { border-radius: 22px; }

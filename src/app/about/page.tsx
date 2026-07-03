@@ -30,7 +30,6 @@ const cardUp = {
 };
 
 const ecosystemItems = [
-  { label: "Academy", desc: "Professional software engineering education" },
   { label: "Software Engineering", desc: "Modern, scalable software systems" },
   { label: "Product Development", desc: "From concept to production-ready" },
   { label: "Artificial Intelligence", desc: "Intelligent automation & LLMs" },
@@ -67,11 +66,6 @@ const workflow = [
 ];
 
 const ecosystemCards = [
-  {
-    emoji: "🎓",
-    title: "CODEMAFIA Academy",
-    desc: "Professional software engineering education designed around real projects, modern technologies, mentorship, and industry best practices. Students don't simply complete courses—they build portfolios, gain practical experience, and prepare for professional engineering careers.",
-  },
   {
     emoji: "💻",
     title: "Software Engineering",
@@ -152,12 +146,7 @@ export default function AboutPage() {
               >
                 Build With Us
               </Link>
-              <Link
-                href="/academy"
-                className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
-              >
-                Explore the Academy
-              </Link>
+
             </div>
           </motion.div>
         </div>
@@ -383,8 +372,8 @@ export default function AboutPage() {
                 desc: "We don't build software for today. We engineer systems designed to grow with tomorrow.",
               },
               {
-                title: "Education Meets Industry",
-                desc: "Our academy is informed by real engineering projects. Our engineering is strengthened by continuous learning.",
+                title: "Continuous Learning",
+                desc: "Every project is an opportunity to grow. We stay at the forefront of technology through constant learning and improvement.",
               },
               {
                 title: "Partnership Over Projects",
@@ -595,12 +584,6 @@ export default function AboutPage() {
               className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
             >
               Start Your Project
-            </Link>
-            <Link
-              href="/academy"
-              className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
-            >
-              Join the Academy
             </Link>
           </motion.div>
         </div>
