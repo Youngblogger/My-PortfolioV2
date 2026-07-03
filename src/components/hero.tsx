@@ -97,27 +97,27 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
         >
-          <span className="section-label">DIGITAL PRODUCT STUDIO</span>
+          <span className="section-label">FULL-STACK DEVELOPMENT STUDIO</span>
         </motion.div>
 
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] as const }}
-          className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.95] sm:leading-[0.9] tracking-tight mt-6 text-balance"
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.05] sm:leading-[1.0] tracking-tight mt-6 text-balance"
         >
-          <span className="block">BUILDING WEBSITES</span>
-          <span className="block text-gradient">THAT SCALE</span>
-          <span className="block">BUSINESSES</span>
+          <span className="block">We Build Websites,</span>
+          <span className="block text-gradient">Web Apps & Digital</span>
+          <span className="block">Platforms for Businesses</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
-          className="mt-8 text-lg md:text-xl text-muted max-w-2xl mx-auto leading-relaxed"
+          className="mt-8 text-lg md:text-xl text-muted max-w-3xl mx-auto leading-relaxed"
         >
-          We design and build scalable websites, dashboards, and digital platforms for startups and businesses.
+          CODEMAFIA partners with founders, startups, and organizations to design, build, and launch custom digital products — from business websites to dashboards, portals, and full-scale web applications.
         </motion.p>
 
         <motion.div
@@ -127,13 +127,13 @@ export default function Hero() {
           className="mt-10 flex flex-wrap justify-center gap-4"
         >
           <a
-            href="/hire"
+            href="/start-project"
             className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
           >
             Start a Project
           </a>
           <a
-            href="/projects"
+            href="/work"
             className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
           >
             View Our Work
@@ -163,20 +163,9 @@ export default function Hero() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] as const }}
-          className="mt-10 flex items-center justify-center gap-6 text-sm text-muted"
+          className="mt-8 text-sm text-muted"
         >
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-            Premium design & engineering
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-            Product-minded approach
-          </span>
-          <span className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-            Reliable delivery
-          </span>
+          Trusted by startups, SMEs, and organizations across Africa
         </motion.div>
       </div>
       <motion.div

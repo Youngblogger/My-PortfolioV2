@@ -4,6 +4,7 @@ import "./globals.css";
 import Nav from "@/components/nav";
 import ClientLayout from "@/components/ClientLayout";
 import ConditionalFooter from "@/components/ConditionalFooter";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -73,6 +74,7 @@ export default function RootLayout({
           <ClientLayout>{children}</ClientLayout>
         </main>
         <ConditionalFooter />
+        <WhatsAppButton />
       </body>
     </html>
   );

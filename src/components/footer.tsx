@@ -6,31 +6,28 @@ import { Copyright } from "@/components/Copyright";
 
 const footerSections = [
   {
-    title: "Projects",
+    title: "Work",
     links: [
-      { label: "Marketplace Platform", href: "/projects/marketplace-platform" },
-      { label: "Online Learning Platform", href: "/projects/lms-platform" },
-      { label: "Fintech Dashboard", href: "/projects/fintech-dashboard" },
-      { label: "Restaurant Platform", href: "/projects/restaurant-platform" },
-      { label: "AI Applications", href: "/projects/ai-content-platform" },
+      { label: "Marketplace Platform", href: "/work/marketplace-platform" },
+      { label: "Fintech Dashboard", href: "/work/fintech-dashboard" },
+      { label: "Restaurant Platform", href: "/work/restaurant-platform" },
+      { label: "AI Content Platform", href: "/work/ai-content-platform" },
+      { label: "SaaS Analytics", href: "/work/saas-analytics" },
     ],
   },
   {
     title: "Services",
     links: [
-      { label: "Websites & Brand Platforms", href: "/hire/web-development" },
-      { label: "Custom Web Applications", href: "/hire/saas-development" },
-      { label: "E-Commerce & Marketplaces", href: "/hire/mobile-apps" },
-      { label: "UI/UX Design", href: "/hire/ui-ux-design" },
-      { label: "Technical Consulting", href: "/hire/technical-consulting" },
+      { label: "All Services", href: "/services" },
+      { label: "FAQs", href: "/faq" },
       { label: "Pricing", href: "/pricing" },
+      { label: "Start a Project", href: "/start-project" },
     ],
   },
   {
     title: "Connect",
     links: [
-      { label: "Blog", href: "/insights" },
-      { label: "Community", href: "/community" },
+      { label: "Insights", href: "/insights" },
       { label: "About", href: "/about" },
       { label: "Contact", href: "/contact" },
       { label: "Careers", href: "/careers" },

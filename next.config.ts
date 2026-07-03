@@ -10,6 +10,21 @@ const nextConfig: NextConfig = {
         destination: "/auth/login",
         permanent: false,
       },
+      {
+        source: "/hire",
+        destination: "/services",
+        permanent: true,
+      },
+      {
+        source: "/projects",
+        destination: "/work",
+        permanent: true,
+      },
+      {
+        source: "/projects/:path*",
+        destination: "/work/:path*",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

@@ -145,13 +145,13 @@ export default function BlogPostPage() {
               </p>
               <div className="flex flex-wrap justify-center gap-3">
                 <Link
-                  href="/hire"
+                  href="/start-project"
                   className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold transition-all duration-300"
                 >
-                  Hire Us
+                  Start a Project
                 </Link>
                 <Link
-                  href="/projects"
+                  href="/work"
                   className="px-6 py-3 rounded-xl border border-white/10 text-white font-semibold text-sm hover:bg-white/5 transition-all duration-300"
                 >
                   View Projects

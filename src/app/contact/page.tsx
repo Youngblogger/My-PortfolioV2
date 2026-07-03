@@ -95,7 +95,7 @@ export default function ContactPage() {
         label="CONTACT"
         title="Let&apos;s Start a"
         highlight="Conversation"
-        description="Have a project in mind, a question about our programs, or just want to say hello? We&apos;d love to hear from you."
+        description="Have a project in mind or a question about working with us? We&apos;d love to hear from you. For project inquiries, use the Start a Project page for a faster response."
       />
 
       <section className="relative py-16 md:py-24 overflow-hidden">

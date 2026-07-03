@@ -7,9 +7,9 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
-  { label: "Projects", href: "/projects" },
-  { label: "Services", href: "/hire" },
-  { label: "Blog", href: "/insights" },
+  { label: "Work", href: "/work" },
+  { label: "Services", href: "/services" },
+  { label: "Insights", href: "/insights" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -94,7 +94,7 @@ export default function Nav() {
           })}
           <div className="ml-4 pl-4 border-l border-white/5 flex items-center gap-3">
             <Link
-              href="/hire"
+              href="/start-project"
               className="px-5 py-2.5 rounded-lg bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold transition-all duration-300"
             >
               Start a Project
@@ -150,7 +150,7 @@ export default function Nav() {
               ))}
               <div className="mt-3 pt-3 border-t border-white/5 flex flex-col gap-2">
                 <motion.a
-                  href="/hire"
+                  href="/start-project"
                   onClick={() => setMobileOpen(false)}
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}

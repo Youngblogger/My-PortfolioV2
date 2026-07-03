@@ -44,7 +44,7 @@ export default function UiUxDesignPage() {
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
           >
             <Link
-              href="/hire"
+              href="/services"
               className="inline-flex items-center gap-2 text-sm text-muted hover:text-gold transition-colors duration-300 mb-8"
             >
               ← Back to Services
@@ -110,13 +110,13 @@ export default function UiUxDesignPage() {
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
-                href="/hire/request-quote"
+                href="/start-project"
                 className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
               >
-                Request a Quote
+                Start a Project
               </Link>
               <Link
-                href="/projects"
+                href="/work"
                 className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 transition-all duration-300"
               >
                 View Our Work

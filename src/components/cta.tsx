@@ -51,16 +51,16 @@ export default function CTA() {
           className="mt-10 flex flex-wrap justify-center gap-4"
         >
           <a
-            href="/projects"
+            href="/work"
             className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
           >
             View Projects
           </a>
           <a
-            href="/hire"
+            href="/services"
             className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 transition-all duration-300"
           >
-            Work With Us
+            Our Services
           </a>
         </motion.div>
       </div>

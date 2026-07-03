@@ -165,7 +165,7 @@ export default function PricingPage() {
                 Get a Custom Quote
               </Link>
               <Link
-                href="/hire"
+                href="/services"
                 className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 transition-all duration-300"
               >
                 View All Services
