@@ -11,14 +11,13 @@ class QuoteController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:255'],
+            'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
-            'service' => ['required', 'string', 'max:255'],
-            'subService' => ['nullable', 'string', 'max:255'],
-            'budget' => ['required', 'string', 'max:100'],
-            'project' => ['required', 'string', 'max:10000'],
+            'project_type' => ['required', 'string', 'max:255'],
+            'budget_range' => ['required', 'string', 'max:100'],
             'timeline' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:10000'],
         ]);
 
         if ($validator->fails()) {

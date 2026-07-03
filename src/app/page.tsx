@@ -6,15 +6,75 @@ import Hero from "@/components/hero";
 import Tech from "@/components/tech";
 
 const featuredProjects = [
-  { id: "marketplace-platform", title: "Marketplace Platform", description: "Multi-vendor marketplace connecting artisans across Africa with global buyers.", icon: "🛒", tech: ["Next.js", "Node.js", "PostgreSQL"], results: "10,000+ vendors, 50,000+ monthly transactions" },
-  { id: "lms-platform", title: "Learning Management System", description: "Comprehensive LMS supporting 10,000+ concurrent students with live coding environments.", icon: "📚", tech: ["React", "Python", "Django"], results: "8,000+ active students, 95% completion rate" },
-  { id: "fintech-dashboard", title: "Fintech Dashboard", description: "Enterprise financial analytics dashboard processing millions in daily transactions.", icon: "📊", tech: ["TypeScript", "Next.js", "Supabase"], results: "40% faster decisions, $2M+ fraud prevented" },
+  {
+    id: "marketplace-platform",
+    title: "Marketplace Platform",
+    description: "A multi-vendor marketplace connecting artisans across Africa with global buyers. Features vendor dashboards, payment processing, and real-time inventory management.",
+    icon: "🛒",
+    tech: ["Next.js", "Node.js", "PostgreSQL"],
+    results: "10,000+ vendors, 50,000+ monthly transactions",
+  },
+  {
+    id: "lms-platform",
+    title: "Learning Management System",
+    description: "A comprehensive online learning platform supporting 10,000+ concurrent users with live coding environments, assessments, and certification workflows.",
+    icon: "📚",
+    tech: ["React", "Python", "Django"],
+    results: "8,000+ active users, 95% completion rate",
+  },
+  {
+    id: "fintech-dashboard",
+    title: "Fintech Dashboard",
+    description: "An enterprise financial analytics dashboard processing millions in daily transactions. Real-time reporting, fraud detection, and multi-currency support.",
+    icon: "📊",
+    tech: ["TypeScript", "Next.js", "Supabase"],
+    results: "40% faster decisions, $2M+ fraud prevented",
+  },
 ];
 
 const services = [
-  { id: "web-development", title: "Web Development", description: "From business websites to complex portals — we build web applications that drive results.", icon: "🌐", price: "Starting ₦250,000" },
-  { id: "saas-development", title: "SaaS Development", description: "Custom SaaS platforms, CRM systems, and subscription-based applications tailored to your business.", icon: "☁️", price: "Custom Quote" },
-  { id: "mobile-apps", title: "Mobile Apps", description: "Native and cross-platform mobile applications for iOS and Android that users love.", icon: "📱", price: "Starting ₦500,000" },
+  {
+    id: "web-development",
+    title: "Websites & Brand Platforms",
+    description: "From company websites to marketing sites — we build fast, beautiful web experiences that represent your brand and drive results.",
+    icon: "globe",
+    price: "Starting from ₦250,000",
+  },
+  {
+    id: "custom-applications",
+    title: "Custom Web Applications",
+    description: "Tailored platforms, internal tools, and business software built to your exact requirements. Scalable, secure, and built for the real world.",
+    icon: "app",
+    price: "Custom Quote",
+  },
+  {
+    id: "portals",
+    title: "Dashboards & Client Portals",
+    description: "Admin dashboards, client portals, analytics interfaces, and internal management systems that put your data and operations at your fingertips.",
+    icon: "dashboard",
+    price: "Custom Quote",
+  },
+  {
+    id: "ecommerce",
+    title: "E-Commerce & Marketplaces",
+    description: "Online stores, multi-vendor marketplaces, booking platforms, and subscription-based products designed to sell, scale, and convert.",
+    icon: "cart",
+    price: "Starting from ₦500,000",
+  },
+  {
+    id: "design",
+    title: "Product Design & UX",
+    description: "User research, wireframing, prototyping, and visual design. We create interfaces that are intuitive, accessible, and beautiful.",
+    icon: "design",
+    price: "Starting from ₦150,000",
+  },
+  {
+    id: "consulting",
+    title: "Technical Consulting",
+    description: "Architecture review, technology strategy, code audits, and fractional CTO guidance for startups and growing teams.",
+    icon: "consult",
+    price: "Custom Quote",
+  },
 ];
 
 const ServiceIcon = ({ id }: { id: string }) => {
@@ -23,26 +83,41 @@ const ServiceIcon = ({ id }: { id: string }) => {
       <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
     </svg>
   );
-  if (id === "saas-development") return (
+  if (id === "custom-applications") return (
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+      <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+    </svg>
+  );
+  if (id === "portals") return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" />
+    </svg>
+  );
+  if (id === "ecommerce") return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" /><line x1="3" y1="6" x2="21" y2="6" /><path d="M16 10a4 4 0 0 1-8 0" />
+    </svg>
+  );
+  if (id === "design") return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 19l7-7 3 3-7 7-3-3z" /><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" /><path d="M2 2l7.586 7.586" /><circle cx="11" cy="11" r="2" />
     </svg>
   );
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#d4af37" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="5" y="2" width="14" height="20" rx="2" ry="2" /><line x1="12" y1="18" x2="12.01" y2="18" />
+      <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
     </svg>
   );
 };
 
 const testimonials = [
-  { name: "Chioma O.", role: "Frontend Engineering Graduate", text: "CODEMAFIA transformed my career. The structured curriculum and mentorship helped me land my first developer role within 3 months of graduating.", image: "CO" },
-  { name: "Samuel A.", role: "Full-Stack Developer", text: "The project-based learning approach at CODEMAFIA gave me real-world experience that made me job-ready. I built more in 12 weeks than I did in 2 years of self-learning.", image: "SA" },
-  { name: "Blessing E.", role: "AI Engineering Student", text: "The AI Engineering track is incredible. Learning LLMs and building actual AI products gave me skills that are in high demand right now.", image: "BE" },
+  { name: "Kunle A.", role: "Founder, VendSpace Marketplace", text: "CODEMAFIA built our entire marketplace platform from scratch. The team understood our vision immediately and delivered a product that exceeded our expectations. Our vendors love the dashboard.", image: "KA" },
+  { name: "Tara O.", role: "CTO, FinEdge Analytics", text: "We needed a complex financial dashboard with real-time data processing. CODEMAFIA delivered on time, communicated clearly throughout, and the system has been rock-solid since launch.", image: "TO" },
+  { name: "Emeka N.", role: "Director, LearnFirst Institute", text: "The learning platform CODEMAFIA built for us handles thousands of concurrent users without breaking a sweat. The team's attention to UX and performance set them apart from every other agency we interviewed.", image: "EN" },
 ];
 
 const blogPosts = [
-  { slug: "building-production-apis-nextjs", category: "Full-Stack Development", title: "Building Production-Ready APIs with Next.js", date: "Jun 15, 2026", gradient: "from-blue-500/10 to-cyan-500/10" },
+  { slug: "building-production-apis-nextjs", category: "Web Development", title: "Building Production-Ready APIs with Next.js", date: "Jun 15, 2026", gradient: "from-blue-500/10 to-cyan-500/10" },
   { slug: "integrating-llms-web-apps", category: "Artificial Intelligence", title: "Integrating LLMs Into Your Web Applications", date: "Jun 10, 2026", gradient: "from-purple-500/10 to-pink-500/10" },
   { slug: "self-taught-to-software-engineer", category: "Career Growth", title: "From Self-Taught to Software Engineer: A Roadmap", date: "Jun 5, 2026", gradient: "from-emerald-500/10 to-teal-500/10" },
 ];
@@ -70,7 +145,7 @@ export default function Home() {
       <Hero />
 
       {/* Featured Projects */}
-      <section id="build" className="relative py-24 md:py-32 overflow-hidden">
+      <section id="work" className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gold/[0.02] to-transparent" />
           <motion.div
@@ -88,12 +163,12 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-center mb-16"
           >
-            <span className="section-label">PROJECTS</span>
+            <span className="section-label">SELECTED WORK</span>
             <h2 className="section-heading">
-              Real Projects. <span className="text-gradient">Real Results.</span>
+              Products We&apos;ve <span className="text-gradient">Built</span>
             </h2>
             <p className="section-subtitle mt-4 mx-auto">
-              Enterprise-grade solutions we've built for startups, businesses, and institutions across Africa.
+              Real platforms, real scale — from marketplaces to fintech dashboards.
             </p>
           </motion.div>
 
@@ -122,7 +197,7 @@ export default function Home() {
                     ))}
                   </div>
                   <div className="pt-4 border-t border-white/5">
-                    <span className="text-sm text-gold font-semibold">📈 {project.results}</span>
+                    <span className="text-sm text-gold font-semibold">{project.results}</span>
                   </div>
                 </Link>
               </motion.div>
@@ -147,7 +222,7 @@ export default function Home() {
       </section>
 
       {/* Services Overview */}
-      <section id="hire" className="relative py-24 md:py-32 overflow-hidden">
+      <section id="services" className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <motion.div
@@ -159,10 +234,10 @@ export default function Home() {
           >
             <span className="section-label">SERVICES</span>
             <h2 className="section-heading">
-              Ready to Build Your <span className="text-gradient">Website?</span>
+              What We <span className="text-gradient">Build</span>
             </h2>
             <p className="section-subtitle mt-4 mx-auto">
-              From concept to launch — we partner with startups and enterprises to build world-class digital products.
+              From business websites to custom platforms — we deliver digital products that work.
             </p>
           </motion.div>
 
@@ -171,7 +246,7 @@ export default function Home() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-3 gap-5"
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
           >
             {services.map((service) => (
               <motion.div
@@ -179,11 +254,13 @@ export default function Home() {
                 variants={cardVariants}
                 className="group relative rounded-2xl glass glass-hover overflow-hidden"
               >
-                <Link href={`/hire/${service.id}`} className="relative block p-6 md:p-8">
+                <Link href="/hire" className="relative block p-6 md:p-8">
                   <div className="mb-4">
                     <ServiceIcon id={service.id} />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3 group-hover:text-gold transition-colors">{service.title}</h3>
+                  <h3 className="text-lg font-bold text-white mb-3 group-hover:text-gold transition-colors">
+                    {service.title}
+                  </h3>
                   <p className="text-muted text-sm leading-relaxed mb-6">{service.description}</p>
                   <div className="inline-block px-4 py-2 rounded-full glass text-sm text-gold font-semibold">
                     {service.price}
@@ -204,9 +281,114 @@ export default function Home() {
               href="/hire"
               className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300 inline-block"
             >
-              View All Services
+              Discuss Your Project
             </Link>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Why Choose CODEMAFIA */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-gold/[0.02] to-transparent" />
+          <motion.div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
+            style={{ background: "radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%)" }}
+            animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+            className="text-center mb-16"
+          >
+            <span className="section-label">WHY CODEMAFIA</span>
+            <h2 className="section-heading">
+              Built Different. <span className="text-gradient">Delivered Better.</span>
+            </h2>
+            <p className="section-subtitle mt-4 mx-auto">
+              What makes working with us different from a typical agency.
+            </p>
+          </motion.div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid md:grid-cols-3 gap-5"
+          >
+            {[
+              { title: "Premium Design & UX", desc: "We don't just write code — we craft experiences. Every interface we build is designed to be intuitive, accessible, and visually polished." },
+              { title: "Strong Engineering", desc: "Our team builds with modern, scalable technologies. You get a product that performs, stays reliable as you grow, and is maintainable long-term." },
+              { title: "Product-Minded Thinking", desc: "We ask the right questions before we write a line of code. We think about your users, your business goals, and what actually needs to be built." },
+              { title: "Clear Communication", desc: "No black boxes. We keep you informed at every stage — from planning through launch. You'll always know where your project stands." },
+              { title: "Reliable Delivery", desc: "We set realistic timelines and deliver on them. Our process is structured enough to be predictable without sacrificing flexibility." },
+              { title: "Post-Launch Support", desc: "Launch day isn't the end. We provide ongoing maintenance, monitoring, and support to keep your product running smoothly." },
+            ].map((reason) => (
+              <motion.div
+                key={reason.title}
+                variants={cardVariants}
+                className="glass rounded-2xl p-6 md:p-8"
+              >
+                <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center mb-5">
+                  <svg className="w-5 h-5 text-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-base font-bold text-white mb-3">{reason.title}</h3>
+                <p className="text-sm text-muted leading-relaxed">{reason.desc}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Process */}
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent pointer-events-none" />
+        <div className="relative z-10 max-w-7xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
+            className="text-center mb-16"
+          >
+            <span className="section-label">HOW WE WORK</span>
+            <h2 className="section-heading">
+              From Idea to <span className="text-gradient">Launch</span>
+            </h2>
+            <p className="section-subtitle mt-4 mx-auto">
+              A structured process that keeps your project on track and on budget.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-4 gap-5">
+            {[
+              { step: "01", title: "Discovery", desc: "We learn about your business, goals, users, and requirements. This phase sets the foundation for everything that follows." },
+              { step: "02", title: "Planning", desc: "We define scope, architecture, design direction, timeline, and deliverables. You get a clear roadmap before we build anything." },
+              { step: "03", title: "Design & Build", desc: "We design and develop your product iteratively. Regular updates keep you involved and aligned throughout the process." },
+              { step: "04", title: "Launch & Support", desc: "We deploy, test, and go live. Then we stay on board for maintenance, monitoring, and continued improvements." },
+            ].map((phase) => (
+              <motion.div
+                key={phase.step}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: Number(phase.step) * 0.1 }}
+                className="glass rounded-2xl p-6 md:p-8 text-center"
+              >
+                <div className="text-3xl font-bold text-gold mb-3">{phase.step}</div>
+                <h3 className="text-base font-bold text-white mb-3">{phase.title}</h3>
+                <p className="text-sm text-muted leading-relaxed">{phase.desc}</p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -229,9 +411,9 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-center mb-16"
           >
-            <span className="section-label">TESTIMONIALS</span>
+            <span className="section-label">CLIENT STORIES</span>
             <h2 className="section-heading">
-              What Our <span className="text-gradient">Students Say</span>
+              What Our <span className="text-gradient">Clients Say</span>
             </h2>
           </motion.div>
 
@@ -265,7 +447,7 @@ export default function Home() {
       </section>
 
       {/* Blog Highlights */}
-      <section className="relative py-24 md:py-32 overflow-hidden">
+      <section id="insights" className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <motion.div
@@ -275,12 +457,12 @@ export default function Home() {
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
             className="text-center mb-16"
           >
-            <span className="section-label">BLOG</span>
+            <span className="section-label">INSIGHTS</span>
             <h2 className="section-heading">
-              Insights & <span className="text-gradient">Tutorials</span>
+              Thoughts on <span className="text-gradient">Building Products</span>
             </h2>
             <p className="section-subtitle mt-4 mx-auto">
-              Deep dives into software engineering, AI, career growth, and building technology products.
+              Engineering deep dives, product strategy, and lessons from building real digital products.
             </p>
           </motion.div>
 
@@ -330,7 +512,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Community + Final CTA */}
+      {/* Final CTA */}
       <section className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/50 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
@@ -341,12 +523,12 @@ export default function Home() {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
           >
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Ready To Start Your
+              Have a Project
               <br />
-              <span className="text-gradient">Journey?</span>
+              <span className="text-gradient">In Mind?</span>
             </h2>
             <p className="text-lg md:text-xl text-muted mt-6 max-w-2xl mx-auto leading-relaxed">
-              Join thousands of developers building the future of African technology.
+              Let&apos;s talk about your idea. Whether it&apos;s a website, a dashboard, an online store, or a custom platform — we can build it.
             </p>
           </motion.div>
 
@@ -358,16 +540,16 @@ export default function Home() {
             className="mt-10 flex flex-wrap justify-center gap-4"
           >
             <Link
-              href="/community"
-              className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
+              href="/hire"
+              className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
             >
-              Join Community
+              Start a Project
             </Link>
             <Link
-              href="/hire"
+              href="/contact"
               className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
             >
-              Hire Us
+              Get in Touch
             </Link>
           </motion.div>
         </div>

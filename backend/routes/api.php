@@ -20,9 +20,9 @@ Route::get('/services/{serviceSlug}/project-types/{projectSlug}', [\App\Http\Con
 Route::get('/add-ons', [\App\Http\Controllers\Api\ServiceController::class, 'addOns']);
 Route::get('/services/{serviceSlug}/project-types', [\App\Http\Controllers\Api\ServiceController::class, 'projectTypes']);
 
-Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact');
-Route::post('/request-quote', [QuoteController::class, 'store'])->middleware('throttle:contact');
+Route::post('/contact', [ContactController::class, 'store']);
+Route::post('/request-quote', [QuoteController::class, 'store']);
 
-Route::post('/discovery-calls', [DiscoveryCallController::class, 'store'])->middleware('throttle:api');
+Route::post('/discovery-calls', [DiscoveryCallController::class, 'store']);
 
 Route::get('/health', [\App\Http\Controllers\Api\HealthController::class, 'index']);

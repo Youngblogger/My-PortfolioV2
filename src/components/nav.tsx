@@ -25,7 +25,7 @@ export default function Nav() {
     if (!isHome) return;
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
-      const sections = ["learn", "build", "hire", "insights", "community", "founder"];
+      const sections = ["work", "services", "insights"];
       for (let i = sections.length - 1; i >= 0; i--) {
         const el = document.getElementById(sections[i]);
         if (el && el.getBoundingClientRect().top <= 200) {
@@ -95,9 +95,9 @@ export default function Nav() {
           <div className="ml-4 pl-4 border-l border-white/5 flex items-center gap-3">
             <Link
               href="/hire"
-              className="px-5 py-2.5 rounded-lg border border-white/10 text-white font-semibold text-sm hover:bg-white/5 hover:border-white/20 animate-blink-border"
+              className="px-5 py-2.5 rounded-lg bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold transition-all duration-300"
             >
-              Hire Us
+              Start a Project
             </Link>
           </div>
         </div>
@@ -155,9 +155,9 @@ export default function Nav() {
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="block px-5 py-3 rounded-lg border border-white/10 text-white font-semibold text-sm text-center hover:bg-white/5 animate-blink-border"
+                  className="block px-5 py-3 rounded-lg bg-gold-gradient text-background font-semibold text-sm text-center hover:shadow-gold transition-all duration-300"
                 >
-                  Hire Us
+                  Start a Project
                 </motion.a>
               </div>
             </div>

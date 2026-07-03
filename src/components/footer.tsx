@@ -9,7 +9,7 @@ const footerSections = [
     title: "Projects",
     links: [
       { label: "Marketplace Platform", href: "/projects/marketplace-platform" },
-      { label: "Learning Management System", href: "/projects/lms-platform" },
+      { label: "Online Learning Platform", href: "/projects/lms-platform" },
       { label: "Fintech Dashboard", href: "/projects/fintech-dashboard" },
       { label: "Restaurant Platform", href: "/projects/restaurant-platform" },
       { label: "AI Applications", href: "/projects/ai-content-platform" },
@@ -18,9 +18,9 @@ const footerSections = [
   {
     title: "Services",
     links: [
-      { label: "Web Development", href: "/hire/web-development" },
-      { label: "SaaS Development", href: "/hire/saas-development" },
-      { label: "Mobile Apps", href: "/hire/mobile-apps" },
+      { label: "Websites & Brand Platforms", href: "/hire/web-development" },
+      { label: "Custom Web Applications", href: "/hire/saas-development" },
+      { label: "E-Commerce & Marketplaces", href: "/hire/mobile-apps" },
       { label: "UI/UX Design", href: "/hire/ui-ux-design" },
       { label: "Technical Consulting", href: "/hire/technical-consulting" },
       { label: "Pricing", href: "/pricing" },
@@ -51,7 +51,7 @@ export default function Footer() {
                 <Image src="/CodemafiaLogo.png" alt="CODEMAFIA" width={144} height={36} className="w-28 sm:w-32 md:w-36 h-auto" unoptimized />
               </span>
               <span className="text-[11px] text-muted/50 leading-tight mt-0.5">
-                Engineering Excellence. Inspiring Innovation.
+                Digital Product Studio. Built in Africa.
               </span>
             </Link>
             <div className="flex gap-3">

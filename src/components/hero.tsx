@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 const stats = [
-  { value: "10,000+", label: "Students" },
-  { value: "100+", label: "Projects" },
-  { value: "50+", label: "Clients" },
+  { value: "100+", label: "Projects Delivered" },
+  { value: "50+", label: "Clients Served" },
+  { value: "8+", label: "Industries" },
   { value: "5+", label: "Years Experience" },
 ];
 
@@ -81,46 +81,7 @@ function FloatingParticles() {
   );
 }
 
-function CodeSnippet({ text, index }: { text: string; index: number }) {
-  return (
-    <motion.div
-      className="absolute text-[10px] md:text-xs font-mono text-muted/30 whitespace-nowrap"
-      style={{
-        left: `${10 + (index % 4) * 25}%`,
-        top: `${20 + (index % 3) * 30}%`,
-      }}
-      animate={{
-        y: [0, -15, 0],
-        opacity: [0.15, 0.3, 0.15],
-      }}
-      transition={{
-        duration: 8 + index,
-        repeat: Infinity,
-        delay: index * 0.7,
-        ease: "easeInOut",
-      }}
-    >
-      {text}
-    </motion.div>
-  );
-}
-
 export default function Hero() {
-  const codeLines = [
-    "const future = await build();",
-    "import { AI } from 'codemafia';",
-    "function innovate() { return true; }",
-    "npm install success",
-    "git commit -m 'built africa'",
-    "deploy --production",
-    "class Engineer extends Human",
-    "while(alive) { learn(); }",
-    "export default excellence",
-    "new CODEMAFIA().launch()",
-    "async function buildAfrica()",
-    "const dev = new Developer();",
-  ];
-
   return (
     <section
       id="hero"
@@ -130,17 +91,13 @@ export default function Hero() {
       <FloatingParticles />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background pointer-events-none" />
 
-      {codeLines.map((line, i) => (
-        <CodeSnippet key={i} text={line} index={i} />
-      ))}
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center pt-16 md:pt-0">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
         >
-          <span className="section-label">CODEMAFIA ECOSYSTEM</span>
+          <span className="section-label">DIGITAL PRODUCT STUDIO</span>
         </motion.div>
 
         <motion.h1
@@ -149,19 +106,18 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] as const }}
           className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-[0.95] sm:leading-[0.9] tracking-tight mt-6 text-balance"
         >
-          <span className="block">BUILDING AFRICA&apos;S</span>
-          <span className="block text-gradient">NEXT GENERATION</span>
-          <span className="block">OF SOFTWARE ENGINEERS</span>
+          <span className="block">BUILDING WEBSITES</span>
+          <span className="block text-gradient">THAT SCALE</span>
+          <span className="block">BUSINESSES</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] as const }}
-          className="mt-8 text-xl md:text-2xl text-muted max-w-2xl mx-auto leading-relaxed"
+          className="mt-8 text-lg md:text-xl text-muted max-w-2xl mx-auto leading-relaxed"
         >
-          Master modern software development, build real-world products, and work
-          with industry professionals.
+          We design and build scalable websites, dashboards, and digital platforms for startups and businesses.
         </motion.p>
 
         <motion.div
@@ -174,19 +130,13 @@ export default function Hero() {
             href="/hire"
             className="px-8 py-4 rounded-xl bg-gold-gradient text-background font-bold text-base hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
           >
-            Hire Us
+            Start a Project
           </a>
           <a
-            href="#build"
+            href="/projects"
             className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
           >
-            View Projects
-          </a>
-          <a
-            href="#hire"
-            className="px-8 py-4 rounded-xl border border-white/10 text-white font-bold text-base hover:bg-white/5 hover:border-white/20 transition-all duration-300"
-          >
-            Hire Us
+            View Our Work
           </a>
         </motion.div>
 
@@ -194,7 +144,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.7, ease: [0.16, 1, 0.3, 1] as const }}
-          className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-xl mx-auto"
+          className="mt-16 md:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto"
         >
           {stats.map((stat) => (
             <div
@@ -217,15 +167,15 @@ export default function Hero() {
         >
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-            Project-based learning
+            Premium design & engineering
           </span>
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-            Live mentorship
+            Product-minded approach
           </span>
           <span className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-            Career support
+            Reliable delivery
           </span>
         </motion.div>
       </div>
