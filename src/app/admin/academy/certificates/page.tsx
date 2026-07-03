@@ -109,20 +109,20 @@ export default function AdminCertificatesPage() {
       render: (cert) => (
         <div>
           <p className="text-sm font-medium text-white">{cert.student_name || "—"}</p>
-          <p className="text-xs text-muted">{cert.student_email}</p>
+          <p className="text-xs text-[#667085]">{cert.student_email}</p>
         </div>
       ),
     },
     {
       key: "course_title",
       header: "Course",
-      render: (cert) => <span className="text-sm text-muted">{cert.course_title}</span>,
+      render: (cert) => <span className="text-sm text-[#667085]">{cert.course_title}</span>,
       hideOnMobile: true,
     },
     {
       key: "issued_date",
       header: "Issued Date",
-      render: (cert) => <span className="text-sm text-muted whitespace-nowrap">{formatDate(cert.issued_date)}</span>,
+      render: (cert) => <span className="text-sm text-[#667085] whitespace-nowrap">{formatDate(cert.issued_date)}</span>,
       hideOnMobile: true,
     },
     {

@@ -157,10 +157,10 @@ export default function AdminTeamMembersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <span className="section-label">TEAM</span>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">
             Team Members
           </h1>
-          <p className="text-muted text-sm mt-1">
+          <p className="text-[#667085] text-sm mt-1">
             Manage your team and assign members to projects.
           </p>
         </div>
@@ -199,7 +199,7 @@ export default function AdminTeamMembersPage() {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="glass rounded-2xl p-6 space-y-4">
+            <div key={i} className="portal-card rounded-2xl p-6 space-y-4">
               <div className="flex items-center gap-4">
                 <Skeleton className="w-14 h-14 rounded-full" />
                 <div className="space-y-2 flex-1">
@@ -243,11 +243,11 @@ export default function AdminTeamMembersPage() {
             <motion.div
               key={member.id}
               variants={cardVariants}
-              className="glass rounded-2xl p-6 flex flex-col gap-4"
+              className="portal-card rounded-2xl p-6 flex flex-col gap-4"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="relative w-14 h-14 rounded-full overflow-hidden bg-white/10 shrink-0 flex items-center justify-center text-xl">
+                  <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-100 shrink-0 flex items-center justify-center text-xl">
                     {member.avatar_url ? (
                       <img
                         src={member.avatar_url}
@@ -255,7 +255,7 @@ export default function AdminTeamMembersPage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-white/60">{member.name.charAt(0).toUpperCase()}</span>
+                      <span className="text-[#667085]">{member.name.charAt(0).toUpperCase()}</span>
                     )}
                     <span
                       className={`absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-background ${
@@ -265,12 +265,12 @@ export default function AdminTeamMembersPage() {
                   </div>
                   <div>
                     <p className="text-white font-semibold text-sm">{member.name}</p>
-                    <p className="text-gold text-xs font-medium">{member.title || member.role_slug}</p>
+                    <p className="text-[#5B4CF0] text-xs font-medium">{member.title || member.role_slug}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-1.5 text-xs text-muted">
+              <div className="space-y-1.5 text-xs text-[#667085]">
                 <div className="flex items-center gap-2">
                   <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -291,7 +291,7 @@ export default function AdminTeamMembersPage() {
                 </div>
               </div>
 
-              <div className="flex gap-2 mt-auto pt-2 border-t border-white/5">
+              <div className="flex gap-2 mt-auto pt-2 border-t border-[#ECEFF5]">
                 <Button
                   size="sm"
                   variant="outline"
@@ -329,13 +329,13 @@ export default function AdminTeamMembersPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="glass rounded-2xl p-6 w-full max-w-md space-y-6"
+              className="portal-card rounded-2xl p-6 w-full max-w-md space-y-6"
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-white">Add Team Member</h2>
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className="p-1 rounded-lg text-muted hover:text-white hover:bg-white/5 transition-colors"
+                  className="p-1 rounded-lg text-[#667085] hover:text-white hover:bg-gray-50 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -397,13 +397,13 @@ export default function AdminTeamMembersPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="glass rounded-2xl p-6 w-full max-w-md space-y-6"
+              className="portal-card rounded-2xl p-6 w-full max-w-md space-y-6"
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-white">Assign to Project</h2>
                 <button
                   onClick={() => setShowAssignModal(false)}
-                  className="p-1 rounded-lg text-muted hover:text-white hover:bg-white/5 transition-colors"
+                  className="p-1 rounded-lg text-[#667085] hover:text-white hover:bg-gray-50 transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

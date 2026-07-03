@@ -129,8 +129,8 @@ export default function AdminServicesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <span className="section-label">SERVICES</span>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">Manage Services</h1>
-          <p className="text-muted text-sm mt-1">Create and manage your service offerings.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">Manage Services</h1>
+          <p className="text-[#667085] text-sm mt-1">Create and manage your service offerings.</p>
         </div>
         <Button onClick={openCreate} icon={
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -150,7 +150,7 @@ export default function AdminServicesPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -166,16 +166,16 @@ export default function AdminServicesPage() {
         />
       ) : (
         <>
-          <div className="hidden md:block glass rounded-2xl overflow-hidden">
+          <div className="hidden md:block portal-card rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Title</th>
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Slug</th>
-                    <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Starting Price</th>
-                    <th className="text-center text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Status</th>
-                    <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Actions</th>
+                  <tr className="border-b border-[#ECEFF5]">
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Title</th>
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Slug</th>
+                    <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Starting Price</th>
+                    <th className="text-center text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Status</th>
+                    <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Actions</th>
                   </tr>
                 </thead>
                 <motion.tbody variants={containerVariants} initial="hidden" animate="visible">
@@ -183,7 +183,7 @@ export default function AdminServicesPage() {
                     <motion.tr
                       key={svc.id}
                       variants={rowVariants}
-                      className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                      className="border-b border-[#ECEFF5] hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -191,7 +191,7 @@ export default function AdminServicesPage() {
                           <span className="text-sm font-medium text-white">{svc.title}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-muted">{svc.slug}</td>
+                      <td className="px-6 py-4 text-sm text-[#667085]">{svc.slug}</td>
                       <td className="px-6 py-4 text-sm text-right font-semibold text-white">
                         {formatCurrency(svc.starting_price_ngn)}
                       </td>
@@ -226,22 +226,22 @@ export default function AdminServicesPage() {
               <motion.div
                 key={svc.id}
                 variants={rowVariants}
-                className="glass rounded-2xl p-5 space-y-3"
+                className="portal-card rounded-2xl p-5 space-y-3"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-xl">{svc.icon}</span>
                     <div>
                       <p className="text-sm font-bold text-white">{svc.title}</p>
-                      <p className="text-xs text-muted">{svc.slug}</p>
+                      <p className="text-xs text-[#667085]">{svc.slug}</p>
                     </div>
                   </div>
                   <Badge variant={(svc as any).is_active === false ? "error" : "success"}>
                     {(svc as any).is_active === false ? "Inactive" : "Active"}
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                  <p className="text-lg font-bold text-gold">{formatCurrency(svc.starting_price_ngn)}</p>
+                <div className="flex items-center justify-between pt-2 border-t border-[#ECEFF5]">
+                  <p className="text-lg font-bold text-[#5B4CF0]">{formatCurrency(svc.starting_price_ngn)}</p>
                   <div className="flex gap-2">
                     <Button variant="ghost" size="sm" onClick={() => openEdit(svc)}>Edit</Button>
                     <Button variant="outline" size="sm" onClick={() => handleToggleActive(svc)}>
@@ -272,10 +272,10 @@ export default function AdminServicesPage() {
               transition={{ ease: [0.16, 1, 0.3, 1] as const }}
               className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 md:w-full md:max-w-lg max-h-[90vh] overflow-y-auto"
             >
-              <form onSubmit={handleSubmit} className="glass rounded-2xl p-6 space-y-5">
+              <form onSubmit={handleSubmit} className="portal-card rounded-2xl p-6 space-y-5">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-white">{editingId ? "Edit Service" : "Create Service"}</h2>
-                  <button type="button" onClick={() => setShowForm(false)} className="text-muted hover:text-white transition-colors">
+                  <button type="button" onClick={() => setShowForm(false)} className="text-[#667085] hover:text-white transition-colors">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>

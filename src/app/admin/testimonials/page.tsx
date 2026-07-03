@@ -110,7 +110,7 @@ export default function TestimonialsPage() {
         {Array.from({ length: 5 }).map((_, i) => (
           <svg
             key={i}
-            className={cn("w-4 h-4", i < rating ? "text-gold" : "text-white/10")}
+            className={cn("w-4 h-4", i < rating ? "text-[#5B4CF0]" : "text-[#101828]/10")}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -131,7 +131,7 @@ export default function TestimonialsPage() {
       key: "project",
       header: "Project",
       hideOnMobile: true,
-      render: (r) => <span className="text-sm text-muted">{r.project || "—"}</span>,
+      render: (r) => <span className="text-sm text-[#667085]">{r.project || "—"}</span>,
     },
     {
       key: "rating",
@@ -142,7 +142,7 @@ export default function TestimonialsPage() {
       key: "review",
       header: "Review",
       render: (r) => (
-        <span className="text-sm text-muted max-w-xs block truncate">
+        <span className="text-sm text-[#667085] max-w-xs block truncate">
           {r.review ? truncate(r.review, 80) : "—"}
         </span>
       ),
@@ -160,7 +160,7 @@ export default function TestimonialsPage() {
       key: "created_at",
       header: "Date",
       hideOnMobile: true,
-      render: (r) => <span className="text-sm text-muted whitespace-nowrap">{formatDate(r.created_at)}</span>,
+      render: (r) => <span className="text-sm text-[#667085] whitespace-nowrap">{formatDate(r.created_at)}</span>,
     },
     {
       key: "actions",

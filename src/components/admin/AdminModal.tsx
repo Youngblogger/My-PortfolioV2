@@ -48,15 +48,15 @@ export function AdminModal({ open, onClose, title, children, footer, size = "md"
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", duration: 0.3 }}
             className={cn(
-              "relative w-full glass rounded-2xl border border-white/10 shadow-2xl max-h-[90vh] flex flex-col",
+              "relative w-full bg-white rounded-2xl border border-[#ECEFF5] shadow-xl max-h-[90vh] flex flex-col",
               sizeClasses[size]
             )}
           >
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-              <h2 className="text-lg font-semibold text-white">{title}</h2>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-[#ECEFF5]">
+              <h2 className="text-lg font-semibold text-[#101828]">{title}</h2>
               <button
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-muted hover:text-white hover:bg-white/5 transition-all"
+                className="p-1.5 rounded-lg text-[#667085] hover:text-[#101828] hover:bg-gray-100 transition-all"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -67,7 +67,7 @@ export function AdminModal({ open, onClose, title, children, footer, size = "md"
               {children}
             </div>
             {footer && (
-              <div className="px-6 py-4 border-t border-white/10 flex items-center justify-end gap-3">
+              <div className="px-6 py-4 border-t border-[#ECEFF5] flex items-center justify-end gap-3">
                 {footer}
               </div>
             )}

@@ -221,7 +221,7 @@ export default function AdminUsersPage() {
       render: (user) => (
         <div>
           <p className="text-sm font-medium text-white">{user.name}</p>
-          <p className="text-xs text-muted">{user.email}</p>
+          <p className="text-xs text-[#667085]">{user.email}</p>
         </div>
       ),
     },
@@ -229,7 +229,7 @@ export default function AdminUsersPage() {
       key: "email",
       header: "Email",
       hideOnMobile: true,
-      render: (user) => <span className="text-sm text-muted">{user.email}</span>,
+      render: (user) => <span className="text-sm text-[#667085]">{user.email}</span>,
     },
     {
       key: "role",
@@ -254,7 +254,7 @@ export default function AdminUsersPage() {
       header: "Last Login",
       hideOnMobile: true,
       render: (user) => (
-        <span className="text-sm text-muted">
+        <span className="text-sm text-[#667085]">
           {user.last_login_at ? formatDate(user.last_login_at) : "Never"}
         </span>
       ),
@@ -350,11 +350,11 @@ export default function AdminUsersPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {!editingId && (
             <div>
-              <label className="block text-sm text-white/80 font-medium mb-1.5">Select User</label>
+              <label className="block text-sm text-[#667085] font-medium mb-1.5">Select User</label>
               <select
                 value={selectedUserId}
                 onChange={(e) => setSelectedUserId(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all"
                 required
               >
                 <option value="" disabled>Choose a user...</option>
@@ -375,7 +375,7 @@ export default function AdminUsersPage() {
           />
 
           <div>
-            <label className="block text-sm text-white/80 font-medium mb-2">Permissions</label>
+            <label className="block text-sm text-[#667085] font-medium mb-2">Permissions</label>
             <div className="grid grid-cols-2 gap-2">
               {ALL_PERMISSIONS.map((perm) => (
                 <Checkbox

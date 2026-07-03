@@ -128,22 +128,22 @@ export default function CreateProposalPage() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <span className="section-label">PROPOSALS</span>
-        <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">
           Create Proposal
         </h1>
-        <p className="text-muted text-sm mt-1">
+        <p className="text-[#667085] text-sm mt-1">
           Generate a new proposal from an existing service order.
         </p>
       </div>
 
       {error && (
-        <div className="mb-6 glass rounded-xl px-5 py-3 border border-red-500/20 bg-red-500/5">
+        <div className="mb-6 portal-card rounded-xl px-5 py-3 border border-red-500/20 bg-red-500/5">
           <p className="text-red-400 text-sm">{error}</p>
         </div>
       )}
 
       {loadingOrders ? (
-        <div className="glass rounded-2xl p-8 space-y-6">
+        <div className="portal-card rounded-2xl p-8 space-y-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-16 w-full" />
           ))}
@@ -157,7 +157,7 @@ export default function CreateProposalPage() {
           className="space-y-8"
         >
           {/* Order Selection */}
-          <div className="glass rounded-2xl p-6 space-y-5">
+          <div className="portal-card rounded-2xl p-6 space-y-5">
             <h2 className="text-lg font-semibold text-white">Order Information</h2>
             <Select
               label="Service Order"
@@ -170,36 +170,36 @@ export default function CreateProposalPage() {
           </div>
 
           {/* Scope & Timeline */}
-          <div className="glass rounded-2xl p-6 space-y-5">
+          <div className="portal-card rounded-2xl p-6 space-y-5">
             <h2 className="text-lg font-semibold text-white">Scope & Timeline</h2>
 
             <div className="space-y-1.5">
-              <label className="block text-sm text-white/80 font-medium">Scope of Work</label>
+              <label className="block text-sm text-[#667085] font-medium">Scope of Work</label>
               <textarea
                 value={scopeOfWork}
                 onChange={(e) => setScopeOfWork(e.target.value)}
                 rows={4}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-y"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-y"
                 placeholder="Describe the scope of work in detail..."
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-sm text-white/80 font-medium">Timeline Description</label>
+              <label className="block text-sm text-[#667085] font-medium">Timeline Description</label>
               <textarea
                 value={timelineDescription}
                 onChange={(e) => setTimelineDescription(e.target.value)}
                 rows={3}
                 required
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-y"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-y"
                 placeholder="Describe the project timeline..."
               />
             </div>
           </div>
 
           {/* Pricing */}
-          <div className="glass rounded-2xl p-6 space-y-5">
+          <div className="portal-card rounded-2xl p-6 space-y-5">
             <h2 className="text-lg font-semibold text-white">Pricing</h2>
             <div className="grid sm:grid-cols-2 gap-5">
               <Input
@@ -251,7 +251,7 @@ export default function CreateProposalPage() {
           />
 
           {/* Milestones */}
-          <div className="glass rounded-2xl p-6 space-y-5">
+          <div className="portal-card rounded-2xl p-6 space-y-5">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-white">Milestones</h2>
               <Button
@@ -271,10 +271,10 @@ export default function CreateProposalPage() {
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-4"
+                  className="p-4 rounded-xl bg-gray-50 border border-[#ECEFF5] space-y-4"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted font-medium uppercase">Milestone {i + 1}</span>
+                    <span className="text-xs text-[#667085] font-medium uppercase">Milestone {i + 1}</span>
                     {milestones.length > 1 && (
                       <button
                         type="button"
@@ -308,7 +308,7 @@ export default function CreateProposalPage() {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-sm text-white/80 font-medium">Description</label>
+                    <label className="block text-sm text-[#667085] font-medium">Description</label>
                     <textarea
                       value={milestone.description}
                       onChange={(e) => {
@@ -317,7 +317,7 @@ export default function CreateProposalPage() {
                         setMilestones(updated);
                       }}
                       rows={2}
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-y"
+                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-y"
                       placeholder="Describe this milestone..."
                     />
                   </div>
@@ -339,7 +339,7 @@ export default function CreateProposalPage() {
           </div>
 
           {/* Payment Schedule */}
-          <div className="glass rounded-2xl p-6 space-y-5">
+          <div className="portal-card rounded-2xl p-6 space-y-5">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-white">Payment Schedule</h2>
               <Button
@@ -359,10 +359,10 @@ export default function CreateProposalPage() {
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-4"
+                  className="p-4 rounded-xl bg-gray-50 border border-[#ECEFF5] space-y-4"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted font-medium uppercase">Payment {i + 1}</span>
+                    <span className="text-xs text-[#667085] font-medium uppercase">Payment {i + 1}</span>
                     {paymentSchedule.length > 1 && (
                       <button
                         type="button"
@@ -433,7 +433,7 @@ export default function CreateProposalPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="text-muted hover:text-white text-sm font-medium transition-colors"
+              className="text-[#667085] hover:text-white text-sm font-medium transition-colors"
             >
               Cancel
             </button>
@@ -460,7 +460,7 @@ function ArraySection({
   placeholder: string;
 }) {
   return (
-    <div className="glass rounded-2xl p-6 space-y-5">
+    <div className="portal-card rounded-2xl p-6 space-y-5">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-white">{title}</h2>
         <Button type="button" variant="outline" size="sm" onClick={onAdd}>

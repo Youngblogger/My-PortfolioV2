@@ -72,7 +72,7 @@ export default function AnalyticsPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="glass rounded-2xl p-6 space-y-3">
+            <div key={i} className="portal-card rounded-2xl p-6 space-y-3">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-8 w-28" />
               <Skeleton className="h-3 w-full" />
@@ -81,7 +81,7 @@ export default function AnalyticsPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="glass rounded-2xl p-6 space-y-3">
+            <div key={i} className="portal-card rounded-2xl p-6 space-y-3">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="h-8 w-28" />
               <Skeleton className="h-3 w-full" />
@@ -90,7 +90,7 @@ export default function AnalyticsPage() {
         </div>
         <div className="grid lg:grid-cols-2 gap-6">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="glass rounded-2xl p-6 space-y-4">
+            <div key={i} className="portal-card rounded-2xl p-6 space-y-4">
               <Skeleton className="h-6 w-48" />
               <Skeleton className="h-48 w-full" />
             </div>
@@ -206,15 +206,15 @@ export default function AnalyticsPage() {
                   initial={{ height: 0 }}
                   animate={{ height: `${(item.amount / maxRevenue) * 100}%` }}
                   transition={{ duration: 0.8, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
-                  className="w-full bg-gold-gradient rounded-t-md min-h-[4px]"
+                  className="w-full portal-primary-bg rounded-t-md min-h-[4px]"
                 />
-                <span className="text-[10px] text-muted truncate w-full text-center">
+                <span className="text-[10px] text-[#667085] truncate w-full text-center">
                   {item.month}
                 </span>
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted mt-4">
+          <p className="text-xs text-[#667085] mt-4">
             Total revenue: <span className="text-white font-semibold">{formatCurrency(data.total_revenue, "NGN")}</span>
           </p>
         </ChartCard>
@@ -227,15 +227,15 @@ export default function AnalyticsPage() {
                   initial={{ height: 0 }}
                   animate={{ height: `${(item.count / maxProjects) * 100}%` }}
                   transition={{ duration: 0.8, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
-                  className="w-full bg-gold-gradient rounded-t-md min-h-[4px]"
+                  className="w-full portal-primary-bg rounded-t-md min-h-[4px]"
                 />
-                <span className="text-[10px] text-muted truncate w-full text-center">
+                <span className="text-[10px] text-[#667085] truncate w-full text-center">
                   {item.month}
                 </span>
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted mt-4">
+          <p className="text-xs text-[#667085] mt-4">
             Total projects: <span className="text-white font-semibold">{data.projects_by_month.reduce((s, m) => s + m.count, 0)}</span>
           </p>
         </ChartCard>
@@ -248,15 +248,15 @@ export default function AnalyticsPage() {
                   initial={{ height: 0 }}
                   animate={{ height: `${(item.count / maxEnrollments) * 100}%` }}
                   transition={{ duration: 0.8, delay: i * 0.05, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
-                  className="w-full bg-gold-gradient rounded-t-md min-h-[4px]"
+                  className="w-full portal-primary-bg rounded-t-md min-h-[4px]"
                 />
-                <span className="text-[10px] text-muted truncate w-full text-center">
+                <span className="text-[10px] text-[#667085] truncate w-full text-center">
                   {item.month}
                 </span>
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted mt-4">
+          <p className="text-xs text-[#667085] mt-4">
             Total enrollments: <span className="text-white font-semibold">{data.course_enrollments}</span>
           </p>
         </ChartCard>
@@ -278,7 +278,7 @@ export default function AnalyticsPage() {
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeDasharray={`${data.conversion_rate} ${100 - data.conversion_rate}`}
-                  className="text-gold"
+                  className="text-[#5B4CF0]"
                   initial={{ strokeDashoffset: 100 }}
                   animate={{ strokeDashoffset: 100 - data.conversion_rate }}
                   transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
@@ -289,7 +289,7 @@ export default function AnalyticsPage() {
               </div>
             </div>
           </div>
-          <p className="text-xs text-muted mt-4 text-center">
+          <p className="text-xs text-[#667085] mt-4 text-center">
             {data.conversion_rate >= 50
               ? "Your conversion rate is strong. Keep up the good work!"
               : "Consider optimizing your proposal and sales process to improve conversions."}
@@ -302,10 +302,10 @@ export default function AnalyticsPage() {
 
 function ChartCard({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   return (
-    <motion.div variants={itemVariants} className="glass rounded-2xl p-6">
+    <motion.div variants={itemVariants} className="portal-card rounded-2xl p-6">
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-white">{title}</h3>
-        <p className="text-sm text-muted">{subtitle}</p>
+        <p className="text-sm text-[#667085]">{subtitle}</p>
       </div>
       {children}
     </motion.div>

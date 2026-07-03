@@ -98,7 +98,7 @@ export default function AdminReceiptsPage() {
       render: (r) => (
         <div>
           <p className="text-sm font-mono font-medium text-white">{r.receipt_number}</p>
-          <p className="text-xs text-muted font-mono">{r.transaction_reference}</p>
+          <p className="text-xs text-[#667085] font-mono">{r.transaction_reference}</p>
         </div>
       ),
     },
@@ -108,19 +108,19 @@ export default function AdminReceiptsPage() {
       render: (r) => (
         <div>
           <p className="text-sm text-white">{r.client_name || "—"}</p>
-          <p className="text-xs text-muted">{r.client_email}</p>
+          <p className="text-xs text-[#667085]">{r.client_email}</p>
         </div>
       ),
     },
     {
       key: "amount",
       header: "Amount",
-      render: (r) => <span className="text-sm font-semibold text-white whitespace-nowrap">{formatCurrency(r.amount_ngn || r.amount)}</span>,
+      render: (r) => <span className="text-sm font-semibold text-[#101828] whitespace-nowrap">{formatCurrency(r.amount_ngn || r.amount)}</span>,
     },
     {
       key: "gateway",
       header: "Gateway",
-      render: (r) => <span className="text-sm capitalize text-muted">{r.gateway || "—"}</span>,
+      render: (r) => <span className="text-sm capitalize text-[#667085]">{r.gateway || "—"}</span>,
       hideOnMobile: true,
     },
     {
@@ -135,7 +135,7 @@ export default function AdminReceiptsPage() {
     {
       key: "created_at",
       header: "Date",
-      render: (r) => <span className="text-sm text-muted whitespace-nowrap">{formatDate(r.created_at)}</span>,
+      render: (r) => <span className="text-sm text-[#667085] whitespace-nowrap">{formatDate(r.created_at)}</span>,
       hideOnMobile: true,
     },
     {
@@ -202,41 +202,41 @@ export default function AdminReceiptsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-muted mb-1">Receipt Number</p>
+                <p className="text-xs text-[#667085] mb-1">Receipt Number</p>
                 <p className="text-sm font-mono font-medium text-white">{selectedReceipt.receipt_number}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Transaction Reference</p>
+                <p className="text-xs text-[#667085] mb-1">Transaction Reference</p>
                 <p className="text-sm font-mono text-white">{selectedReceipt.transaction_reference}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Gateway</p>
+                <p className="text-xs text-[#667085] mb-1">Gateway</p>
                 <p className="text-sm capitalize text-white">{selectedReceipt.gateway || "—"}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Amount</p>
+                <p className="text-xs text-[#667085] mb-1">Amount</p>
                 <p className="text-sm font-semibold text-white">{formatCurrency(selectedReceipt.amount_ngn || selectedReceipt.amount)}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Status</p>
+                <p className="text-xs text-[#667085] mb-1">Status</p>
                 <Badge variant={statusVariant[selectedReceipt.status] || "info"}>
                   {selectedReceipt.status.charAt(0).toUpperCase() + selectedReceipt.status.slice(1)}
                 </Badge>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Date</p>
+                <p className="text-xs text-[#667085] mb-1">Date</p>
                 <p className="text-sm text-white">{formatDate(selectedReceipt.created_at)}</p>
               </div>
             </div>
-            <div className="pt-4 border-t border-white/10">
-              <p className="text-xs text-muted mb-1">Client</p>
+            <div className="pt-4 border-t border-[#ECEFF5]">
+              <p className="text-xs text-[#667085] mb-1">Client</p>
               <p className="text-sm text-white">{selectedReceipt.client_name || "—"}</p>
-              <p className="text-sm text-muted">{selectedReceipt.client_email}</p>
+              <p className="text-sm text-[#667085]">{selectedReceipt.client_email}</p>
             </div>
             {selectedReceipt.notes && (
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-xs text-muted mb-1">Notes</p>
-                <p className="text-sm text-white/80">{selectedReceipt.notes}</p>
+              <div className="pt-4 border-t border-[#ECEFF5]">
+                <p className="text-xs text-[#667085] mb-1">Notes</p>
+                <p className="text-sm text-[#667085]">{selectedReceipt.notes}</p>
               </div>
             )}
           </div>

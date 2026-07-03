@@ -104,8 +104,8 @@ export default function AdminAddOnsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <span className="section-label">ADD-ONS</span>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">Manage Add-ons</h1>
-          <p className="text-muted text-sm mt-1">Create and manage add-on items grouped by category.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">Manage Add-ons</h1>
+          <p className="text-[#667085] text-sm mt-1">Create and manage add-on items grouped by category.</p>
         </div>
         <Button onClick={openCreate} icon={
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -136,7 +136,7 @@ export default function AdminAddOnsPage() {
       {loading ? (
         <div className="space-y-6">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="glass rounded-2xl p-6 space-y-4">
+            <div key={i} className="portal-card rounded-2xl p-6 space-y-4">
               <Skeleton className="h-6 w-48" />
               <Skeleton className="h-12 w-full" />
               <Skeleton className="h-12 w-full" />
@@ -155,17 +155,17 @@ export default function AdminAddOnsPage() {
       ) : (
         <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
           {filteredCategories.map((cat) => (
-            <motion.div key={cat.category} variants={itemVariants} className="glass rounded-2xl overflow-hidden">
-              <div className="px-6 py-4 border-b border-white/10">
+            <motion.div key={cat.category} variants={itemVariants} className="portal-card rounded-2xl overflow-hidden">
+              <div className="px-6 py-4 border-b border-[#ECEFF5]">
                 <h3 className="text-lg font-semibold text-white">{cat.category}</h3>
               </div>
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-white/5">
-                      <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Name</th>
-                      <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Slug</th>
-                      <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-3">Price</th>
+                    <tr className="border-b border-[#ECEFF5]">
+                      <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-3">Name</th>
+                      <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-3">Slug</th>
+                      <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-3">Price</th>
                     </tr>
                   </thead>
                   <motion.tbody variants={containerVariants} initial="hidden" animate="visible">
@@ -173,7 +173,7 @@ export default function AdminAddOnsPage() {
                       <motion.tr
                         key={item.id}
                         variants={itemVariants}
-                        className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                        className="border-b border-[#ECEFF5] hover:bg-gray-50 transition-colors"
                       >
                         <td className="px-6 py-3">
                           <div className="flex items-center gap-3">
@@ -181,12 +181,12 @@ export default function AdminAddOnsPage() {
                             <div>
                               <span className="text-sm font-medium text-white">{item.name}</span>
                               {item.description && (
-                                <p className="text-xs text-muted mt-0.5">{item.description}</p>
+                                <p className="text-xs text-[#667085] mt-0.5">{item.description}</p>
                               )}
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-3 text-sm text-muted">{item.slug}</td>
+                        <td className="px-6 py-3 text-sm text-[#667085]">{item.slug}</td>
                         <td className="px-6 py-3 text-sm text-right font-semibold text-white">
                           {formatCurrency(item.price_ngn)}
                         </td>
@@ -198,15 +198,15 @@ export default function AdminAddOnsPage() {
 
               <div className="grid gap-3 p-4 md:hidden">
                 {cat.items.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5">
+                  <div key={item.id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                     <div className="flex items-center gap-3">
                       {item.icon && <span className="text-lg">{item.icon}</span>}
                       <div>
                         <p className="text-sm font-medium text-white">{item.name}</p>
-                        <p className="text-xs text-muted">{item.slug}</p>
+                        <p className="text-xs text-[#667085]">{item.slug}</p>
                       </div>
                     </div>
-                    <p className="text-sm font-bold text-gold">{formatCurrency(item.price_ngn)}</p>
+                    <p className="text-sm font-bold text-[#5B4CF0]">{formatCurrency(item.price_ngn)}</p>
                   </div>
                 ))}
               </div>
@@ -232,10 +232,10 @@ export default function AdminAddOnsPage() {
               transition={{ ease: [0.16, 1, 0.3, 1] as const }}
               className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 md:w-full md:max-w-lg max-h-[90vh] overflow-y-auto"
             >
-              <form onSubmit={handleSubmit} className="glass rounded-2xl p-6 space-y-5">
+              <form onSubmit={handleSubmit} className="portal-card rounded-2xl p-6 space-y-5">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-white">Create Add-on</h2>
-                  <button type="button" onClick={() => setShowForm(false)} className="text-muted hover:text-white transition-colors">
+                  <button type="button" onClick={() => setShowForm(false)} className="text-[#667085] hover:text-white transition-colors">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>

@@ -92,7 +92,7 @@ export default function NewBlogPostPage() {
       />
 
       <div className="max-w-3xl space-y-6">
-        <div className="glass rounded-2xl p-6 space-y-5">
+        <div className="portal-card rounded-2xl p-6 space-y-5">
           <h2 className="text-lg font-semibold text-white">Content</h2>
           <Input
             label="Title"
@@ -107,27 +107,27 @@ export default function NewBlogPostPage() {
             required
           />
           <div className="space-y-1.5">
-            <label className="block text-sm text-white/80 font-medium">Content</label>
+            <label className="block text-sm text-[#667085] font-medium">Content</label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               rows={12}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
               required
             />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm text-white/80 font-medium">Excerpt</label>
+            <label className="block text-sm text-[#667085] font-medium">Excerpt</label>
             <textarea
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
               rows={3}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
         </div>
 
-        <div className="glass rounded-2xl p-6 space-y-5">
+        <div className="portal-card rounded-2xl p-6 space-y-5">
           <h2 className="text-lg font-semibold text-white">Metadata</h2>
           <div className="grid grid-cols-2 gap-4">
             <Input
@@ -151,7 +151,7 @@ export default function NewBlogPostPage() {
           />
         </div>
 
-        <div className="glass rounded-2xl p-6 space-y-5">
+        <div className="portal-card rounded-2xl p-6 space-y-5">
           <h2 className="text-lg font-semibold text-white">Publishing</h2>
           <div className="grid grid-cols-2 gap-4">
             <Select
@@ -175,7 +175,7 @@ export default function NewBlogPostPage() {
           </div>
         </div>
 
-        <div className="glass rounded-2xl p-6 space-y-5">
+        <div className="portal-card rounded-2xl p-6 space-y-5">
           <h2 className="text-lg font-semibold text-white">SEO</h2>
           <Input
             label="SEO Title"
@@ -183,12 +183,12 @@ export default function NewBlogPostPage() {
             onChange={(e) => setSeoTitle(e.target.value)}
           />
           <div className="space-y-1.5">
-            <label className="block text-sm text-white/80 font-medium">SEO Description</label>
+            <label className="block text-sm text-[#667085] font-medium">SEO Description</label>
             <textarea
               value={seoDescription}
               onChange={(e) => setSeoDescription(e.target.value)}
               rows={2}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
           <Input

@@ -51,7 +51,7 @@ function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "md
       {[1, 2, 3, 4, 5].map((star) => (
         <svg
           key={star}
-          className={`${sizeClass} ${star <= rating ? "text-gold" : "text-white/20"}`}
+          className={`${sizeClass} ${star <= rating ? "text-[#5B4CF0]" : "text-[#D0D5DD]"}`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -140,14 +140,14 @@ export default function AdminReviewsPage() {
       render: (review) => (
         <div>
           <p className="text-sm font-medium text-white">{review.client_name || "—"}</p>
-          <p className="text-xs text-muted">{review.client_email}</p>
+          <p className="text-xs text-[#667085]">{review.client_email}</p>
         </div>
       ),
     },
     {
       key: "project_name",
       header: "Project",
-      render: (review) => <span className="text-sm text-muted">{review.project_name || review.service || "—"}</span>,
+      render: (review) => <span className="text-sm text-[#667085]">{review.project_name || review.service || "—"}</span>,
       hideOnMobile: true,
     },
     {
@@ -159,18 +159,18 @@ export default function AdminReviewsPage() {
       key: "review",
       header: "Review",
       render: (review) => {
-        if (!review.review) return <span className="text-sm text-muted italic">No text</span>;
+        if (!review.review) return <span className="text-sm text-[#667085] italic">No text</span>;
         const isExpanded = expandedReviews.has(review.id);
         const truncated = review.review.length > 80;
         return (
           <div>
-            <p className="text-sm text-white/80">
+            <p className="text-sm text-[#667085]">
               {isExpanded || !truncated ? review.review : `${review.review.slice(0, 80)}...`}
             </p>
             {truncated && (
               <button
                 onClick={() => toggleExpand(review.id)}
-                className="text-xs text-gold hover:text-gold-secondary mt-1 transition-colors"
+                className="text-xs text-[#5B4CF0] hover:text-[#5B4CF0]-secondary mt-1 transition-colors"
               >
                 {isExpanded ? "Show less" : "Show more"}
               </button>
@@ -190,7 +190,7 @@ export default function AdminReviewsPage() {
     {
       key: "created_at",
       header: "Date",
-      render: (review) => <span className="text-sm text-muted whitespace-nowrap">{formatDate(review.created_at)}</span>,
+      render: (review) => <span className="text-sm text-[#667085] whitespace-nowrap">{formatDate(review.created_at)}</span>,
       hideOnMobile: true,
     },
     {

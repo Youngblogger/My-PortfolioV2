@@ -109,7 +109,7 @@ export default function AdminCourseDetailPage() {
     <div>
       <button
         onClick={() => router.push("/admin/academy/courses")}
-        className="text-xs text-muted hover:text-white transition-colors mb-2 flex items-center gap-1"
+        className="text-xs text-[#667085] hover:text-white transition-colors mb-2 flex items-center gap-1"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m7-7l-7 7 7 7" />
@@ -117,7 +117,7 @@ export default function AdminCourseDetailPage() {
         Back to Courses
       </button>
 
-      <div className="glass rounded-2xl p-6 md:p-8 mb-6">
+      <div className="portal-card rounded-2xl p-6 md:p-8 mb-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div>
             <div className="flex items-center gap-3 mb-1">
@@ -126,20 +126,20 @@ export default function AdminCourseDetailPage() {
                 {course.is_published ? "Published" : "Draft"}
               </Badge>
             </div>
-            <p className="text-muted text-sm">/{course.slug}</p>
+            <p className="text-[#667085] text-sm">/{course.slug}</p>
             {course.short_description && (
-              <p className="text-muted text-sm mt-2 max-w-2xl">{course.short_description}</p>
+              <p className="text-[#667085] text-sm mt-2 max-w-2xl">{course.short_description}</p>
             )}
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-bold text-gold">{formatCurrency(course.price_ngn)}</span>
+            <span className="text-2xl font-bold text-[#5B4CF0]">{formatCurrency(course.price_ngn)}</span>
           </div>
         </div>
-        <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-white/10">
-          <div className="text-sm"><span className="text-muted">Category:</span> <span className="text-white/80">{course.category?.name || "—"}</span></div>
-          <div className="text-sm"><span className="text-muted">Duration:</span> <span className="text-white/80">{course.duration_weeks ? `${course.duration_weeks} weeks` : "—"}</span></div>
-          <div className="text-sm"><span className="text-muted">Level:</span> <span className="text-white/80 capitalize">{course.skill_level || "—"}</span></div>
-          <div className="text-sm"><span className="text-muted">Enrollments:</span> <span className="text-white/80">{course.enrollments_count}</span></div>
+        <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-[#ECEFF5]">
+          <div className="text-sm"><span className="text-[#667085]">Category:</span> <span className="text-[#667085]">{course.category?.name || "—"}</span></div>
+          <div className="text-sm"><span className="text-[#667085]">Duration:</span> <span className="text-[#667085]">{course.duration_weeks ? `${course.duration_weeks} weeks` : "—"}</span></div>
+          <div className="text-sm"><span className="text-[#667085]">Level:</span> <span className="text-[#667085] capitalize">{course.skill_level || "—"}</span></div>
+          <div className="text-sm"><span className="text-[#667085]">Enrollments:</span> <span className="text-[#667085]">{course.enrollments_count}</span></div>
         </div>
       </div>
 
@@ -237,7 +237,7 @@ function ModulesTab({ courseId, modules, onRefresh }: { courseId: string; module
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Course Modules</h3>
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">Course Modules</h3>
         <Button size="sm" onClick={openCreate} icon={
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -259,20 +259,20 @@ function ModulesTab({ courseId, modules, onRefresh }: { courseId: string; module
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.03 }}
-                className="glass rounded-xl p-5"
+                className="portal-card rounded-xl p-5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3">
-                      <span className="w-7 h-7 rounded-full bg-gold/10 text-gold text-xs font-bold flex items-center justify-center shrink-0">
+                      <span className="w-7 h-7 rounded-full bg-[#5B4CF0]/10 text-[#5B4CF0] text-xs font-bold flex items-center justify-center shrink-0">
                         {mod.sort_order}
                       </span>
                       <h4 className="text-sm font-semibold text-white">{mod.name}</h4>
                     </div>
                     {mod.description && (
-                      <p className="text-xs text-muted mt-2 ml-10">{mod.description}</p>
+                      <p className="text-xs text-[#667085] mt-2 ml-10">{mod.description}</p>
                     )}
-                    <p className="text-xs text-muted mt-1 ml-10">{mod.lessons.length} lesson{mod.lessons.length !== 1 ? "s" : ""}</p>
+                    <p className="text-xs text-[#667085] mt-1 ml-10">{mod.lessons.length} lesson{mod.lessons.length !== 1 ? "s" : ""}</p>
                   </div>
                   <div className="flex gap-1 shrink-0">
                     <Button variant="ghost" size="sm" onClick={() => openEdit(mod)}>Edit</Button>
@@ -297,12 +297,12 @@ function ModulesTab({ courseId, modules, onRefresh }: { courseId: string; module
             required
           />
           <div>
-            <label className="block text-sm text-white/80 font-medium mb-1.5">Description</label>
+            <label className="block text-sm text-[#667085] font-medium mb-1.5">Description</label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
           <Input
@@ -424,7 +424,7 @@ function LessonsTab({ courseId, modules, onRefresh }: { courseId: string; module
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">All Lessons</h3>
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">All Lessons</h3>
         <Button size="sm" onClick={openCreate} icon={
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -445,8 +445,8 @@ function LessonsTab({ courseId, modules, onRefresh }: { courseId: string; module
             .filter((m) => m.lessons.length > 0)
             .map((mod) => (
               <div key={mod.id}>
-                <h4 className="text-sm font-semibold text-white/80 mb-3 flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-gold/10 text-gold text-[10px] font-bold flex items-center justify-center">
+                <h4 className="text-sm font-semibold text-[#667085] mb-3 flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-[#5B4CF0]/10 text-[#5B4CF0] text-[10px] font-bold flex items-center justify-center">
                     {mod.sort_order}
                   </span>
                   {mod.name}
@@ -460,19 +460,19 @@ function LessonsTab({ courseId, modules, onRefresh }: { courseId: string; module
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: idx * 0.02 }}
-                        className="glass rounded-xl p-4 flex items-start justify-between gap-4"
+                        className="portal-card rounded-xl p-4 flex items-start justify-between gap-4"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted w-5">#{lesson.sort_order}</span>
+                            <span className="text-xs text-[#667085] w-5">#{lesson.sort_order}</span>
                             <h5 className="text-sm font-medium text-white">{lesson.title}</h5>
                             <Badge variant={statusVariant[lesson.status] || "info"}>{lesson.status}</Badge>
                           </div>
                           <div className="flex items-center gap-3 mt-1 ml-7">
                             {lesson.duration_minutes && (
-                              <span className="text-xs text-muted">{lesson.duration_minutes} min</span>
+                              <span className="text-xs text-[#667085]">{lesson.duration_minutes} min</span>
                             )}
-                            <span className="text-xs text-muted">/{lesson.slug}</span>
+                            <span className="text-xs text-[#667085]">/{lesson.slug}</span>
                           </div>
                         </div>
                         <div className="flex gap-1 shrink-0">
@@ -509,12 +509,12 @@ function LessonsTab({ courseId, modules, onRefresh }: { courseId: string; module
             />
           </div>
           <div>
-            <label className="block text-sm text-white/80 font-medium mb-1.5">Content</label>
+            <label className="block text-sm text-[#667085] font-medium mb-1.5">Content</label>
             <textarea
               value={form.content}
               onChange={(e) => setForm({ ...form, content: e.target.value })}
               rows={6}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">

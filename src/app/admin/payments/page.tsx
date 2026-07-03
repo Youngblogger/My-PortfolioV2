@@ -126,25 +126,25 @@ export default function AdminPaymentsPage() {
       render: (p) => (
         <div>
           <p className="text-sm text-white">{p.client_name || "—"}</p>
-          <p className="text-xs text-muted">{p.client_email}</p>
+          <p className="text-xs text-[#667085]">{p.client_email}</p>
         </div>
       ),
     },
     {
       key: "service",
       header: "Service",
-      render: (p) => <span className="text-sm text-muted">{p.service || "—"}</span>,
+      render: (p) => <span className="text-sm text-[#667085]">{p.service || "—"}</span>,
       hideOnMobile: true,
     },
     {
       key: "amount",
       header: "Amount",
-      render: (p) => <span className="text-sm font-semibold text-white whitespace-nowrap">{formatCurrency(p.amount_ngn || p.amount)}</span>,
+      render: (p) => <span className="text-sm font-semibold text-[#101828] whitespace-nowrap">{formatCurrency(p.amount_ngn || p.amount)}</span>,
     },
     {
       key: "gateway",
       header: "Gateway",
-      render: (p) => <span className="text-sm capitalize text-muted">{p.gateway || "—"}</span>,
+      render: (p) => <span className="text-sm capitalize text-[#667085]">{p.gateway || "—"}</span>,
       hideOnMobile: true,
     },
     {
@@ -159,7 +159,7 @@ export default function AdminPaymentsPage() {
     {
       key: "paid_at",
       header: "Date",
-      render: (p) => <span className="text-sm text-muted whitespace-nowrap">{formatDate(p.paid_at || p.created_at)}</span>,
+      render: (p) => <span className="text-sm text-[#667085] whitespace-nowrap">{formatDate(p.paid_at || p.created_at)}</span>,
       hideOnMobile: true,
     },
     {
@@ -298,51 +298,51 @@ export default function AdminPaymentsPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-muted mb-1">Reference</p>
+                <p className="text-xs text-[#667085] mb-1">Reference</p>
                 <p className="text-sm font-mono font-medium text-white">{selectedPayment.reference}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Gateway</p>
+                <p className="text-xs text-[#667085] mb-1">Gateway</p>
                 <p className="text-sm capitalize text-white">{selectedPayment.gateway || "—"}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Amount</p>
+                <p className="text-xs text-[#667085] mb-1">Amount</p>
                 <p className="text-sm font-semibold text-white">{formatCurrency(selectedPayment.amount_ngn || selectedPayment.amount)}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Fees</p>
+                <p className="text-xs text-[#667085] mb-1">Fees</p>
                 <p className="text-sm text-white">{selectedPayment.fees ? formatCurrency(selectedPayment.fees) : "—"}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Status</p>
+                <p className="text-xs text-[#667085] mb-1">Status</p>
                 <Badge variant={statusVariant[selectedPayment.status] || "info"}>
                   {selectedPayment.status.charAt(0).toUpperCase() + selectedPayment.status.slice(1)}
                 </Badge>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Paid At</p>
+                <p className="text-xs text-[#667085] mb-1">Paid At</p>
                 <p className="text-sm text-white">{selectedPayment.paid_at ? formatDate(selectedPayment.paid_at) : "—"}</p>
               </div>
             </div>
-            <div className="pt-4 border-t border-white/10">
-              <p className="text-xs text-muted mb-1">Client</p>
+            <div className="pt-4 border-t border-[#ECEFF5]">
+              <p className="text-xs text-[#667085] mb-1">Client</p>
               <p className="text-sm text-white">{selectedPayment.client_name || "—"}</p>
-              <p className="text-sm text-muted">{selectedPayment.client_email}</p>
+              <p className="text-sm text-[#667085]">{selectedPayment.client_email}</p>
               {selectedPayment.service && (
                 <>
-                  <p className="text-xs text-muted mt-3 mb-1">Service</p>
+                  <p className="text-xs text-[#667085] mt-3 mb-1">Service</p>
                   <p className="text-sm text-white">{selectedPayment.service}</p>
                 </>
               )}
             </div>
             {selectedPayment.metadata && Object.keys(selectedPayment.metadata).length > 0 && (
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-xs text-muted mb-2">Metadata</p>
+              <div className="pt-4 border-t border-[#ECEFF5]">
+                <p className="text-xs text-[#667085] mb-2">Metadata</p>
                 <div className="space-y-1">
                   {Object.entries(selectedPayment.metadata).map(([key, val]) => (
                     <div key={key} className="flex gap-2 text-xs">
-                      <span className="text-muted capitalize">{key.replace(/_/g, " ")}:</span>
-                      <span className="text-white/80">{String(val)}</span>
+                      <span className="text-[#667085] capitalize">{key.replace(/_/g, " ")}:</span>
+                      <span className="text-[#667085]">{String(val)}</span>
                     </div>
                   ))}
                 </div>

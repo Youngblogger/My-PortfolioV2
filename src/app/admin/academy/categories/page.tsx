@@ -147,14 +147,14 @@ export default function AdminCourseCategoriesPage() {
     {
       key: "slug",
       header: "Slug",
-      render: (cat) => <span className="text-sm text-muted">/{cat.slug}</span>,
+      render: (cat) => <span className="text-sm text-[#667085]">/{cat.slug}</span>,
       hideOnMobile: true,
     },
     {
       key: "description",
       header: "Description",
       render: (cat) => (
-        <span className="text-sm text-muted truncate max-w-[200px] block">
+        <span className="text-sm text-[#667085] truncate max-w-[200px] block">
           {cat.description || "—"}
         </span>
       ),
@@ -169,7 +169,7 @@ export default function AdminCourseCategoriesPage() {
     {
       key: "courses_count",
       header: "Courses",
-      render: (cat) => <span className="text-sm text-muted">{cat.courses_count}</span>,
+      render: (cat) => <span className="text-sm text-[#667085]">{cat.courses_count}</span>,
       hideOnMobile: true,
     },
     {

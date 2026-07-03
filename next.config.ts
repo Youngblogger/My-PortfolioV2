@@ -3,6 +3,15 @@ import type { NextConfig } from "next";
 const API_PROXY_TARGET = process.env.API_PROXY_TARGET || "http://localhost:8000";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/login",
+        destination: "/auth/login",
+        permanent: false,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

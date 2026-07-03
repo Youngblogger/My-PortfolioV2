@@ -180,7 +180,7 @@ export default function MediaPage() {
             />
             <label
               htmlFor="media-upload"
-              className="inline-flex items-center gap-2 px-6 py-3 text-base rounded-xl bg-gold-gradient text-background font-bold hover:shadow-gold cursor-pointer transition-all duration-300"
+              className="inline-flex items-center gap-2 px-6 py-3 text-base rounded-xl portal-primary-bg text-[#101828] font-bold hover:shadow-gold cursor-pointer transition-all duration-300"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -202,7 +202,7 @@ export default function MediaPage() {
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="glass rounded-xl overflow-hidden">
+            <div key={i} className="portal-card rounded-xl overflow-hidden">
               <Skeleton className="aspect-square w-full" />
               <div className="p-3 space-y-2">
                 <Skeleton className="h-3 w-full" />
@@ -232,9 +232,9 @@ export default function MediaPage() {
                 key={item.id}
                 variants={itemVariants}
                 onClick={() => openDetail(item)}
-                className="glass rounded-xl overflow-hidden text-left group hover:border-gold/30 transition-all duration-300 border border-transparent"
+                className="portal-card rounded-xl overflow-hidden text-left group hover:border-[#5B4CF0]/30 transition-all duration-300 border border-transparent"
               >
-                <div className="aspect-square bg-white/5 relative overflow-hidden">
+                <div className="aspect-square bg-gray-50 relative overflow-hidden">
                   {item.thumbnail_url ? (
                     <img
                       src={item.thumbnail_url}
@@ -249,31 +249,31 @@ export default function MediaPage() {
                     />
                   ) : isVideo(item.mime_type) ? (
                     <div className="w-full h-full flex items-center justify-center">
-                      <svg className="w-10 h-10 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <svg className="w-10 h-10 text-[#667085]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <svg className="w-10 h-10 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <svg className="w-10 h-10 text-[#667085]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                       </svg>
                     </div>
                   )}
                 </div>
                 <div className="p-3 space-y-1">
-                  <p className="text-xs font-medium text-white truncate">{item.filename}</p>
-                  <p className="text-[10px] text-muted">{formatFileSize(item.size)}</p>
-                  <p className="text-[10px] text-muted">{formatDate(item.created_at)}</p>
+                  <p className="text-xs font-medium text-[#101828] truncate">{item.filename}</p>
+                  <p className="text-[10px] text-[#667085]">{formatFileSize(item.size)}</p>
+                  <p className="text-[10px] text-[#667085]">{formatDate(item.created_at)}</p>
                 </div>
               </motion.button>
             ))}
           </motion.div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-6 mt-6 border-t border-white/10">
-              <p className="text-sm text-muted">
+            <div className="flex items-center justify-between pt-6 mt-6 border-t border-[#ECEFF5]">
+              <p className="text-sm text-[#667085]">
                 Page {page} of {totalPages}
                 <span className="ml-2">({totalItems} total)</span>
               </p>
@@ -315,54 +315,54 @@ export default function MediaPage() {
               <img
                 src={selectedItem.url}
                 alt={selectedItem.alt_text || selectedItem.filename}
-                className="w-full max-h-64 object-contain rounded-xl bg-white/5"
+                className="w-full max-h-64 object-contain rounded-xl bg-gray-50"
               />
             ) : (
-              <div className="w-full h-40 bg-white/5 rounded-xl flex items-center justify-center">
-                <span className="text-muted text-sm">{selectedItem.mime_type}</span>
+              <div className="w-full h-40 bg-gray-50 rounded-xl flex items-center justify-center">
+                <span className="text-[#667085] text-sm">{selectedItem.mime_type}</span>
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="text-muted block text-xs">Filename</span>
+                <span className="text-[#667085] block text-xs">Filename</span>
                 <span className="text-white font-medium">{selectedItem.filename}</span>
               </div>
               <div>
-                <span className="text-muted block text-xs">Original Name</span>
+                <span className="text-[#667085] block text-xs">Original Name</span>
                 <span className="text-white font-medium">{selectedItem.original_name}</span>
               </div>
               <div>
-                <span className="text-muted block text-xs">MIME Type</span>
+                <span className="text-[#667085] block text-xs">MIME Type</span>
                 <span className="text-white font-medium">{selectedItem.mime_type}</span>
               </div>
               <div>
-                <span className="text-muted block text-xs">Size</span>
+                <span className="text-[#667085] block text-xs">Size</span>
                 <span className="text-white font-medium">{formatFileSize(selectedItem.size)}</span>
               </div>
               <div>
-                <span className="text-muted block text-xs">Upload Date</span>
+                <span className="text-[#667085] block text-xs">Upload Date</span>
                 <span className="text-white font-medium">{formatDate(selectedItem.created_at)}</span>
               </div>
               {selectedItem.folder && (
                 <div>
-                  <span className="text-muted block text-xs">Folder</span>
+                  <span className="text-[#667085] block text-xs">Folder</span>
                   <span className="text-white font-medium">{selectedItem.folder}</span>
                 </div>
               )}
             </div>
 
             <div>
-              <span className="text-muted block text-xs mb-1">URL</span>
+              <span className="text-[#667085] block text-xs mb-1">URL</span>
               <div className="flex items-center gap-2">
                 <input
                   readOnly
                   value={selectedItem.url}
-                  className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-xs"
+                  className="flex-1 px-3 py-2 rounded-lg bg-gray-50 border border-[#ECEFF5] text-[#101828] text-xs"
                 />
                 <button
                   onClick={() => copyToClipboard(selectedItem.url)}
-                  className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-muted hover:text-white transition-all"
+                  className="p-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-[#667085] hover:text-white transition-all"
                   title="Copy URL"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

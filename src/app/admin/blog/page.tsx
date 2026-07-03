@@ -113,7 +113,7 @@ export default function AdminBlogPage() {
       key: "title",
       header: "Title",
       render: (post) => (
-        <Link href={`/admin/blog/${post.id}`} className="text-sm font-medium text-white hover:text-gold transition-colors">
+        <Link href={`/admin/blog/${post.id}`} className="text-sm font-medium text-[#101828] hover:text-[#5B4CF0] transition-colors">
           {post.title}
         </Link>
       ),
@@ -121,13 +121,13 @@ export default function AdminBlogPage() {
     {
       key: "category",
       header: "Category",
-      render: (post) => <span className="text-sm text-muted">{post.category || "—"}</span>,
+      render: (post) => <span className="text-sm text-[#667085]">{post.category || "—"}</span>,
       hideOnMobile: true,
     },
     {
       key: "author",
       header: "Author",
-      render: (post) => <span className="text-sm text-muted">{post.author || "—"}</span>,
+      render: (post) => <span className="text-sm text-[#667085]">{post.author || "—"}</span>,
       hideOnMobile: true,
     },
     {
@@ -143,7 +143,7 @@ export default function AdminBlogPage() {
       key: "published_at",
       header: "Published Date",
       render: (post) => (
-        <span className="text-sm text-muted whitespace-nowrap">
+        <span className="text-sm text-[#667085] whitespace-nowrap">
           {post.published_at ? formatDate(post.published_at) : "—"}
         </span>
       ),
@@ -156,13 +156,13 @@ export default function AdminBlogPage() {
         <div className="flex items-center gap-2">
           <Link
             href={`/admin/blog/${post.id}`}
-            className="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-muted hover:text-white hover:border-gold/30 transition-all"
+            className="text-xs px-3 py-1.5 rounded-lg border border-[#ECEFF5] text-[#667085] hover:text-white hover:border-[#5B4CF0]/30 transition-all"
           >
             Edit
           </Link>
           <button
             onClick={(e) => { e.stopPropagation(); setDeleteConfirm(post); }}
-            className="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-red-400 hover:text-red-300 hover:border-red-400/30 transition-all"
+            className="text-xs px-3 py-1.5 rounded-lg border border-[#ECEFF5] text-red-400 hover:text-red-300 hover:border-red-400/30 transition-all"
           >
             Delete
           </button>
@@ -205,9 +205,9 @@ export default function AdminBlogPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-12 bg-white/5 rounded-xl animate-pulse" />
+            <div key={i} className="h-12 bg-gray-50 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : error ? (
@@ -228,8 +228,8 @@ export default function AdminBlogPage() {
       )}
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
-          <p className="text-sm text-muted">Page {page} of {totalPages} ({total} total)</p>
+        <div className="flex items-center justify-between mt-6 pt-6 border-t border-[#ECEFF5]">
+          <p className="text-sm text-[#667085]">Page {page} of {totalPages} ({total} total)</p>
           <div className="flex gap-2">
             <Button size="sm" variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Previous</Button>
             <Button size="sm" variant="secondary" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>Next</Button>

@@ -124,8 +124,8 @@ export default function AdminProjectTypesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <span className="section-label">PROJECT TYPES</span>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">Manage Project Types</h1>
-          <p className="text-muted text-sm mt-1">Select a service to manage its project types.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">Manage Project Types</h1>
+          <p className="text-[#667085] text-sm mt-1">Select a service to manage its project types.</p>
         </div>
         {selectedServiceId && (
           <Button onClick={openCreate} icon={
@@ -138,7 +138,7 @@ export default function AdminProjectTypesPage() {
         )}
       </div>
 
-      <div className="glass rounded-2xl p-5 mb-6">
+      <div className="portal-card rounded-2xl p-5 mb-6">
         <Select
           label="Select Service"
           placeholder="Choose a service..."
@@ -159,7 +159,7 @@ export default function AdminProjectTypesPage() {
       )}
 
       {loadingServices ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -169,7 +169,7 @@ export default function AdminProjectTypesPage() {
       ) : !selectedServiceId ? (
         <EmptyState icon="📋" title="Select a service" description="Choose a service from the dropdown above to view its project types." />
       ) : loadingTypes ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -183,14 +183,14 @@ export default function AdminProjectTypesPage() {
         />
       ) : (
         <>
-          <div className="hidden md:block glass rounded-2xl overflow-hidden">
+          <div className="hidden md:block portal-card rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Title</th>
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Slug</th>
-                    <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Starting Price</th>
+                  <tr className="border-b border-[#ECEFF5]">
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Title</th>
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Slug</th>
+                    <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Starting Price</th>
                   </tr>
                 </thead>
                 <motion.tbody variants={containerVariants} initial="hidden" animate="visible">
@@ -198,7 +198,7 @@ export default function AdminProjectTypesPage() {
                     <motion.tr
                       key={pt.id}
                       variants={rowVariants}
-                      className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                      className="border-b border-[#ECEFF5] hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -206,7 +206,7 @@ export default function AdminProjectTypesPage() {
                           <span className="text-sm font-medium text-white">{pt.title}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-muted">{pt.slug}</td>
+                      <td className="px-6 py-4 text-sm text-[#667085]">{pt.slug}</td>
                       <td className="px-6 py-4 text-sm text-right font-semibold text-white">
                         {formatCurrency(pt.starting_price_ngn)}
                       </td>
@@ -222,17 +222,17 @@ export default function AdminProjectTypesPage() {
               <motion.div
                 key={pt.id}
                 variants={rowVariants}
-                className="glass rounded-2xl p-5 space-y-3"
+                className="portal-card rounded-2xl p-5 space-y-3"
               >
                 <div className="flex items-center gap-3">
                   {pt.icon && <span className="text-xl">{pt.icon}</span>}
                   <div>
                     <p className="text-sm font-bold text-white">{pt.title}</p>
-                    <p className="text-xs text-muted">{pt.slug}</p>
+                    <p className="text-xs text-[#667085]">{pt.slug}</p>
                   </div>
                 </div>
-                <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                  <p className="text-lg font-bold text-gold">{formatCurrency(pt.starting_price_ngn)}</p>
+                <div className="flex items-center justify-between pt-2 border-t border-[#ECEFF5]">
+                  <p className="text-lg font-bold text-[#5B4CF0]">{formatCurrency(pt.starting_price_ngn)}</p>
                 </div>
               </motion.div>
             ))}
@@ -257,16 +257,16 @@ export default function AdminProjectTypesPage() {
               transition={{ ease: [0.16, 1, 0.3, 1] as const }}
               className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 md:w-full md:max-w-lg max-h-[90vh] overflow-y-auto"
             >
-              <form onSubmit={handleSubmit} className="glass rounded-2xl p-6 space-y-5">
+              <form onSubmit={handleSubmit} className="portal-card rounded-2xl p-6 space-y-5">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-white">Create Project Type</h2>
-                  <button type="button" onClick={() => setShowForm(false)} className="text-muted hover:text-white transition-colors">
+                  <button type="button" onClick={() => setShowForm(false)} className="text-[#667085] hover:text-white transition-colors">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
-                <p className="text-sm text-muted">Service: <span className="text-white font-medium">{selectedService?.title}</span></p>
+                <p className="text-sm text-[#667085]">Service: <span className="text-white font-medium">{selectedService?.title}</span></p>
                 <div className="grid grid-cols-2 gap-4">
                   <Input label="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
                   <Input label="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} required />

@@ -98,7 +98,7 @@ export default function AdminProjectDetailPage() {
       <div className="space-y-6">
         <Skeleton className="h-8 w-64" />
         <Skeleton className="h-4 w-96" />
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-32 w-full" />
         </div>
@@ -118,7 +118,7 @@ export default function AdminProjectDetailPage() {
       <div className="mb-8">
         <button
           onClick={() => router.push("/admin/projects")}
-          className="text-xs text-muted hover:text-white transition-colors mb-2 flex items-center gap-1"
+          className="text-xs text-[#667085] hover:text-white transition-colors mb-2 flex items-center gap-1"
         >
           ← Back to Projects
         </button>
@@ -132,7 +132,7 @@ export default function AdminProjectDetailPage() {
                 {statusLabels[project.project_status] || project.project_status}
               </Badge>
             </div>
-            <p className="text-muted text-sm mt-1">
+            <p className="text-[#667085] text-sm mt-1">
               {project.project_number || project.order_number}
               {project.client && <span> &mdash; {project.client.full_name}</span>}
             </p>
@@ -141,23 +141,23 @@ export default function AdminProjectDetailPage() {
       </div>
 
       {/* Progress Bar */}
-      <div className="glass rounded-2xl p-4 md:p-6 mb-6">
+      <div className="portal-card rounded-2xl p-4 md:p-6 mb-6">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-muted">Progress</span>
+          <span className="text-sm text-[#667085]">Progress</span>
           <span className="text-sm font-semibold text-white">{project.progress.progress}%</span>
         </div>
-        <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gold rounded-full transition-all duration-500"
+            className="h-full bg-[#5B4CF0] rounded-full transition-all duration-500"
             style={{ width: `${project.progress.progress}%` }}
           />
         </div>
         <div className="flex items-center justify-between mt-2">
-          <span className="text-xs text-muted">
+          <span className="text-xs text-[#667085]">
             {project.progress.completed} of {project.progress.total} milestones completed
           </span>
           {project.progress.current_milestone && (
-            <span className="text-xs text-muted">
+            <span className="text-xs text-[#667085]">
               Current: {project.progress.current_milestone}
             </span>
           )}
@@ -165,7 +165,7 @@ export default function AdminProjectDetailPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-1 mb-6 border-b border-white/10 pb-2 overflow-x-auto">
+      <div className="flex flex-wrap gap-1 mb-6 border-b border-[#ECEFF5] pb-2 overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -173,8 +173,8 @@ export default function AdminProjectDetailPage() {
             className={cn(
               "text-sm font-medium px-4 py-2 rounded-t-lg transition-all whitespace-nowrap",
               activeTab === tab.key
-                ? "text-gold border-b-2 border-gold"
-                : "text-muted hover:text-white"
+                ? "text-[#5B4CF0] border-b-2 border-gold"
+                : "text-[#667085] hover:text-white"
             )}
           >
             {tab.label}
@@ -223,8 +223,8 @@ export default function AdminProjectDetailPage() {
 function OverviewTab({ project }: { project: AdminProjectDetailData }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="glass rounded-2xl p-6 md:p-8 space-y-5">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Project Information</h3>
+      <div className="portal-card rounded-2xl p-6 md:p-8 space-y-5">
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">Project Information</h3>
         <div className="grid grid-cols-2 gap-4">
           <InfoRow label="Project Name" value={project.project_name} />
           <InfoRow label="Project Number" value={project.project_number || "—"} />
@@ -239,15 +239,15 @@ function OverviewTab({ project }: { project: AdminProjectDetailData }) {
         </div>
         {project.notes && (
           <div>
-            <p className="text-xs text-muted mb-1">Notes</p>
-            <p className="text-sm text-white/80">{project.notes}</p>
+            <p className="text-xs text-[#667085] mb-1">Notes</p>
+            <p className="text-sm text-[#667085]">{project.notes}</p>
           </div>
         )}
       </div>
 
       <div className="space-y-6">
-        <div className="glass rounded-2xl p-6 md:p-8 space-y-4">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Client Information</h3>
+        <div className="portal-card rounded-2xl p-6 md:p-8 space-y-4">
+          <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">Client Information</h3>
           {project.client ? (
             <div className="space-y-3">
               <InfoRow label="Name" value={project.client.full_name || "—"} />
@@ -256,20 +256,20 @@ function OverviewTab({ project }: { project: AdminProjectDetailData }) {
               <InfoRow label="Company" value={project.client.company || "—"} />
             </div>
           ) : (
-            <p className="text-sm text-muted">No client data</p>
+            <p className="text-sm text-[#667085]">No client data</p>
           )}
         </div>
 
-        <div className="glass rounded-2xl p-6 md:p-8 space-y-4">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Service Details</h3>
+        <div className="portal-card rounded-2xl p-6 md:p-8 space-y-4">
+          <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">Service Details</h3>
           <InfoRow label="Service" value={project.service?.title || "—"} />
           <InfoRow label="Project Type" value={project.projectType?.title || "—"} />
           <InfoRow label="Package" value={project.package?.name || "—"} />
           <InfoRow label="Add-ons" value={project.addOns.length > 0 ? project.addOns.map((a) => a.name).join(", ") : "None"} />
         </div>
 
-        <div className="glass rounded-2xl p-6 md:p-8 space-y-4">
-          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Budget & Payments</h3>
+        <div className="portal-card rounded-2xl p-6 md:p-8 space-y-4">
+          <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">Budget & Payments</h3>
           <InfoRow label="Total Budget" value={formatCurrency(project.total_ngn)} />
           <InfoRow label="Amount Paid" value={formatCurrency(project.amount_paid_ngn)} />
           <InfoRow label="Balance" value={formatCurrency(project.balance_ngn)} />
@@ -283,8 +283,8 @@ function OverviewTab({ project }: { project: AdminProjectDetailData }) {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs text-muted">{label}</p>
-      <p className="text-sm text-white/80 font-medium">{value}</p>
+      <p className="text-xs text-[#667085]">{label}</p>
+      <p className="text-sm text-[#667085] font-medium">{value}</p>
     </div>
   );
 }
@@ -354,8 +354,8 @@ function MilestonesTab({ milestones, onRefresh }: { milestones: AdminMilestoneDa
   };
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8">
-      <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-6">Milestones</h3>
+    <div className="portal-card rounded-2xl p-6 md:p-8">
+      <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider mb-6">Milestones</h3>
       <div className="space-y-3">
         {milestones.map((ms, idx) => (
           <div
@@ -365,10 +365,10 @@ function MilestonesTab({ milestones, onRefresh }: { milestones: AdminMilestoneDa
               ms.status === "completed"
                 ? "bg-green-500/5 border border-green-500/10"
                 : ms.status === "in_progress"
-                ? "bg-gold/5 border border-gold/10"
+                ? "bg-[#5B4CF0]/5 border border-[#5B4CF0]/10"
                 : ms.status === "delayed" || ms.status === "blocked"
                 ? "bg-red-500/5 border border-red-500/10"
-                : "bg-white/5"
+                : "bg-gray-50"
             )}
           >
             {/* Step Number */}
@@ -397,9 +397,9 @@ function MilestonesTab({ milestones, onRefresh }: { milestones: AdminMilestoneDa
                 </Badge>
               </div>
               {ms.description && (
-                <p className="text-xs text-muted/70 mt-1">{ms.description}</p>
+                <p className="text-xs text-[#667085]/70 mt-1">{ms.description}</p>
               )}
-              <div className="flex items-center gap-4 mt-2 text-xs text-muted flex-wrap">
+              <div className="flex items-center gap-4 mt-2 text-xs text-[#667085] flex-wrap">
                 {ms.due_date && <span>Due: {formatDate(ms.due_date)}</span>}
                 {ms.completed_at && <span>Completed: {formatDate(ms.completed_at)}</span>}
                 {ms.completion_notes && <span className="italic">{ms.completion_notes}</span>}
@@ -408,12 +408,12 @@ function MilestonesTab({ milestones, onRefresh }: { milestones: AdminMilestoneDa
                     Review: {ms.review_status.replace(/_/g, " ")}
                   </Badge>
                 )}
-                {ms.review_feedback && <span className="italic text-gold">Feedback: "{ms.review_feedback}"</span>}
+                {ms.review_feedback && <span className="italic text-[#5B4CF0]">Feedback: "{ms.review_feedback}"</span>}
               </div>
               {ms.deliverables && ms.deliverables.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {ms.deliverables.map((d, i) => (
-                    <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-gold/10 text-gold/70 border border-gold/10">
+                    <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-[#5B4CF0]/10 text-[#5B4CF0]/70 border border-[#5B4CF0]/10">
                       {d}
                     </span>
                   ))}
@@ -477,7 +477,7 @@ function TimelineTab({ projectId }: { projectId: string }) {
 
   if (loading) {
     return (
-      <div className="glass rounded-2xl p-6 space-y-4">
+      <div className="portal-card rounded-2xl p-6 space-y-4">
         <Skeleton className="h-6 w-48" />
         <Skeleton className="h-24 w-full" />
         <Skeleton className="h-24 w-full" />
@@ -486,31 +486,31 @@ function TimelineTab({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8">
-      <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-6">Activity Timeline</h3>
+    <div className="portal-card rounded-2xl p-6 md:p-8">
+      <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider mb-6">Activity Timeline</h3>
       {logs.length === 0 ? (
-        <p className="text-sm text-muted">No activity recorded yet.</p>
+        <p className="text-sm text-[#667085]">No activity recorded yet.</p>
       ) : (
         <div className="space-y-0">
           {logs.map((entry, idx) => (
             <div key={entry.id} className="flex gap-4 pb-6 last:pb-0 relative">
               {idx < logs.length - 1 && (
-                <div className="absolute left-[7px] top-4 bottom-0 w-0.5 bg-white/10" />
+                <div className="absolute left-[7px] top-4 bottom-0 w-0.5 bg-gray-100" />
               )}
-              <div className="w-[14px] h-[14px] rounded-full border-2 border-gold/30 bg-gold/10 shrink-0 mt-1" />
+              <div className="w-[14px] h-[14px] rounded-full border-2 border-[#5B4CF0]/30 bg-[#5B4CF0]/10 shrink-0 mt-1" />
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className="text-sm text-white capitalize">{entry.action.replace(/_/g, " ")}</p>
+                  <p className="text-sm text-[#101828] capitalize">{entry.action.replace(/_/g, " ")}</p>
                   {entry.user?.profile?.full_name && (
-                    <span className="text-xs text-muted">by {entry.user.profile.full_name}</span>
+                    <span className="text-xs text-[#667085]">by {entry.user.profile.full_name}</span>
                   )}
                 </div>
                 {entry.description && (
-                  <p className="text-xs text-muted/70 mt-0.5">{entry.description}</p>
+                  <p className="text-xs text-[#667085]/70 mt-0.5">{entry.description}</p>
                 )}
-                <p className="text-xs text-muted mt-0.5">{formatDate(entry.created_at)}</p>
+                <p className="text-xs text-[#667085] mt-0.5">{formatDate(entry.created_at)}</p>
                 {entry.metadata && Object.keys(entry.metadata).length > 0 && (
-                  <div className="text-[10px] text-muted/40 mt-1 bg-white/5 p-2 rounded-lg max-w-md space-y-0.5">
+                  <div className="text-[10px] text-[#667085]/40 mt-1 bg-gray-50 p-2 rounded-lg max-w-md space-y-0.5">
                     {Object.entries(entry.metadata).map(([key, val]) => (
                       <div key={key} className="flex gap-2">
                         <span className="capitalize shrink-0">{key.replace(/_/g, " ")}:</span>
@@ -585,8 +585,8 @@ function NotesTab({ projectId, initialNotes, onRefresh }: {
   }
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8">
-      <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Internal Notes</h3>
+    <div className="portal-card rounded-2xl p-6 md:p-8">
+      <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider mb-4">Internal Notes</h3>
 
       {/* New Note */}
       <div className="mb-6 space-y-2">
@@ -595,7 +595,7 @@ function NotesTab({ projectId, initialNotes, onRefresh }: {
           onChange={(e) => setContent(e.target.value)}
           placeholder="Write an internal note (Markdown supported)..."
           rows={4}
-          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white placeholder:text-muted focus:outline-none focus:border-gold/50 resize-none"
+          className="w-full bg-gray-50 border border-[#ECEFF5] rounded-xl p-3 text-sm text-[#101828] placeholder:text-[#667085] focus:outline-none focus:border-[#5B4CF0]/50 resize-none"
         />
         <div className="flex justify-end">
           <Button size="sm" disabled={!content.trim() || saving} onClick={handleCreate}>
@@ -606,18 +606,18 @@ function NotesTab({ projectId, initialNotes, onRefresh }: {
 
       {/* Notes List */}
       {notes.length === 0 ? (
-        <p className="text-sm text-muted">No internal notes yet.</p>
+        <p className="text-sm text-[#667085]">No internal notes yet.</p>
       ) : (
         <div className="space-y-4">
           {notes.map((note) => (
-            <div key={note.id} className="bg-white/5 rounded-xl p-4">
+            <div key={note.id} className="bg-gray-50 rounded-xl p-4">
               {editingId === note.id ? (
                 <div className="space-y-2">
                   <textarea
                     value={editContent}
                     onChange={(e) => setEditContent(e.target.value)}
                     rows={4}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-gold/50 resize-none"
+                    className="w-full bg-gray-50 border border-[#ECEFF5] rounded-xl p-3 text-sm text-[#101828] focus:outline-none focus:border-[#5B4CF0]/50 resize-none"
                   />
                   <div className="flex justify-end gap-2">
                     <Button size="sm" variant="secondary" onClick={() => setEditingId(null)}>
@@ -632,10 +632,10 @@ function NotesTab({ projectId, initialNotes, onRefresh }: {
                 <>
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
-                      <div className="prose prose-sm prose-invert max-w-none whitespace-pre-wrap text-sm text-white/80">
+                      <div className="prose prose-sm prose-invert max-w-none whitespace-pre-wrap text-sm text-[#667085]">
                         {note.content}
                       </div>
-                      <div className="flex items-center gap-3 mt-2 text-[10px] text-muted">
+                      <div className="flex items-center gap-3 mt-2 text-[10px] text-[#667085]">
                         {note.user && <span>by {note.user.full_name}</span>}
                         <span>{formatDate(note.created_at)}</span>
                         {note.edit_history && note.edit_history.length > 0 && (
@@ -649,13 +649,13 @@ function NotesTab({ projectId, initialNotes, onRefresh }: {
                           setEditingId(note.id);
                           setEditContent(note.content);
                         }}
-                        className="text-[10px] px-2 py-1 rounded bg-white/5 text-muted hover:text-white"
+                        className="text-[10px] px-2 py-1 rounded bg-gray-50 text-[#667085] hover:text-white"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(note.id)}
-                        className="text-[10px] px-2 py-1 rounded bg-white/5 text-red-400 hover:bg-red-500/10"
+                        className="text-[10px] px-2 py-1 rounded bg-gray-50 text-red-400 hover:bg-red-500/10"
                       >
                         Delete
                       </button>
@@ -676,41 +676,41 @@ function NotesTab({ projectId, initialNotes, onRefresh }: {
 function PaymentsTab({ payments }: { payments: WorkspacePaymentData[] }) {
   if (payments.length === 0) {
     return (
-      <div className="glass rounded-2xl p-6 md:p-8">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Payments</h3>
-        <p className="text-sm text-muted">No payments recorded yet.</p>
+      <div className="portal-card rounded-2xl p-6 md:p-8">
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider mb-4">Payments</h3>
+        <p className="text-sm text-[#667085]">No payments recorded yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8">
-      <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Payments</h3>
+    <div className="portal-card rounded-2xl p-6 md:p-8">
+      <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider mb-4">Payments</h3>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/10">
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Reference</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Gateway</th>
-              <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Amount</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Type</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Status</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Date</th>
+            <tr className="border-b border-[#ECEFF5]">
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Reference</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Gateway</th>
+              <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Amount</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Type</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Status</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Date</th>
             </tr>
           </thead>
           <tbody>
             {payments.map((p) => (
-              <tr key={p.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                <td className="px-4 py-3 text-sm text-white/80 font-mono">{p.reference}</td>
-                <td className="px-4 py-3 text-sm text-white/80 capitalize">{p.gateway}</td>
-                <td className="px-4 py-3 text-sm text-right text-white font-semibold">{formatCurrency(p.amount_ngn)}</td>
-                <td className="px-4 py-3 text-sm text-muted capitalize">{p.payment_type}</td>
+              <tr key={p.id} className="border-b border-[#ECEFF5] hover:bg-gray-50 transition-colors">
+                <td className="px-4 py-3 text-sm text-[#667085] font-mono">{p.reference}</td>
+                <td className="px-4 py-3 text-sm text-[#667085] capitalize">{p.gateway}</td>
+                <td className="px-4 py-3 text-sm text-right text-[#101828] font-semibold">{formatCurrency(p.amount_ngn)}</td>
+                <td className="px-4 py-3 text-sm text-[#667085] capitalize">{p.payment_type}</td>
                 <td className="px-4 py-3">
                   <Badge variant={p.status === "completed" || p.status === "success" ? "success" : "gold"}>
                     {p.status}
                   </Badge>
                 </td>
-                <td className="px-4 py-3 text-sm text-muted">{formatDate(p.paid_at || p.created_at)}</td>
+                <td className="px-4 py-3 text-sm text-[#667085]">{formatDate(p.paid_at || p.created_at)}</td>
               </tr>
             ))}
           </tbody>
@@ -725,42 +725,42 @@ function PaymentsTab({ payments }: { payments: WorkspacePaymentData[] }) {
 function InvoiceTab({ invoices, projectId }: { invoices: WorkspaceInvoiceData[]; projectId: string }) {
   if (invoices.length === 0) {
     return (
-      <div className="glass rounded-2xl p-6 md:p-8">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Invoice</h3>
-        <p className="text-sm text-muted">No invoices generated yet.</p>
+      <div className="portal-card rounded-2xl p-6 md:p-8">
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider mb-4">Invoice</h3>
+        <p className="text-sm text-[#667085]">No invoices generated yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8">
-      <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Invoice</h3>
+    <div className="portal-card rounded-2xl p-6 md:p-8">
+      <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider mb-4">Invoice</h3>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/10">
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Invoice #</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Status</th>
-              <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Total</th>
-              <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Paid</th>
-              <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Balance</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Date</th>
-              <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Action</th>
+            <tr className="border-b border-[#ECEFF5]">
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Invoice #</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Status</th>
+              <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Total</th>
+              <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Paid</th>
+              <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Balance</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Date</th>
+              <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
             {invoices.map((inv) => (
-              <tr key={inv.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                <td className="px-4 py-3 text-sm text-white/80 font-mono">{inv.invoice_number}</td>
+              <tr key={inv.id} className="border-b border-[#ECEFF5] hover:bg-gray-50 transition-colors">
+                <td className="px-4 py-3 text-sm text-[#667085] font-mono">{inv.invoice_number}</td>
                 <td className="px-4 py-3">
                   <Badge variant={inv.status === "paid" ? "success" : inv.status === "partially_paid" ? "gold" : "info"}>
                     {inv.status.replace(/_/g, " ")}
                   </Badge>
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-white font-semibold">{formatCurrency(inv.total_ngn)}</td>
+                <td className="px-4 py-3 text-sm text-right text-[#101828] font-semibold">{formatCurrency(inv.total_ngn)}</td>
                 <td className="px-4 py-3 text-sm text-right text-green-400">{formatCurrency(inv.amount_paid_ngn)}</td>
                 <td className="px-4 py-3 text-sm text-right text-red-400">{formatCurrency(inv.balance_ngn)}</td>
-                <td className="px-4 py-3 text-sm text-muted">{formatDate(inv.paid_at || inv.created_at)}</td>
+                <td className="px-4 py-3 text-sm text-[#667085]">{formatDate(inv.paid_at || inv.created_at)}</td>
                 <td className="px-4 py-3 text-right">
                   <Button
                     size="sm"
@@ -785,40 +785,40 @@ function InvoiceTab({ invoices, projectId }: { invoices: WorkspaceInvoiceData[];
 function ReceiptTab({ receipts, projectId }: { receipts: WorkspaceReceiptData[]; projectId: string }) {
   if (receipts.length === 0) {
     return (
-      <div className="glass rounded-2xl p-6 md:p-8">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Receipt</h3>
-        <p className="text-sm text-muted">No receipts generated yet.</p>
+      <div className="portal-card rounded-2xl p-6 md:p-8">
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider mb-4">Receipt</h3>
+        <p className="text-sm text-[#667085]">No receipts generated yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8">
-      <h3 className="text-sm font-semibold text-muted uppercase tracking-wider mb-4">Receipt</h3>
+    <div className="portal-card rounded-2xl p-6 md:p-8">
+      <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider mb-4">Receipt</h3>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-white/10">
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Receipt #</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Gateway</th>
-              <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Amount</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Currency</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Status</th>
-              <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Date</th>
-              <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-4 py-3">Action</th>
+            <tr className="border-b border-[#ECEFF5]">
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Receipt #</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Gateway</th>
+              <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Amount</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Currency</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Status</th>
+              <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Date</th>
+              <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-4 py-3">Action</th>
             </tr>
           </thead>
           <tbody>
             {receipts.map((r) => (
-              <tr key={r.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                <td className="px-4 py-3 text-sm text-white/80 font-mono">{r.receipt_number}</td>
-                <td className="px-4 py-3 text-sm text-white/80 capitalize">{r.payment_gateway}</td>
-                <td className="px-4 py-3 text-sm text-right text-white font-semibold">{formatCurrency(r.amount_ngn)}</td>
-                <td className="px-4 py-3 text-sm text-muted">{r.currency}</td>
+              <tr key={r.id} className="border-b border-[#ECEFF5] hover:bg-gray-50 transition-colors">
+                <td className="px-4 py-3 text-sm text-[#667085] font-mono">{r.receipt_number}</td>
+                <td className="px-4 py-3 text-sm text-[#667085] capitalize">{r.payment_gateway}</td>
+                <td className="px-4 py-3 text-sm text-right text-[#101828] font-semibold">{formatCurrency(r.amount_ngn)}</td>
+                <td className="px-4 py-3 text-sm text-[#667085]">{r.currency}</td>
                 <td className="px-4 py-3">
                   <Badge variant={r.status === "completed" ? "success" : "gold"}>{r.status}</Badge>
                 </td>
-                <td className="px-4 py-3 text-sm text-muted">{formatDate(r.created_at)}</td>
+                <td className="px-4 py-3 text-sm text-[#667085]">{formatDate(r.created_at)}</td>
                 <td className="px-4 py-3 text-right">
                   <Button
                     size="sm"
@@ -879,16 +879,16 @@ function SettingsTab({ project, onRefresh }: { project: AdminProjectDetailData; 
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="glass rounded-2xl p-6 md:p-8 space-y-6">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Project Settings</h3>
+      <div className="portal-card rounded-2xl p-6 md:p-8 space-y-6">
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">Project Settings</h3>
 
         <div className="space-y-4">
           <div>
-            <label className="text-xs text-muted block mb-1">Priority</label>
+            <label className="text-xs text-[#667085] block mb-1">Priority</label>
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-gold/50"
+              className="w-full bg-gray-50 border border-[#ECEFF5] rounded-xl px-3 py-2 text-sm text-[#101828] focus:outline-none focus:border-[#5B4CF0]/50"
             >
               <option value="low" className="bg-surface">Low</option>
               <option value="normal" className="bg-surface">Normal</option>
@@ -898,12 +898,12 @@ function SettingsTab({ project, onRefresh }: { project: AdminProjectDetailData; 
           </div>
 
           <div>
-            <label className="text-xs text-muted block mb-1">Admin Notes</label>
+            <label className="text-xs text-[#667085] block mb-1">Admin Notes</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={4}
-              className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white placeholder:text-muted focus:outline-none focus:border-gold/50 resize-none"
+              className="w-full bg-gray-50 border border-[#ECEFF5] rounded-xl p-3 text-sm text-[#101828] placeholder:text-[#667085] focus:outline-none focus:border-[#5B4CF0]/50 resize-none"
               placeholder="Internal admin notes..."
             />
           </div>
@@ -914,9 +914,9 @@ function SettingsTab({ project, onRefresh }: { project: AdminProjectDetailData; 
         </div>
       </div>
 
-      <div className="glass rounded-2xl p-6 md:p-8 space-y-6">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Project Status</h3>
-        <p className="text-xs text-muted">
+      <div className="portal-card rounded-2xl p-6 md:p-8 space-y-6">
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">Project Status</h3>
+        <p className="text-xs text-[#667085]">
           Current: <span className="text-white font-medium">{statusLabels[project.project_status] || project.project_status}</span>
         </p>
         <div className="grid grid-cols-2 gap-2">

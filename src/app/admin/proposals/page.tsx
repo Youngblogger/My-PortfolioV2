@@ -80,10 +80,10 @@ export default function AdminProposalsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <span className="section-label">PROPOSALS</span>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">
             Manage Proposals
           </h1>
-          <p className="text-muted text-sm mt-1">
+          <p className="text-[#667085] text-sm mt-1">
             Create, review and manage all project proposals.
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function AdminProposalsPage() {
       </div>
 
       {/* Status Filter Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-white/10 pb-4">
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-[#ECEFF5] pb-4">
         {statusFilters.map((filter) => (
           <button
             key={filter}
@@ -107,8 +107,8 @@ export default function AdminProposalsPage() {
             className={cn(
               "text-sm font-medium px-3 py-1.5 rounded-lg transition-all",
               activeFilter === filter
-                ? "text-gold bg-gold/10"
-                : "text-muted hover:text-white"
+                ? "text-[#5B4CF0] bg-[#5B4CF0]/10"
+                : "text-[#667085] hover:text-white"
             )}
           >
             {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -117,23 +117,23 @@ export default function AdminProposalsPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
         </div>
       ) : error ? (
-        <div className="glass rounded-2xl p-12 text-center">
+        <div className="portal-card rounded-2xl p-12 text-center">
           <div className="text-4xl mb-4">⚠️</div>
-          <h3 className="text-lg font-bold text-white mb-2">Failed to Load Proposals</h3>
-          <p className="text-muted text-sm mb-6">{error}</p>
+          <h3 className="text-lg font-bold text-[#101828] mb-2">Failed to Load Proposals</h3>
+          <p className="text-[#667085] text-sm mb-6">{error}</p>
           <Button onClick={() => setActiveFilter(activeFilter)}>Retry</Button>
         </div>
       ) : proposals.length === 0 ? (
-        <div className="glass rounded-2xl p-12 text-center">
+        <div className="portal-card rounded-2xl p-12 text-center">
           <div className="text-5xl mb-4">📄</div>
-          <h3 className="text-xl font-bold text-white mb-2">No proposals found</h3>
-          <p className="text-muted text-sm mb-6 max-w-md mx-auto">
+          <h3 className="text-xl font-bold text-[#101828] mb-2">No proposals found</h3>
+          <p className="text-[#667085] text-sm mb-6 max-w-md mx-auto">
             {activeFilter === "all"
               ? "Proposals will appear here once they are created from service orders."
               : `No proposals with status "${activeFilter}". Try a different filter.`}
@@ -147,19 +147,19 @@ export default function AdminProposalsPage() {
       ) : (
         <>
           {/* Table - Desktop */}
-          <div className="hidden md:block glass rounded-2xl overflow-hidden">
+          <div className="hidden md:block portal-card rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Proposal #</th>
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Service</th>
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Project</th>
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Status</th>
-                    <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Total</th>
-                    <th className="text-center text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Version</th>
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Date</th>
-                    <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Actions</th>
+                  <tr className="border-b border-[#ECEFF5]">
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Proposal #</th>
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Service</th>
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Project</th>
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Status</th>
+                    <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Total</th>
+                    <th className="text-center text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Version</th>
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Date</th>
+                    <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Actions</th>
                   </tr>
                 </thead>
                 <motion.tbody
@@ -171,33 +171,33 @@ export default function AdminProposalsPage() {
                     <motion.tr
                       key={proposal.id}
                       variants={rowVariants}
-                      className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                      className="border-b border-[#ECEFF5] hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <Link
                           href={`/proposals/${proposal.id}`}
-                          className="text-sm font-medium text-gold hover:text-gold-secondary transition-colors"
+                          className="text-sm font-medium text-[#5B4CF0] hover:text-[#5B4CF0]-secondary transition-colors"
                         >
                           {proposal.proposal_number}
                         </Link>
                       </td>
-                      <td className="px-6 py-4 text-sm text-white/80">{proposal.service}</td>
-                      <td className="px-6 py-4 text-sm text-white/80">{proposal.project}</td>
+                      <td className="px-6 py-4 text-sm text-[#667085]">{proposal.service}</td>
+                      <td className="px-6 py-4 text-sm text-[#667085]">{proposal.project}</td>
                       <td className="px-6 py-4">
                         <StatusBadge status={proposal.status} />
                       </td>
                       <td className="px-6 py-4 text-sm text-right font-semibold text-white">
                         {formatCurrency(proposal.total_ngn)}
                       </td>
-                      <td className="px-6 py-4 text-sm text-center text-muted">v{proposal.version}</td>
-                      <td className="px-6 py-4 text-sm text-muted whitespace-nowrap">
+                      <td className="px-6 py-4 text-sm text-center text-[#667085]">v{proposal.version}</td>
+                      <td className="px-6 py-4 text-sm text-[#667085] whitespace-nowrap">
                         {formatDate(proposal.created_at)}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <Link
                             href={`/proposals/${proposal.id}`}
-                            className="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-muted hover:text-white hover:border-gold/30 transition-all"
+                            className="text-xs px-3 py-1.5 rounded-lg border border-[#ECEFF5] text-[#667085] hover:text-white hover:border-[#5B4CF0]/30 transition-all"
                           >
                             View
                           </Link>
@@ -205,7 +205,7 @@ export default function AdminProposalsPage() {
                             value={proposal.status}
                             disabled={updatingId === proposal.id}
                             onChange={(e) => handleStatusChange(proposal.id, e.target.value)}
-                            className="text-xs px-2 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-gold/50 transition-all appearance-none cursor-pointer disabled:opacity-50"
+                            className="text-xs px-2 py-1.5 rounded-lg bg-gray-50 border border-[#ECEFF5] text-[#101828] focus:outline-none focus:border-[#5B4CF0]/50 transition-all appearance-none cursor-pointer disabled:opacity-50"
                           >
                             {statusFilters.filter((s) => s !== "all").map((s) => (
                               <option key={s} value={s} className="bg-surface text-white">
@@ -233,35 +233,35 @@ export default function AdminProposalsPage() {
               <motion.div
                 key={proposal.id}
                 variants={rowVariants}
-                className="glass rounded-2xl p-5 space-y-3"
+                className="portal-card rounded-2xl p-5 space-y-3"
               >
                 <div className="flex items-start justify-between">
                   <Link
                     href={`/proposals/${proposal.id}`}
-                    className="text-sm font-bold text-gold hover:text-gold-secondary transition-colors"
+                    className="text-sm font-bold text-[#5B4CF0] hover:text-[#5B4CF0]-secondary transition-colors"
                   >
                     {proposal.proposal_number}
                   </Link>
                   <StatusBadge status={proposal.status} />
                 </div>
                 <div>
-                  <p className="text-sm text-white/80">
+                  <p className="text-sm text-[#667085]">
                     {proposal.service} &mdash; {proposal.project}
                   </p>
                 </div>
-                <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                <div className="flex items-center justify-between pt-2 border-t border-[#ECEFF5]">
                   <div>
-                    <p className="text-lg font-bold text-gold">
+                    <p className="text-lg font-bold text-[#5B4CF0]">
                       {formatCurrency(proposal.total_ngn)}
                     </p>
-                    <p className="text-xs text-muted">
+                    <p className="text-xs text-[#667085]">
                       v{proposal.version} &middot; {formatDate(proposal.created_at)}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/proposals/${proposal.id}`}
-                      className="text-xs px-3 py-1.5 rounded-lg border border-white/10 text-muted hover:text-white hover:border-gold/30 transition-all"
+                      className="text-xs px-3 py-1.5 rounded-lg border border-[#ECEFF5] text-[#667085] hover:text-white hover:border-[#5B4CF0]/30 transition-all"
                     >
                       View
                     </Link>
@@ -269,7 +269,7 @@ export default function AdminProposalsPage() {
                       value={proposal.status}
                       disabled={updatingId === proposal.id}
                       onChange={(e) => handleStatusChange(proposal.id, e.target.value)}
-                      className="text-xs px-2 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-gold/50 transition-all appearance-none cursor-pointer disabled:opacity-50"
+                      className="text-xs px-2 py-1.5 rounded-lg bg-gray-50 border border-[#ECEFF5] text-[#101828] focus:outline-none focus:border-[#5B4CF0]/50 transition-all appearance-none cursor-pointer disabled:opacity-50"
                     >
                       {statusFilters.filter((s) => s !== "all").map((s) => (
                         <option key={s} value={s} className="bg-surface text-white">

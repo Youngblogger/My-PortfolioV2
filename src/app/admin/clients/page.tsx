@@ -154,14 +154,14 @@ export default function AdminClientsPage() {
       header: "Name",
       render: (client) => (
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gold/10 flex items-center justify-center">
-            <span className="text-xs font-bold text-gold">
+          <div className="w-8 h-8 rounded-full bg-[#5B4CF0]/10 flex items-center justify-center">
+            <span className="text-xs font-bold text-[#5B4CF0]">
               {(client.full_name || client.email).charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
             <p className="text-sm font-medium text-white">{client.full_name || "Unnamed"}</p>
-            <p className="text-xs text-muted">{client.email}</p>
+            <p className="text-xs text-[#667085]">{client.email}</p>
           </div>
         </div>
       ),
@@ -170,13 +170,13 @@ export default function AdminClientsPage() {
     {
       key: "company",
       header: "Company",
-      render: (client) => <span className="text-sm text-muted">{client.company || "—"}</span>,
+      render: (client) => <span className="text-sm text-[#667085]">{client.company || "—"}</span>,
       hideOnMobile: true,
     },
     {
       key: "phone",
       header: "Phone",
-      render: (client) => <span className="text-sm text-muted">{client.phone || "—"}</span>,
+      render: (client) => <span className="text-sm text-[#667085]">{client.phone || "—"}</span>,
       hideOnMobile: true,
     },
     {
@@ -199,7 +199,7 @@ export default function AdminClientsPage() {
     {
       key: "joined_at",
       header: "Joined",
-      render: (client) => <span className="text-sm text-muted whitespace-nowrap">{formatDate(client.joined_at)}</span>,
+      render: (client) => <span className="text-sm text-[#667085] whitespace-nowrap">{formatDate(client.joined_at)}</span>,
       hideOnMobile: true,
     },
   ];
@@ -235,15 +235,15 @@ export default function AdminClientsPage() {
         exit={{ height: 0, opacity: 0 }}
         className="overflow-hidden"
       >
-        <div className="px-6 py-4 bg-white/[0.02] border-t border-white/5">
+        <div className="px-6 py-4 bg-gray-50/50 border-t border-[#ECEFF5]">
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <h4 className="text-sm font-semibold text-white mb-3">Project History</h4>
+              <h4 className="text-sm font-semibold text-[#101828] mb-3">Project History</h4>
               {client.projects && client.projects.length > 0 ? (
                 <div className="space-y-2">
                   {client.projects.map((p) => (
                     <div key={p.id} className="flex items-center justify-between text-sm">
-                      <span className="text-muted">{p.title}</span>
+                      <span className="text-[#667085]">{p.title}</span>
                       <Badge variant={p.status === "completed" ? "success" : "info"}>
                         {p.status}
                       </Badge>
@@ -251,16 +251,16 @@ export default function AdminClientsPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted">No projects yet.</p>
+                <p className="text-sm text-[#667085]">No projects yet.</p>
               )}
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-white mb-3">Payment History</h4>
+              <h4 className="text-sm font-semibold text-[#101828] mb-3">Payment History</h4>
               {client.payments && client.payments.length > 0 ? (
                 <div className="space-y-2">
                   {client.payments.map((p) => (
                     <div key={p.id} className="flex items-center justify-between text-sm">
-                      <span className="text-muted">{formatDate(p.created_at)}</span>
+                      <span className="text-[#667085]">{formatDate(p.created_at)}</span>
                       <Badge variant={p.status === "paid" ? "success" : "error"}>
                         {p.status}
                       </Badge>
@@ -268,7 +268,7 @@ export default function AdminClientsPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-muted">No payments yet.</p>
+                <p className="text-sm text-[#667085]">No payments yet.</p>
               )}
             </div>
           </div>
@@ -337,9 +337,9 @@ export default function AdminClientsPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-12 bg-white/5 rounded-xl animate-pulse" />
+            <div key={i} className="h-12 bg-gray-50 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : error ? (
@@ -351,20 +351,20 @@ export default function AdminClientsPage() {
           description="Clients will appear here once they register or place orders."
         />
       ) : (
-        <div className="glass rounded-2xl overflow-hidden">
+        <div className="portal-card rounded-2xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/10">
+                <tr className="border-b border-[#ECEFF5]">
                   {columns.map((col) => (
                     <th
                       key={col.key}
-                      className={`text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4 ${col.hideOnMobile ? "hidden md:table-cell" : ""}`}
+                      className={`text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4 ${col.hideOnMobile ? "hidden md:table-cell" : ""}`}
                     >
                       {col.header}
                     </th>
                   ))}
-                  <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">
+                  <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">
                     Actions
                   </th>
                 </tr>
@@ -373,11 +373,11 @@ export default function AdminClientsPage() {
                 {clients.map((client) => (
                   <motion.tbody
                     key={client.id}
-                    className="border-b border-white/5 last:border-b-0"
+                    className="border-b border-[#ECEFF5] last:border-b-0"
                   >
                     <motion.tr
                       onClick={() => toggleExpand(client.id)}
-                      className="hover:bg-white/[0.02] transition-colors cursor-pointer"
+                      className="hover:bg-gray-50/50 transition-colors cursor-pointer"
                     >
                       {columns.map((col) => (
                         <td
@@ -407,8 +407,8 @@ export default function AdminClientsPage() {
       )}
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
-          <p className="text-sm text-muted">
+        <div className="flex items-center justify-between mt-6 pt-6 border-t border-[#ECEFF5]">
+          <p className="text-sm text-[#667085]">
             Page {page} of {totalPages} ({total} total)
           </p>
           <div className="flex gap-2">
@@ -441,13 +441,13 @@ export default function AdminClientsPage() {
         <div className="space-y-4">
           <Input label="Title" value={notifyTitle} onChange={(e) => setNotifyTitle(e.target.value)} placeholder="Notification title..." />
           <div className="space-y-1.5">
-            <label className="block text-sm text-white/80 font-medium">Message</label>
+            <label className="block text-sm text-[#667085] font-medium">Message</label>
             <textarea
               value={notifyMessage}
               onChange={(e) => setNotifyMessage(e.target.value)}
               rows={4}
               placeholder="Write your notification message..."
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
         </div>

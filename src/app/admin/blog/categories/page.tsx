@@ -127,12 +127,12 @@ export default function BlogCategoriesPage() {
     {
       key: "slug",
       header: "Slug",
-      render: (cat) => <span className="text-sm text-muted">{cat.slug}</span>,
+      render: (cat) => <span className="text-sm text-[#667085]">{cat.slug}</span>,
     },
     {
       key: "description",
       header: "Description",
-      render: (cat) => <span className="text-sm text-muted">{cat.description || "—"}</span>,
+      render: (cat) => <span className="text-sm text-[#667085]">{cat.description || "—"}</span>,
     },
     {
       key: "posts_count",
@@ -172,9 +172,9 @@ export default function BlogCategoriesPage() {
       />
 
       {loading ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-12 bg-white/5 rounded-xl animate-pulse" />
+            <div key={i} className="h-12 bg-gray-50 rounded-xl animate-pulse" />
           ))}
         </div>
       ) : error ? (
@@ -212,12 +212,12 @@ export default function BlogCategoriesPage() {
             <Input label="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} required />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm text-white/80 font-medium">Description</label>
+            <label className="block text-sm text-[#667085] font-medium">Description</label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
         </form>

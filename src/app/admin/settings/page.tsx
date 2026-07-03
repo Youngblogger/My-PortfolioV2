@@ -179,12 +179,12 @@ export default function SettingsPage() {
     if (TEXTAREA_KEYS.has(key)) {
       return (
         <div>
-          <label className="block text-sm text-white/80 font-medium mb-1.5">{label}</label>
+          <label className="block text-sm text-[#667085] font-medium mb-1.5">{label}</label>
           <textarea
             value={String(value || "")}
             onChange={(e) => updateField(key, e.target.value)}
             rows={3}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
           />
         </div>
       );
@@ -202,7 +202,7 @@ export default function SettingsPage() {
             type="color"
             value={String(value || "#000000")}
             onChange={(e) => updateField(key, e.target.value)}
-            className="w-10 h-10 rounded-lg border border-white/10 bg-transparent cursor-pointer shrink-0 mt-6"
+            className="w-10 h-10 rounded-lg border border-[#ECEFF5] bg-transparent cursor-pointer shrink-0 mt-6"
           />
         </div>
       );
@@ -239,7 +239,7 @@ export default function SettingsPage() {
         <Skeleton className="h-8 w-48" />
         <Skeleton className="h-5 w-64" />
         <Skeleton className="h-10 w-full" />
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -279,7 +279,7 @@ export default function SettingsPage() {
         <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
       </motion.div>
 
-      <motion.div key={activeTab} variants={itemVariants} className="glass rounded-2xl p-6">
+      <motion.div key={activeTab} variants={itemVariants} className="portal-card rounded-2xl p-6">
         <div className="space-y-5">
           <h3 className="text-lg font-semibold text-white">{currentGroup.label}</h3>
           {currentGroup.keys.map((key) => (
@@ -287,7 +287,7 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        <div className="mt-8 pt-6 border-t border-white/10 flex justify-end">
+        <div className="mt-8 pt-6 border-t border-[#ECEFF5] flex justify-end">
           <Button onClick={handleSave} loading={saving} size="lg">
             Save All Settings
           </Button>

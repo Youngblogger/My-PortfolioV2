@@ -225,22 +225,22 @@ export default function AdminConversationPage() {
   return (
     <div className="p-4 md:p-6 max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-4 md:mb-6">
-        <button onClick={() => router.push("/admin/messages")} className="text-white/40 hover:text-white transition-colors">
+        <button onClick={() => router.push("/admin/messages")} className="text-[#98A2B3] hover:text-white transition-colors">
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         <div>
           <h1 className="text-lg font-bold text-white">Chat with Client</h1>
-          <p className="text-xs text-white/40">{messages.length} message{messages.length !== 1 ? "s" : ""}</p>
+          <p className="text-xs text-[#98A2B3]">{messages.length} message{messages.length !== 1 ? "s" : ""}</p>
         </div>
       </div>
 
-      <div className="bg-white/5 rounded-2xl flex flex-col min-h-[65vh] max-h-[65vh]">
+      <div className="bg-gray-50 rounded-2xl flex flex-col min-h-[65vh] max-h-[65vh]">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <svg className="animate-spin h-6 w-6 text-gold" viewBox="0 0 24 24">
+              <svg className="animate-spin h-6 w-6 text-[#5B4CF0]" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
@@ -249,7 +249,7 @@ export default function AdminConversationPage() {
             <div className="flex items-center justify-center h-full">
               <div className="text-center py-12">
                 <div className="text-4xl mb-4">💬</div>
-                <p className="text-white/50 text-sm">No messages yet. Reply to start the conversation.</p>
+                <p className="text-[#98A2B3] text-sm">No messages yet. Reply to start the conversation.</p>
               </div>
             </div>
           ) : (
@@ -263,7 +263,7 @@ export default function AdminConversationPage() {
                   className={`flex items-start gap-3 ${isAdmin ? "flex-row-reverse" : ""}`}
                 >
                   <div className={`w-8 h-8 rounded-full shrink-0 flex items-center justify-center text-xs font-bold ${
-                    isAdmin ? "bg-gold/20 text-gold" : "bg-blue-500/20 text-blue-400"
+                    isAdmin ? "bg-[#5B4CF0]/20 text-[#5B4CF0]" : "bg-blue-500/20 text-blue-400"
                   }`}>
                     {displayName.charAt(0).toUpperCase()}
                   </div>
@@ -272,35 +272,35 @@ export default function AdminConversationPage() {
                       status === "failed"
                         ? "bg-red-500/10 border border-red-500/20"
                         : isAdmin
-                          ? "bg-gold/10 border border-gold/10"
+                          ? "bg-[#5B4CF0]/10 border border-[#5B4CF0]/10"
                           : "bg-blue-500/10 border border-blue-500/10"
                     }`}>
-                      <p className="text-xs font-medium text-white/50 mb-1">
+                      <p className="text-xs font-medium text-[#98A2B3] mb-1">
                         {displayName}
                       </p>
                       {msg.message && (
-                        <p className="text-sm text-white whitespace-pre-wrap break-words">{msg.message}</p>
+                        <p className="text-sm text-[#101828] whitespace-pre-wrap break-words">{msg.message}</p>
                       )}
                       {msg.attachments && msg.attachments.length > 0 && (
-                        <div className={`mt-2 space-y-1.5 ${msg.message ? "border-t border-white/5 pt-2" : ""}`}>
+                        <div className={`mt-2 space-y-1.5 ${msg.message ? "border-t border-[#ECEFF5] pt-2" : ""}`}>
                           {msg.attachments.map((att: any, i: number) => (
-                            <div key={i} className="flex items-center gap-2 text-xs bg-white/5 rounded-lg px-3 py-2">
+                            <div key={i} className="flex items-center gap-2 text-xs bg-gray-50 rounded-lg px-3 py-2">
                               <span>{getFileIcon(att.type || "")}</span>
-                              <span className="text-white/70 truncate flex-1">{att.name || "Attachment"}</span>
-                              {att.size && <span className="text-white/30 shrink-0">{formatFileSize(att.size)}</span>}
+                              <span className="text-[#667085] truncate flex-1">{att.name || "Attachment"}</span>
+                              {att.size && <span className="text-[#98A2B3] shrink-0">{formatFileSize(att.size)}</span>}
                             </div>
                           ))}
                         </div>
                       )}
                     </div>
                     <div className={`flex items-center gap-1.5 mt-1 px-1 ${isAdmin ? "flex-row-reverse" : ""}`}>
-                      <p className="text-[10px] text-white/30">{timeAgo(msg.created_at)}</p>
+                      <p className="text-[10px] text-[#98A2B3]">{timeAgo(msg.created_at)}</p>
                       {isAdmin && (
                         <span
                           className={`inline-flex items-center text-xs leading-none ${
-                            status === "sending" ? "text-white/20" :
+                            status === "sending" ? "text-[#D0D5DD]" :
                             status === "failed" ? "text-red-400" :
-                            msg.is_read && msg.read_at ? "text-blue-400" : "text-white/40"
+                            msg.is_read && msg.read_at ? "text-blue-400" : "text-[#98A2B3]"
                           }`}
                           title={
                             status === "sending" ? "Sending..." :
@@ -347,13 +347,13 @@ export default function AdminConversationPage() {
         </div>
 
         {/* Input */}
-        <div className="border-t border-white/5 p-4">
+        <div className="border-t border-[#ECEFF5] p-4">
           {files.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
               {files.map((file, i) => (
-                <div key={i} className="flex items-center gap-1.5 bg-white/5 rounded-lg px-2.5 py-1.5 text-xs">
+                <div key={i} className="flex items-center gap-1.5 bg-gray-50 rounded-lg px-2.5 py-1.5 text-xs">
                   <span>{getFileIcon(file.type)}</span>
-                  <span className="text-white/70 max-w-[120px] truncate">{file.name}</span>
+                  <span className="text-[#667085] max-w-[120px] truncate">{file.name}</span>
                   <button onClick={() => setFiles((p) => p.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-300 ml-1">
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -364,7 +364,7 @@ export default function AdminConversationPage() {
             </div>
           )}
           <div className="flex items-end gap-3">
-            <button onClick={() => fileInputRef.current?.click()} className="shrink-0 w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all" title="Attach files">
+            <button onClick={() => fileInputRef.current?.click()} className="shrink-0 w-10 h-10 rounded-xl bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-[#98A2B3] hover:text-white transition-all" title="Attach files">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
               </svg>
@@ -380,7 +380,7 @@ export default function AdminConversationPage() {
               onKeyDown={handleKeyDown}
               placeholder="Reply as admin..."
               rows={1}
-              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold/50 resize-none min-h-[42px] max-h-[120px]"
+              className="flex-1 bg-gray-50 border border-[#ECEFF5] rounded-xl px-4 py-2.5 text-sm text-[#101828] placeholder-white/30 focus:outline-none focus:border-[#5B4CF0]/50 resize-none min-h-[42px] max-h-[120px]"
               onInput={(e) => {
                 const el = e.currentTarget;
                 el.style.height = "auto";
@@ -390,7 +390,7 @@ export default function AdminConversationPage() {
             <button
               onClick={handleSend}
               disabled={sending || (!text.trim() && files.length === 0)}
-              className="shrink-0 px-5 h-10 rounded-xl bg-gold-gradient text-background font-semibold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300 disabled:opacity-40 disabled:scale-100 flex items-center gap-2"
+              className="shrink-0 px-5 h-10 rounded-xl portal-primary-bg text-[#101828] font-semibold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300 disabled:opacity-40 disabled:scale-100 flex items-center gap-2"
             >
               {sending ? (
                 <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">

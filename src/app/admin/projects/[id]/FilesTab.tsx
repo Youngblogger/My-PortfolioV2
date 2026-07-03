@@ -23,8 +23,8 @@ const categoryColors: Record<string, string> = {
   design: "bg-purple-500/10 text-purple-400 border-purple-500/20",
   development: "bg-green-500/10 text-green-400 border-green-500/20",
   testing: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-  final_deliverables: "bg-gold/10 text-gold border-gold/20",
-  other: "bg-white/10 text-muted border-white/10",
+  final_deliverables: "bg-[#5B4CF0]/10 text-[#5B4CF0] border-[#5B4CF0]/20",
+  other: "bg-gray-100 text-[#667085] border-[#ECEFF5]",
 };
 
 export default function FilesTab({ projectId }: { projectId: string }) {
@@ -96,14 +96,14 @@ export default function FilesTab({ projectId }: { projectId: string }) {
   };
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8">
+    <div className="portal-card rounded-2xl p-6 md:p-8">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Project Files</h3>
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">Project Files</h3>
         <div className="flex items-center gap-3">
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as "newest" | "oldest")}
-            className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-gold/50"
+            className="bg-gray-50 border border-[#ECEFF5] rounded-lg px-2 py-1 text-xs text-[#101828] focus:outline-none focus:border-[#5B4CF0]/50"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
@@ -129,8 +129,8 @@ export default function FilesTab({ projectId }: { projectId: string }) {
             className={cn(
               "text-xs px-3 py-1.5 rounded-full border transition-all",
               category === cat.value
-                ? "bg-gold/10 text-gold border-gold/30"
-                : "bg-white/5 text-muted border-white/10 hover:text-white"
+                ? "bg-[#5B4CF0]/10 text-[#5B4CF0] border-[#5B4CF0]/30"
+                : "bg-gray-50 text-[#667085] border-[#ECEFF5] hover:text-white"
             )}
           >
             {cat.label}
@@ -157,14 +157,14 @@ export default function FilesTab({ projectId }: { projectId: string }) {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, x: -8 }}
-                className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
+                className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors group"
               >
-                <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-lg bg-[#5B4CF0]/10 flex items-center justify-center shrink-0">
                   <FileIcon type={file.type || ""} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{file.name}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted mt-0.5">
+                  <p className="text-sm font-medium text-[#101828] truncate">{file.name}</p>
+                  <div className="flex items-center gap-3 text-xs text-[#667085] mt-0.5">
                     <span className={cn("px-1.5 py-0.5 rounded text-[10px] border", categoryColors[file.category] || categoryColors.other)}>
                       {file.category.replace(/_/g, " ")}
                     </span>
@@ -176,7 +176,7 @@ export default function FilesTab({ projectId }: { projectId: string }) {
                 <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
                     onClick={() => handleDownload(file)}
-                    className="text-xs px-2 py-1 rounded bg-white/5 text-muted hover:text-white"
+                    className="text-xs px-2 py-1 rounded bg-gray-50 text-[#667085] hover:text-white"
                   >
                     Download
                   </button>
@@ -200,8 +200,8 @@ function EmptyFiles() {
   return (
     <div className="text-center py-12">
       <div className="text-4xl mb-3 opacity-30">📁</div>
-      <p className="text-sm text-muted">No files uploaded yet.</p>
-      <p className="text-xs text-muted/50 mt-1">Upload project files to share with the client.</p>
+      <p className="text-sm text-[#667085]">No files uploaded yet.</p>
+      <p className="text-xs text-[#667085]/50 mt-1">Upload project files to share with the client.</p>
     </div>
   );
 }

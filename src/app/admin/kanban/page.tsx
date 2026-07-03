@@ -59,32 +59,32 @@ function KanbanCard({
       <div
         draggable
         onDragStart={handleDragStart}
-        className="glass rounded-xl p-4 cursor-grab active:cursor-grabbing hover:border-gold/20 transition-all space-y-2.5 select-none"
+        className="portal-card rounded-xl p-4 cursor-grab active:cursor-grabbing hover:border-[#5B4CF0]/20 transition-all space-y-2.5 select-none"
       >
         <div className="flex items-start justify-between gap-2">
-          <span className="text-xs font-bold text-gold whitespace-nowrap">
+          <span className="text-xs font-bold text-[#5B4CF0] whitespace-nowrap">
             {order.order_number}
           </span>
           <Badge variant="info" className="text-[10px] px-1.5 py-0">
             {order.payment_status}
           </Badge>
         </div>
-        <p className="text-sm font-semibold text-white leading-snug">
+        <p className="text-sm font-semibold text-[#101828] leading-snug">
           {order.project_name || order.projectType?.title || "Untitled Project"}
         </p>
-        <p className="text-xs text-muted">
+        <p className="text-xs text-[#667085]">
           {order.user?.profile?.full_name || "Unknown client"}
         </p>
-        <div className="flex items-center justify-between pt-1 border-t border-white/5">
-          <p className="text-xs text-white/70">
+        <div className="flex items-center justify-between pt-1 border-t border-[#ECEFF5]">
+          <p className="text-xs text-[#667085]">
             {order.package?.name || order.service?.title || "—"}
           </p>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold text-gold">
+          <span className="font-semibold text-[#5B4CF0]">
             {formatCurrency(order.total_ngn)}
           </span>
-          <span className="text-muted">
+          <span className="text-[#667085]">
             {formatDateShort(order.created_at)}
           </span>
         </div>
@@ -210,16 +210,16 @@ export default function KanbanPage() {
       <div>
         <div className="mb-8">
           <span className="section-label">KANBAN</span>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">
             Project Board
           </h1>
-          <p className="text-muted text-sm mt-1">
+          <p className="text-[#667085] text-sm mt-1">
             Drag and drop orders to update their status.
           </p>
         </div>
         <div className="flex gap-4 overflow-x-auto pb-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="min-w-[280px] w-[280px] shrink-0 glass rounded-2xl p-4 space-y-4">
+            <div key={i} className="min-w-[280px] w-[280px] shrink-0 portal-card rounded-2xl p-4 space-y-4">
               <Skeleton className="h-6 w-24" />
               {Array.from({ length: 3 }).map((_, j) => (
                 <Skeleton key={j} className="h-32 w-full" />
@@ -233,10 +233,10 @@ export default function KanbanPage() {
 
   if (error) {
     return (
-      <div className="glass rounded-2xl p-12 text-center">
+      <div className="portal-card rounded-2xl p-12 text-center">
         <div className="text-4xl mb-4">⚠️</div>
-        <h3 className="text-lg font-bold text-white mb-2">Failed to Load Orders</h3>
-        <p className="text-muted text-sm">{error}</p>
+        <h3 className="text-lg font-bold text-[#101828] mb-2">Failed to Load Orders</h3>
+        <p className="text-[#667085] text-sm">{error}</p>
       </div>
     );
   }
@@ -245,10 +245,10 @@ export default function KanbanPage() {
     <div>
       <div className="mb-8">
         <span className="section-label">KANBAN</span>
-        <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">
           Project Board
         </h1>
-        <p className="text-muted text-sm mt-1">
+        <p className="text-[#667085] text-sm mt-1">
           Drag and drop orders to update their status.
         </p>
       </div>
@@ -264,13 +264,13 @@ export default function KanbanPage() {
               initial="hidden"
               animate="visible"
               className={cn(
-                "min-w-[280px] w-[280px] shrink-0 glass rounded-2xl flex flex-col",
+                "min-w-[280px] w-[280px] shrink-0 portal-card rounded-2xl flex flex-col",
                 draggingId && "min-h-[400px]"
               )}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, column.key)}
             >
-              <div className="flex items-center justify-between p-4 border-b border-white/10">
+              <div className="flex items-center justify-between p-4 border-b border-[#ECEFF5]">
                 <h3 className="text-sm font-semibold text-white">{column.label}</h3>
                 <Badge variant="gold" className="text-[11px] px-2 py-0.5">
                   {columnOrders.length}
@@ -287,7 +287,7 @@ export default function KanbanPage() {
                   ))}
                 </AnimatePresence>
                 {columnOrders.length === 0 && (
-                  <div className="flex items-center justify-center h-24 text-xs text-muted/50 text-center">
+                  <div className="flex items-center justify-center h-24 text-xs text-[#667085]/50 text-center">
                     Drop orders here
                   </div>
                 )}

@@ -118,16 +118,16 @@ export default function AdminDiscoveryCallsPage() {
     <div>
       <div className="mb-8">
         <span className="section-label">DISCOVERY CALLS</span>
-        <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">
+        <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">
           Discovery Call Management
         </h1>
-        <p className="text-muted text-sm mt-1">
+        <p className="text-[#667085] text-sm mt-1">
           Review, approve, and manage all discovery call requests.
         </p>
       </div>
 
       {/* Status Filter Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-white/10 pb-4">
+      <div className="flex flex-wrap gap-2 mb-6 border-b border-[#ECEFF5] pb-4">
         {statusFilters.map((filter) => (
           <button
             key={filter}
@@ -135,8 +135,8 @@ export default function AdminDiscoveryCallsPage() {
             className={cn(
               "text-sm font-medium px-3 py-1.5 rounded-lg transition-all",
               activeFilter === filter
-                ? "text-gold bg-gold/10"
-                : "text-muted hover:text-white"
+                ? "text-[#5B4CF0] bg-[#5B4CF0]/10"
+                : "text-[#667085] hover:text-white"
             )}
           >
             {filter.charAt(0).toUpperCase() + filter.slice(1)}
@@ -152,7 +152,7 @@ export default function AdminDiscoveryCallsPage() {
       {loading ? (
         <div className="space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="glass rounded-2xl p-6 space-y-4">
+            <div key={i} className="portal-card rounded-2xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <Skeleton className="h-6 w-48" />
                 <Skeleton className="h-6 w-24 rounded-full" />
@@ -194,15 +194,15 @@ export default function AdminDiscoveryCallsPage() {
             <motion.div
               key={call.id}
               variants={rowVariants}
-              className="glass rounded-2xl p-6"
+              className="portal-card rounded-2xl p-6"
             >
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div className="flex-1 min-w-0 space-y-2">
                   <div className="flex items-center gap-3 flex-wrap">
                     <h3 className="text-white font-semibold">{call.client}</h3>
-                    <span className="text-xs text-muted">{call.email}</span>
+                    <span className="text-xs text-[#667085]">{call.email}</span>
                   </div>
-                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted">
+                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-[#667085]">
                     <span>
                       {formatDate(call.preferred_date)} at {call.preferred_time}
                     </span>
@@ -212,16 +212,16 @@ export default function AdminDiscoveryCallsPage() {
                         href={call.meeting_link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gold hover:underline"
+                        className="text-[#5B4CF0] hover:underline"
                       >
                         Meeting Link
                       </a>
                     )}
                   </div>
                   {call.project_summary && (
-                    <p className="text-sm text-white/70 line-clamp-2">{call.project_summary}</p>
+                    <p className="text-sm text-[#667085] line-clamp-2">{call.project_summary}</p>
                   )}
-                  <div className="flex items-center gap-3 text-xs text-muted">
+                  <div className="flex items-center gap-3 text-xs text-[#667085]">
                     <span>Created: {formatDate(call.created_at)}</span>
                     <Badge variant={statusVariant[call.status] || "info"}>
                       {call.status.charAt(0).toUpperCase() + call.status.slice(1)}
@@ -272,14 +272,14 @@ export default function AdminDiscoveryCallsPage() {
                     </>
                   )}
                   {(call.status === "completed" || call.status === "cancelled") && (
-                    <span className="text-xs text-muted italic">No further actions</span>
+                    <span className="text-xs text-[#667085] italic">No further actions</span>
                   )}
                 </div>
               </div>
 
               {/* Meeting Link Input */}
               {call.status !== "cancelled" && (
-                <div className="mt-4 pt-4 border-t border-white/5">
+                <div className="mt-4 pt-4 border-t border-[#ECEFF5]">
                   <div className="flex items-end gap-3">
                     <div className="flex-1">
                       <Input
@@ -314,7 +314,7 @@ export default function AdminDiscoveryCallsPage() {
                       return next;
                     })
                   }
-                  className="flex items-center gap-2 text-sm text-muted hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-sm text-[#667085] hover:text-white transition-colors"
                 >
                   <svg
                     className={cn("w-4 h-4 transition-transform", expandedNotes.has(call.id) && "rotate-90")}
@@ -336,7 +336,7 @@ export default function AdminDiscoveryCallsPage() {
                           setAdminNotes((p) => ({ ...p, [call.id]: e.target.value }))
                         }
                         rows={3}
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none text-sm"
+                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none text-sm"
                       />
                     </div>
                     <Button

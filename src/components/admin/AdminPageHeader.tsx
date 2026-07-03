@@ -20,7 +20,7 @@ export function AdminPageHeader({ title, description, actions, breadcrumbs, clas
   return (
     <div className={cn("mb-8", className)}>
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="flex items-center gap-2 text-sm text-muted mb-2">
+        <nav className="flex items-center gap-2 text-sm text-[#667085] mb-2">
           {breadcrumbs.map((crumb, i) => (
             <span key={i} className="flex items-center gap-2">
               {i > 0 && (
@@ -29,11 +29,11 @@ export function AdminPageHeader({ title, description, actions, breadcrumbs, clas
                 </svg>
               )}
               {crumb.href ? (
-                <Link href={crumb.href} className="hover:text-white transition-colors">
+                <Link href={crumb.href} className="hover:text-[#5B4CF0] transition-colors">
                   {crumb.label}
                 </Link>
               ) : (
-                <span className="text-white/60">{crumb.label}</span>
+                <span className="text-[#667085]">{crumb.label}</span>
               )}
             </span>
           ))}
@@ -41,9 +41,9 @@ export function AdminPageHeader({ title, description, actions, breadcrumbs, clas
       )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl md:text-3xl font-bold text-white">{title}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828]">{title}</h1>
           {description && (
-            <p className="text-muted text-sm">{description}</p>
+            <p className="text-[#667085] text-sm">{description}</p>
           )}
         </div>
         {actions && (

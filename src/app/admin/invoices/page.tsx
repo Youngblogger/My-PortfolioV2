@@ -109,20 +109,20 @@ export default function AdminInvoicesPage() {
       render: (inv) => (
         <div>
           <p className="text-sm text-white">{inv.client_name || "—"}</p>
-          <p className="text-xs text-muted">{inv.client_email}</p>
+          <p className="text-xs text-[#667085]">{inv.client_email}</p>
         </div>
       ),
     },
     {
       key: "service",
       header: "Service",
-      render: (inv) => <span className="text-sm text-muted">{inv.service || "—"}</span>,
+      render: (inv) => <span className="text-sm text-[#667085]">{inv.service || "—"}</span>,
       hideOnMobile: true,
     },
     {
       key: "amount",
       header: "Amount",
-      render: (inv) => <span className="text-sm font-semibold text-white whitespace-nowrap">{formatCurrency(inv.amount_ngn || inv.amount)}</span>,
+      render: (inv) => <span className="text-sm font-semibold text-[#101828] whitespace-nowrap">{formatCurrency(inv.amount_ngn || inv.amount)}</span>,
     },
     {
       key: "status",
@@ -137,7 +137,7 @@ export default function AdminInvoicesPage() {
       key: "due_date",
       header: "Due Date",
       render: (inv) => (
-        <span className="text-sm text-muted whitespace-nowrap">
+        <span className="text-sm text-[#667085] whitespace-nowrap">
           {inv.due_date ? formatDate(inv.due_date) : "—"}
         </span>
       ),
@@ -240,52 +240,52 @@ export default function AdminInvoicesPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-muted mb-1">Invoice Number</p>
+                <p className="text-xs text-[#667085] mb-1">Invoice Number</p>
                 <p className="text-sm font-mono font-medium text-white">{selectedInvoice.invoice_number}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Status</p>
+                <p className="text-xs text-[#667085] mb-1">Status</p>
                 <Badge variant={statusVariant[selectedInvoice.status] || "info"}>
                   {selectedInvoice.status.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
                 </Badge>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Amount</p>
+                <p className="text-xs text-[#667085] mb-1">Amount</p>
                 <p className="text-sm font-semibold text-white">{formatCurrency(selectedInvoice.amount_ngn || selectedInvoice.amount)}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Due Date</p>
+                <p className="text-xs text-[#667085] mb-1">Due Date</p>
                 <p className="text-sm text-white">{selectedInvoice.due_date ? formatDate(selectedInvoice.due_date) : "—"}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Paid At</p>
+                <p className="text-xs text-[#667085] mb-1">Paid At</p>
                 <p className="text-sm text-white">{selectedInvoice.paid_at ? formatDate(selectedInvoice.paid_at) : "—"}</p>
               </div>
               <div>
-                <p className="text-xs text-muted mb-1">Created At</p>
+                <p className="text-xs text-[#667085] mb-1">Created At</p>
                 <p className="text-sm text-white">{formatDate(selectedInvoice.created_at)}</p>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-white/10">
-              <p className="text-xs text-muted mb-1">Client</p>
+            <div className="pt-4 border-t border-[#ECEFF5]">
+              <p className="text-xs text-[#667085] mb-1">Client</p>
               <p className="text-sm text-white">{selectedInvoice.client_name || "—"}</p>
-              <p className="text-sm text-muted">{selectedInvoice.client_email}</p>
+              <p className="text-sm text-[#667085]">{selectedInvoice.client_email}</p>
               {selectedInvoice.service && (
                 <>
-                  <p className="text-xs text-muted mt-3 mb-1">Service</p>
+                  <p className="text-xs text-[#667085] mt-3 mb-1">Service</p>
                   <p className="text-sm text-white">{selectedInvoice.service}</p>
                 </>
               )}
             </div>
 
             {selectedInvoice.items && selectedInvoice.items.length > 0 && (
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-xs text-muted mb-2">Line Items</p>
+              <div className="pt-4 border-t border-[#ECEFF5]">
+                <p className="text-xs text-[#667085] mb-2">Line Items</p>
                 <div className="space-y-2">
                   {selectedInvoice.items.map((item, idx) => (
                     <div key={idx} className="flex justify-between text-sm">
-                      <span className="text-white/80">{item.description}</span>
+                      <span className="text-[#667085]">{item.description}</span>
                       <span className="text-white font-medium">{formatCurrency(item.amount)}</span>
                     </div>
                   ))}
@@ -294,9 +294,9 @@ export default function AdminInvoicesPage() {
             )}
 
             {selectedInvoice.notes && (
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-xs text-muted mb-1">Notes</p>
-                <p className="text-sm text-white/80">{selectedInvoice.notes}</p>
+              <div className="pt-4 border-t border-[#ECEFF5]">
+                <p className="text-xs text-[#667085] mb-1">Notes</p>
+                <p className="text-sm text-[#667085]">{selectedInvoice.notes}</p>
               </div>
             )}
           </div>

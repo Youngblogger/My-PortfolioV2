@@ -237,7 +237,7 @@ export default function AdminCoursesPage() {
       render: (course) => (
         <Link
           href={`/admin/academy/courses/${course.id}`}
-          className="text-sm font-medium text-gold hover:text-gold-secondary transition-colors"
+          className="text-sm font-medium text-[#5B4CF0] hover:text-[#5B4CF0]-secondary transition-colors"
         >
           {course.title}
         </Link>
@@ -247,7 +247,7 @@ export default function AdminCoursesPage() {
       key: "category",
       header: "Category",
       render: (course) => (
-        <span className="text-sm text-muted">{course.category?.name || "—"}</span>
+        <span className="text-sm text-[#667085]">{course.category?.name || "—"}</span>
       ),
       hideOnMobile: true,
     },
@@ -265,7 +265,7 @@ export default function AdminCoursesPage() {
       key: "duration_weeks",
       header: "Duration",
       render: (course) => (
-        <span className="text-sm text-muted">
+        <span className="text-sm text-[#667085]">
           {course.duration_weeks ? `${course.duration_weeks}w` : "—"}
         </span>
       ),
@@ -284,7 +284,7 @@ export default function AdminCoursesPage() {
       key: "enrollments_count",
       header: "Enrollments",
       render: (course) => (
-        <span className="text-sm text-muted">{course.enrollments_count}</span>
+        <span className="text-sm text-[#667085]">{course.enrollments_count}</span>
       ),
       hideOnMobile: true,
     },
@@ -399,12 +399,12 @@ export default function AdminCoursesPage() {
             onChange={(e) => setForm({ ...form, short_description: e.target.value })}
           />
           <div>
-            <label className="block text-sm text-white/80 font-medium mb-1.5">Description</label>
+            <label className="block text-sm text-[#667085] font-medium mb-1.5">Description</label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={4}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -461,20 +461,20 @@ export default function AdminCoursesPage() {
               id="is_published"
               checked={form.is_published}
               onChange={(e) => setForm({ ...form, is_published: e.target.checked })}
-              className="w-4 h-4 rounded border-white/10 bg-white/5 text-gold focus:ring-gold/20"
+              className="w-4 h-4 rounded border-[#ECEFF5] bg-gray-50 text-[#5B4CF0] focus:ring-gold/20"
             />
-            <label htmlFor="is_published" className="text-sm text-white/80">
+            <label htmlFor="is_published" className="text-sm text-[#667085]">
               Published
             </label>
           </div>
           <div>
-            <label className="block text-sm text-white/80 font-medium mb-1.5">Features (one per line)</label>
+            <label className="block text-sm text-[#667085] font-medium mb-1.5">Features (one per line)</label>
             <textarea
               value={form.features}
               onChange={(e) => setForm({ ...form, features: e.target.value })}
               rows={4}
               placeholder="Feature 1&#10;Feature 2&#10;Feature 3"
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
         </form>

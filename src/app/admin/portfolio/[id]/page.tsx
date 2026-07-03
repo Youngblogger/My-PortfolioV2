@@ -156,19 +156,19 @@ export default function PortfolioDetailPage() {
       />
 
       <form onSubmit={handleSave} className="max-w-3xl space-y-6">
-        <div className="glass rounded-2xl p-6 space-y-5">
+        <div className="portal-card rounded-2xl p-6 space-y-5">
           <h2 className="text-lg font-semibold text-white">Basic Information</h2>
           <div className="grid grid-cols-2 gap-4">
             <Input label="Title" value={title} onChange={(e) => setTitle(e.target.value)} required />
             <Input label="Slug" value={slug} onChange={(e) => setSlug(e.target.value)} required />
           </div>
           <div className="space-y-1.5">
-            <label className="block text-sm text-white/80 font-medium">Description</label>
+            <label className="block text-sm text-[#667085] font-medium">Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={5}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -199,7 +199,7 @@ export default function PortfolioDetailPage() {
           />
         </div>
 
-        <div className="glass rounded-2xl p-6 space-y-5">
+        <div className="portal-card rounded-2xl p-6 space-y-5">
           <h2 className="text-lg font-semibold text-white">Client & Links</h2>
           <div className="grid grid-cols-2 gap-4">
             <Input label="Client Name" value={clientName} onChange={(e) => setClientName(e.target.value)} />
@@ -208,7 +208,7 @@ export default function PortfolioDetailPage() {
           <Input label="Sort Order" type="number" value={sortOrder} onChange={(e) => setSortOrder(Number(e.target.value))} />
         </div>
 
-        <div className="glass rounded-2xl p-6 space-y-5">
+        <div className="portal-card rounded-2xl p-6 space-y-5">
           <h2 className="text-lg font-semibold text-white">Featured Image</h2>
           {featuredImage && (
             <div className="relative rounded-xl overflow-hidden mb-4">
@@ -222,21 +222,21 @@ export default function PortfolioDetailPage() {
             placeholder="https://example.com/image.jpg"
           />
           <div className="flex items-center gap-6 pt-2">
-            <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-[#667085] cursor-pointer">
               <input
                 type="checkbox"
                 checked={isFeatured}
                 onChange={(e) => setIsFeatured(e.target.checked)}
-                className="w-4 h-4 rounded border-white/10 bg-white/5 accent-gold"
+                className="w-4 h-4 rounded border-[#ECEFF5] bg-gray-50 accent-gold"
               />
               Featured
             </label>
-            <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-[#667085] cursor-pointer">
               <input
                 type="checkbox"
                 checked={isCaseStudy}
                 onChange={(e) => setIsCaseStudy(e.target.checked)}
-                className="w-4 h-4 rounded border-white/10 bg-white/5 accent-gold"
+                className="w-4 h-4 rounded border-[#ECEFF5] bg-gray-50 accent-gold"
               />
               Case Study
             </label>

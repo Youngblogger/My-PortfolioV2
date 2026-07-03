@@ -116,14 +116,14 @@ export default function CmsPage() {
           <div key={key}>
             {formContent[key] && formContent[key].length > 150 ? (
               <div className="space-y-1.5">
-                <label className="block text-sm text-white/80 font-medium capitalize">
+                <label className="block text-sm text-[#667085] font-medium capitalize">
                   {key.replace(/_/g, " ")}
                 </label>
                 <textarea
                   value={formContent[key] || ""}
                   onChange={(e) => handleFieldChange(key, e.target.value)}
                   rows={5}
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+                  className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
                 />
               </div>
             ) : (
@@ -166,11 +166,11 @@ export default function CmsPage() {
       {loading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="glass rounded-2xl p-6 space-y-4">
-              <div className="h-5 w-32 bg-white/5 rounded animate-pulse" />
-              <div className="h-4 w-full bg-white/5 rounded animate-pulse" />
-              <div className="h-4 w-3/4 bg-white/5 rounded animate-pulse" />
-              <div className="h-9 w-20 bg-white/5 rounded-xl animate-pulse" />
+            <div key={i} className="portal-card rounded-2xl p-6 space-y-4">
+              <div className="h-5 w-32 bg-gray-50 rounded animate-pulse" />
+              <div className="h-4 w-full bg-gray-50 rounded animate-pulse" />
+              <div className="h-4 w-3/4 bg-gray-50 rounded animate-pulse" />
+              <div className="h-9 w-20 bg-gray-50 rounded-xl animate-pulse" />
             </div>
           ))}
         </div>
@@ -193,14 +193,14 @@ export default function CmsPage() {
             <motion.div
               key={section.key}
               variants={cardVariants}
-              className="glass rounded-2xl p-6 hover:bg-white/[0.03] transition-all duration-300 group"
+              className="portal-card rounded-2xl p-6 hover:bg-gray-100/50 transition-all duration-300 group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{sectionIcons[section.key] || "📄"}</span>
                   <div>
                     <h3 className="text-base font-semibold text-white">{getSectionLabel(section.key)}</h3>
-                    <p className="text-xs text-muted mt-0.5">
+                    <p className="text-xs text-[#667085] mt-0.5">
                       {section.updated_at
                         ? `Updated ${new Date(section.updated_at).toLocaleDateString()}`
                         : "Not yet saved"}
@@ -208,7 +208,7 @@ export default function CmsPage() {
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-muted mb-4 line-clamp-2">
+              <p className="text-sm text-[#667085] mb-4 line-clamp-2">
                 {getPreviewText(section.content)}
               </p>
               <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -224,7 +224,7 @@ export default function CmsPage() {
                 </Button>
               </div>
               {!section.content || Object.keys(section.content).length === 0 && (
-                <p className="text-xs text-muted mt-2 italic">No content yet</p>
+                <p className="text-xs text-[#667085] mt-2 italic">No content yet</p>
               )}
             </motion.div>
           ))}

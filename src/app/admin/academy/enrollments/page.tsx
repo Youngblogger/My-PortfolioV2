@@ -112,14 +112,14 @@ export default function AdminEnrollmentsPage() {
       render: (enr) => (
         <div>
           <p className="text-sm font-medium text-white">{enr.student_name || "—"}</p>
-          <p className="text-xs text-muted">{enr.student_email}</p>
+          <p className="text-xs text-[#667085]">{enr.student_email}</p>
         </div>
       ),
     },
     {
       key: "course_title",
       header: "Course",
-      render: (enr) => <span className="text-sm text-muted">{enr.course_title}</span>,
+      render: (enr) => <span className="text-sm text-[#667085]">{enr.course_title}</span>,
       hideOnMobile: true,
     },
     {
@@ -136,10 +136,10 @@ export default function AdminEnrollmentsPage() {
       header: "Progress",
       render: (enr) => (
         <div className="flex items-center gap-2">
-          <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full bg-gold rounded-full" style={{ width: `${enr.progress}%` }} />
+          <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-full bg-[#5B4CF0] rounded-full" style={{ width: `${enr.progress}%` }} />
           </div>
-          <span className="text-xs text-muted">{enr.progress}%</span>
+          <span className="text-xs text-[#667085]">{enr.progress}%</span>
         </div>
       ),
       hideOnMobile: true,
@@ -147,14 +147,14 @@ export default function AdminEnrollmentsPage() {
     {
       key: "started_at",
       header: "Enrolled Date",
-      render: (enr) => <span className="text-sm text-muted whitespace-nowrap">{formatDate(enr.started_at)}</span>,
+      render: (enr) => <span className="text-sm text-[#667085] whitespace-nowrap">{formatDate(enr.started_at)}</span>,
       hideOnMobile: true,
     },
     {
       key: "completed_at",
       header: "Completed Date",
       render: (enr) => (
-        <span className="text-sm text-muted whitespace-nowrap">
+        <span className="text-sm text-[#667085] whitespace-nowrap">
           {enr.completed_at ? formatDate(enr.completed_at) : "—"}
         </span>
       ),
@@ -170,7 +170,7 @@ export default function AdminEnrollmentsPage() {
               href={enr.certificate_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-gold hover:text-gold-secondary transition-colors"
+              className="text-xs text-[#5B4CF0] hover:text-[#5B4CF0]-secondary transition-colors"
             >
               View
             </a>
@@ -189,7 +189,7 @@ export default function AdminEnrollmentsPage() {
             </Button>
           );
         }
-        return <span className="text-xs text-muted">—</span>;
+        return <span className="text-xs text-[#667085]">—</span>;
       },
       hideOnMobile: true,
     },

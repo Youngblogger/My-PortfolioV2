@@ -149,8 +149,8 @@ export default function AdminPackagesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <span className="section-label">PACKAGES</span>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">Manage Packages</h1>
-          <p className="text-muted text-sm mt-1">Select a service and project type to manage its packages.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">Manage Packages</h1>
+          <p className="text-[#667085] text-sm mt-1">Select a service and project type to manage its packages.</p>
         </div>
         {selectedProjectTypeId && (
           <Button onClick={openCreate} icon={
@@ -163,7 +163,7 @@ export default function AdminPackagesPage() {
         )}
       </div>
 
-      <div className="glass rounded-2xl p-5 mb-6 space-y-4">
+      <div className="portal-card rounded-2xl p-5 mb-6 space-y-4">
         <Select
           label="Select Service"
           placeholder="Choose a service..."
@@ -193,7 +193,7 @@ export default function AdminPackagesPage() {
       )}
 
       {loadingServices || loadingTypes ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -203,7 +203,7 @@ export default function AdminPackagesPage() {
       ) : !selectedProjectTypeId ? (
         <EmptyState icon="📦" title="Select a service and project type" description="Choose from the dropdowns above to view packages." />
       ) : loadingDetail ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton key={i} className="h-12 w-full" />
           ))}
@@ -217,15 +217,15 @@ export default function AdminPackagesPage() {
         />
       ) : (
         <>
-          <div className="hidden md:block glass rounded-2xl overflow-hidden">
+          <div className="hidden md:block portal-card rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Name</th>
-                    <th className="text-right text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Price</th>
-                    <th className="text-center text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Recommended</th>
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Features</th>
+                  <tr className="border-b border-[#ECEFF5]">
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Name</th>
+                    <th className="text-right text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Price</th>
+                    <th className="text-center text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Recommended</th>
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Features</th>
                   </tr>
                 </thead>
                 <motion.tbody variants={containerVariants} initial="hidden" animate="visible">
@@ -233,7 +233,7 @@ export default function AdminPackagesPage() {
                     <motion.tr
                       key={pkg.id}
                       variants={rowVariants}
-                      className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                      className="border-b border-[#ECEFF5] hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-4">
                         <span className="text-sm font-medium text-white">{pkg.name}</span>
@@ -245,7 +245,7 @@ export default function AdminPackagesPage() {
                         {pkg.is_recommended ? (
                           <Badge variant="gold">Recommended</Badge>
                         ) : (
-                          <span className="text-muted text-xs">—</span>
+                          <span className="text-[#667085] text-xs">—</span>
                         )}
                       </td>
                       <td className="px-6 py-4">
@@ -254,7 +254,7 @@ export default function AdminPackagesPage() {
                             <Badge key={i} variant="info">{f}</Badge>
                           ))}
                           {(pkg.features || []).length > 3 && (
-                            <span className="text-xs text-muted">+{pkg.features!.length - 3} more</span>
+                            <span className="text-xs text-[#667085]">+{pkg.features!.length - 3} more</span>
                           )}
                         </div>
                       </td>
@@ -270,13 +270,13 @@ export default function AdminPackagesPage() {
               <motion.div
                 key={pkg.id}
                 variants={rowVariants}
-                className="glass rounded-2xl p-5 space-y-3"
+                className="portal-card rounded-2xl p-5 space-y-3"
               >
                 <div className="flex items-start justify-between">
                   <p className="text-sm font-bold text-white">{pkg.name}</p>
                   {pkg.is_recommended && <Badge variant="gold">Recommended</Badge>}
                 </div>
-                <p className="text-lg font-bold text-gold">{formatCurrency(pkg.price_ngn)}</p>
+                <p className="text-lg font-bold text-[#5B4CF0]">{formatCurrency(pkg.price_ngn)}</p>
                 {(pkg.features || []).length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {(pkg.features || []).slice(0, 3).map((f, i) => (
@@ -307,16 +307,16 @@ export default function AdminPackagesPage() {
               transition={{ ease: [0.16, 1, 0.3, 1] as const }}
               className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 md:w-full md:max-w-lg max-h-[90vh] overflow-y-auto"
             >
-              <form onSubmit={handleSubmit} className="glass rounded-2xl p-6 space-y-5">
+              <form onSubmit={handleSubmit} className="portal-card rounded-2xl p-6 space-y-5">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-white">Create Package</h2>
-                  <button type="button" onClick={() => setShowForm(false)} className="text-muted hover:text-white transition-colors">
+                  <button type="button" onClick={() => setShowForm(false)} className="text-[#667085] hover:text-white transition-colors">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
-                <p className="text-sm text-muted">
+                <p className="text-sm text-[#667085]">
                   Service: <span className="text-white font-medium">{selectedService?.title}</span>
                   &nbsp;&middot;&nbsp;
                   Project Type: <span className="text-white font-medium">{selectedProjectType?.title}</span>
@@ -326,12 +326,12 @@ export default function AdminPackagesPage() {
                   <Input label="Price (NGN)" type="number" value={form.price_ngn || ""} onChange={(e) => setForm({ ...form, price_ngn: Number(e.target.value) })} required />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-sm text-white/80 font-medium">Features (one per line)</label>
+                  <label className="block text-sm text-[#667085] font-medium">Features (one per line)</label>
                   <textarea
                     value={form.features}
                     onChange={(e) => setForm({ ...form, features: e.target.value })}
                     rows={5}
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
                     placeholder="Responsive design&#10;SEO optimization&#10;5 pages"
                   />
                 </div>

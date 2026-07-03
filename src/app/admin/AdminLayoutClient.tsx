@@ -118,7 +118,7 @@ function AdminNotificationBell() {
   }, []);
 
   return (
-    <button onClick={() => router.push("/admin/notifications")} className="relative p-2 rounded-lg text-muted hover:text-white hover:bg-white/5 transition-colors" title="Notifications">
+    <button onClick={() => router.push("/admin/notifications")} className="relative p-2 rounded-lg text-[#667085] hover:text-[#101828] hover:bg-gray-100 transition-colors" title="Notifications">
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
       </svg>
@@ -149,7 +149,7 @@ function AdminChatBell() {
   }, []);
 
   return (
-    <button onClick={() => router.push("/admin/messages")} className="relative p-2 rounded-lg text-muted hover:text-white hover:bg-white/5 transition-colors" title="Messages">
+    <button onClick={() => router.push("/admin/messages")} className="relative p-2 rounded-lg text-[#667085] hover:text-[#101828] hover:bg-gray-100 transition-colors" title="Messages">
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
       </svg>
@@ -251,30 +251,30 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
 
   if (verifying) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen portal-bg flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
-          <div className="w-16 h-16 rounded-xl bg-gold-gradient flex items-center justify-center">
-            <span className="text-background font-black text-2xl">C</span>
+          <div className="w-16 h-16 rounded-xl portal-primary-bg flex items-center justify-center">
+            <span className="text-white font-black text-2xl">C</span>
           </div>
           <div className="text-center">
-            <h1 className="text-xl font-bold text-gradient">CODEMAFIA</h1>
-            <p className="text-sm text-muted mt-1">Admin Portal</p>
+            <h1 className="text-xl font-bold text-portal">CODEMAFIA</h1>
+            <p className="text-sm portal-text-secondary mt-1">Admin Portal</p>
           </div>
           <div className="flex gap-2">
             <motion.div
               animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-              className="w-2.5 h-2.5 rounded-full bg-gold"
+              className="w-2.5 h-2.5 rounded-full portal-primary-bg"
             />
             <motion.div
               animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-              className="w-2.5 h-2.5 rounded-full bg-gold"
+              className="w-2.5 h-2.5 rounded-full portal-primary-bg"
             />
             <motion.div
               animate={{ scale: [1, 1.3, 1], opacity: [0.4, 1, 0.4] }}
               transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-              className="w-2.5 h-2.5 rounded-full bg-gold"
+              className="w-2.5 h-2.5 rounded-full portal-primary-bg"
             />
           </div>
         </div>
@@ -290,21 +290,21 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen portal-bg flex">
       {sidebarOpen && (
         <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       <aside className={`${sidebarOpen ? "block" : "hidden"} lg:block shrink-0 lg:w-[220px]`}>
-        <div className="fixed z-50 h-screen w-[220px] glass border-r border-white/10 flex flex-col">
+        <div className="fixed z-50 h-screen w-[220px] portal-sidebar border-r border-white/10 flex flex-col">
           <div className="p-5 border-b border-white/10 shrink-0">
             <Link href="/admin" className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-gold-gradient flex items-center justify-center">
-                <span className="text-background font-black text-sm">C</span>
+              <div className="w-9 h-9 rounded-lg portal-primary-bg flex items-center justify-center">
+                <span className="text-white font-black text-sm">C</span>
               </div>
               <div>
-                <span className="text-lg font-bold text-gradient block leading-tight">CODEMAFIA</span>
-                <span className="text-[10px] text-muted uppercase tracking-widest">Admin Panel</span>
+                <span className="text-lg font-bold text-white block leading-tight">CODEMAFIA</span>
+                <span className="text-[10px] text-[#98A2B3] uppercase tracking-widest">Admin Panel</span>
               </div>
             </Link>
           </div>
@@ -319,7 +319,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
                   {!isDashboard && (
                     <button
                       onClick={() => toggleGroup(group.label)}
-                      className="flex items-center justify-between w-full px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider text-muted hover:text-white transition-colors"
+                      className="flex items-center justify-between w-full px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider text-[#98A2B3] hover:text-white transition-colors"
                     >
                       {group.label}
                       <svg
@@ -342,11 +342,11 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
                             className={cn(
                               "flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200",
                               active
-                                ? "bg-gold/10 text-gold border border-gold/20"
-                                : "text-muted hover:text-white hover:bg-white/5"
+                                ? "portal-sidebar-hover text-[#5B4CF0] border border-[#5B4CF0]/20"
+                                : "text-[#98A2B3] hover:text-white hover:bg-white/5"
                             )}
                           >
-                            {active && <span className="w-1 h-4 rounded-full bg-gold shrink-0" />}
+                            {active && <span className="w-1 h-4 rounded-full bg-[#5B4CF0] shrink-0" />}
                             {!active && <span className="w-1 shrink-0" />}
                             {link.label}
                           </Link>
@@ -374,12 +374,12 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="sticky top-0 z-30 glass border-b border-white/10">
+        <header className="sticky top-0 z-30 bg-white border-b border-[#ECEFF5]">
           <div className="flex items-center justify-between px-4 md:px-6 h-16">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="lg:hidden p-2 rounded-lg text-muted hover:text-white hover:bg-white/5 transition-colors"
+                className="lg:hidden p-2 rounded-lg text-[#667085] hover:text-[#101828] hover:bg-gray-100 transition-colors"
                 aria-label="Toggle sidebar"
               >
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -390,8 +390,8 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
                   )}
                 </svg>
               </button>
-              <span className="hidden sm:inline text-sm text-muted">/</span>
-              <span className="hidden sm:inline text-sm text-white/60 truncate max-w-[200px] capitalize">
+              <span className="hidden sm:inline text-sm text-[#98A2B3]">/</span>
+              <span className="hidden sm:inline text-sm text-[#667085] truncate max-w-[200px] capitalize">
                 {pathname.split("/").filter(Boolean).slice(1).join(" / ") || "Dashboard"}
               </span>
             </div>
@@ -401,7 +401,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
               <AdminNotificationBell />
               <button
                 onClick={handleLogout}
-                className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all duration-200"
+                className="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-all duration-200"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

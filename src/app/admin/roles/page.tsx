@@ -160,7 +160,7 @@ export default function RolesPage() {
         <Skeleton className="h-5 w-48" />
         <div className="space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="glass rounded-2xl p-6 space-y-4">
+            <div key={i} className="portal-card rounded-2xl p-6 space-y-4">
               <Skeleton className="h-6 w-48" />
               <Skeleton className="h-12 w-full" />
               <Skeleton className="h-12 w-full" />
@@ -197,13 +197,13 @@ export default function RolesPage() {
 
       <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
         {Object.entries(groupedByRole).map(([role, roleUsers]) => (
-          <motion.div key={role} variants={itemVariants} className="glass rounded-2xl p-6">
+          <motion.div key={role} variants={itemVariants} className="portal-card rounded-2xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-lg font-semibold text-white">
                   {ROLE_LABELS[role] || role.split("_").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
                 </h3>
-                <p className="text-sm text-muted">{roleUsers.length} admin{roleUsers.length !== 1 ? "s" : ""}</p>
+                <p className="text-sm text-[#667085]">{roleUsers.length} admin{roleUsers.length !== 1 ? "s" : ""}</p>
               </div>
               <Badge variant={ROLE_COLORS[role] || "info"}>{role}</Badge>
             </div>
@@ -213,11 +213,11 @@ export default function RolesPage() {
                 {roleUsers.map((user) => (
                   <div
                     key={user.id}
-                    className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] transition-colors"
+                    className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 hover:bg-white/[0.04] transition-colors"
                   >
                     <div>
                       <p className="text-sm font-medium text-white">{user.name}</p>
-                      <p className="text-xs text-muted">{user.email}</p>
+                      <p className="text-xs text-[#667085]">{user.email}</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${user.is_active ? "bg-green-500/10 text-green-400" : "bg-red-500/10 text-red-400"}`}>
@@ -234,7 +234,7 @@ export default function RolesPage() {
 
             {roleUsers.length > 0 && (
               <div>
-                <p className="text-xs text-muted mb-2 font-medium uppercase tracking-wider">Permissions Summary</p>
+                <p className="text-xs text-[#667085] mb-2 font-medium uppercase tracking-wider">Permissions Summary</p>
                 <div className="flex flex-wrap gap-1.5">
                   {(() => {
                     const allPerms = new Set(roleUsers.flatMap((u) => u.permissions));
@@ -244,8 +244,8 @@ export default function RolesPage() {
                         className={cn(
                           "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium",
                           allPerms.has(perm)
-                            ? "bg-gold/10 text-gold"
-                            : "bg-white/5 text-muted"
+                            ? "bg-[#5B4CF0]/10 text-[#5B4CF0]"
+                            : "bg-gray-50 text-[#667085]"
                         )}
                       >
                         {permissionLabel(perm)}
@@ -275,7 +275,7 @@ export default function RolesPage() {
       >
         {editUser && (
           <div className="space-y-4">
-            <div className="text-sm text-muted mb-2">
+            <div className="text-sm text-[#667085] mb-2">
               Editing permissions for <span className="text-white font-medium">{editUser.name}</span>
               <br />
               Current role: <Badge variant={ROLE_COLORS[editUser.role] || "info"}>

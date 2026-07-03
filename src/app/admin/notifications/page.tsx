@@ -231,21 +231,21 @@ export default function NotificationsPage() {
       {loading ? (
         <div className="flex items-center justify-center min-h-[40vh]">
           <div className="text-center space-y-4">
-            <svg className="animate-spin h-8 w-8 text-gold mx-auto" viewBox="0 0 24 24">
+            <svg className="animate-spin h-8 w-8 text-[#5B4CF0] mx-auto" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            <p className="text-muted text-sm">Loading notifications...</p>
+            <p className="text-[#667085] text-sm">Loading notifications...</p>
           </div>
         </div>
       ) : error ? (
-        <div className="glass rounded-2xl p-12 text-center">
+        <div className="portal-card rounded-2xl p-12 text-center">
           <div className="text-4xl mb-4" aria-hidden="true">⚠️</div>
-          <h3 className="text-lg font-bold text-white mb-2">Oops</h3>
-          <p className="text-muted text-sm mb-6">{error}</p>
+          <h3 className="text-lg font-bold text-[#101828] mb-2">Oops</h3>
+          <p className="text-[#667085] text-sm mb-6">{error}</p>
           <button
             onClick={fetchNotifications}
-            className="px-6 py-3 rounded-xl bg-gold-gradient text-background font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
+            className="px-6 py-3 rounded-xl portal-primary-bg text-[#101828] font-bold text-sm hover:shadow-gold hover:scale-[1.02] transition-all duration-300"
           >
             Try Again
           </button>
@@ -263,7 +263,7 @@ export default function NotificationsPage() {
               key={notif.id}
               variants={fadeUp}
               onClick={() => handleClick(notif)}
-              className={`w-full text-left glass rounded-2xl p-5 flex items-start gap-4 transition-all duration-300 hover:border-gold/20 ${
+              className={`w-full text-left portal-card rounded-2xl p-5 flex items-start gap-4 transition-all duration-300 hover:border-[#5B4CF0]/20 ${
                 !notif.is_read ? "border-l-2 border-l-gold" : ""
               }`}
             >
@@ -272,22 +272,22 @@ export default function NotificationsPage() {
               </span>
               <div className="flex-1 min-w-0">
                 <p
-                  className={`text-sm ${!notif.is_read ? "font-bold text-white" : "text-white/80"}`}
+                  className={`text-sm ${!notif.is_read ? "font-bold text-white" : "text-[#667085]"}`}
                 >
                   {notif.title}
                 </p>
                 {notif.body && (
-                  <p className="text-xs text-muted mt-0.5 line-clamp-2">{notif.body}</p>
+                  <p className="text-xs text-[#667085] mt-0.5 line-clamp-2">{notif.body}</p>
                 )}
                 <div className="flex items-center gap-3 mt-2">
-                  <span className="text-[11px] text-muted/60">{timeAgo(notif.created_at)}</span>
+                  <span className="text-[11px] text-[#667085]/60">{timeAgo(notif.created_at)}</span>
                   {notif.action_text && notif.action_url && (
-                    <span className="text-[11px] text-gold">{notif.action_text}</span>
+                    <span className="text-[11px] text-[#5B4CF0]">{notif.action_text}</span>
                   )}
                 </div>
               </div>
               {!notif.is_read && (
-                <span className="shrink-0 w-2.5 h-2.5 rounded-full bg-gold mt-2" aria-label="Unread" />
+                <span className="shrink-0 w-2.5 h-2.5 rounded-full bg-[#5B4CF0] mt-2" aria-label="Unread" />
               )}
             </motion.button>
           ))}
@@ -310,7 +310,7 @@ export default function NotificationsPage() {
       >
         <form onSubmit={handleSend} className="space-y-5">
           <div>
-            <label className="block text-sm text-white/80 font-medium mb-2">Type</label>
+            <label className="block text-sm text-[#667085] font-medium mb-2">Type</label>
             <div className="flex gap-4">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -319,7 +319,7 @@ export default function NotificationsPage() {
                   value="broadcast"
                   checked={sendType === "broadcast"}
                   onChange={() => setSendType("broadcast")}
-                  className="text-gold focus:ring-gold/20"
+                  className="text-[#5B4CF0] focus:ring-gold/20"
                 />
                 <span className="text-sm text-white">Broadcast</span>
               </label>
@@ -330,7 +330,7 @@ export default function NotificationsPage() {
                   value="individual"
                   checked={sendType === "individual"}
                   onChange={() => setSendType("individual")}
-                  className="text-gold focus:ring-gold/20"
+                  className="text-[#5B4CF0] focus:ring-gold/20"
                 />
                 <span className="text-sm text-white">Individual</span>
               </label>
@@ -339,11 +339,11 @@ export default function NotificationsPage() {
 
           {sendType === "individual" && (
             <div>
-              <label className="block text-sm text-white/80 font-medium mb-1.5">Select User</label>
+              <label className="block text-sm text-[#667085] font-medium mb-1.5">Select User</label>
               <select
                 value={individualUser}
                 onChange={(e) => setIndividualUser(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all"
                 required={sendType === "individual"}
               >
                 <option value="" disabled>Choose a user...</option>
@@ -364,18 +364,18 @@ export default function NotificationsPage() {
           />
 
           <div>
-            <label className="block text-sm text-white/80 font-medium mb-1.5">Message</label>
+            <label className="block text-sm text-[#667085] font-medium mb-1.5">Message</label>
             <textarea
               value={sendMessage}
               onChange={(e) => setSendMessage(e.target.value)}
               required
               rows={4}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm text-white/80 font-medium mb-2">Channels</label>
+            <label className="block text-sm text-[#667085] font-medium mb-2">Channels</label>
             <div className="space-y-2">
               <Checkbox
                 label="In-App"

@@ -124,8 +124,8 @@ export default function AdminRequirementQuestionsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <span className="section-label">REQUIREMENT QUESTIONS</span>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mt-1">Manage Requirement Questions</h1>
-          <p className="text-muted text-sm mt-1">Create and manage questions shown during service ordering.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-[#101828] mt-1">Manage Requirement Questions</h1>
+          <p className="text-[#667085] text-sm mt-1">Create and manage questions shown during service ordering.</p>
         </div>
         <Button onClick={openCreate} icon={
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -157,7 +157,7 @@ export default function AdminRequirementQuestionsPage() {
       </div>
 
       {loading ? (
-        <div className="glass rounded-2xl p-6 space-y-4">
+        <div className="portal-card rounded-2xl p-6 space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-14 w-full" />
           ))}
@@ -173,16 +173,16 @@ export default function AdminRequirementQuestionsPage() {
         />
       ) : (
         <>
-          <div className="hidden md:block glass rounded-2xl overflow-hidden">
+          <div className="hidden md:block portal-card rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Question Key</th>
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Question</th>
-                    <th className="text-center text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Type</th>
-                    <th className="text-center text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Required</th>
-                    <th className="text-left text-xs font-semibold text-muted uppercase tracking-wider px-6 py-4">Service / Project</th>
+                  <tr className="border-b border-[#ECEFF5]">
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Question Key</th>
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Question</th>
+                    <th className="text-center text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Type</th>
+                    <th className="text-center text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Required</th>
+                    <th className="text-left text-xs font-semibold text-[#667085] uppercase tracking-wider px-6 py-4">Service / Project</th>
                   </tr>
                 </thead>
                 <motion.tbody variants={containerVariants} initial="hidden" animate="visible">
@@ -190,13 +190,13 @@ export default function AdminRequirementQuestionsPage() {
                     <motion.tr
                       key={q.id}
                       variants={rowVariants}
-                      className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                      className="border-b border-[#ECEFF5] hover:bg-gray-50 transition-colors"
                     >
                       <td className="px-6 py-4">
-                        <code className="text-sm font-mono text-gold">{q.question_key}</code>
+                        <code className="text-sm font-mono text-[#5B4CF0]">{q.question_key}</code>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm text-white max-w-xs truncate">{q.question}</p>
+                        <p className="text-sm text-[#101828] max-w-xs truncate">{q.question}</p>
                       </td>
                       <td className="px-6 py-4 text-center">
                         <Badge variant="info">{q.type}</Badge>
@@ -205,10 +205,10 @@ export default function AdminRequirementQuestionsPage() {
                         {q.is_required ? (
                           <Badge variant="success">Required</Badge>
                         ) : (
-                          <span className="text-muted text-xs">Optional</span>
+                          <span className="text-[#667085] text-xs">Optional</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-sm text-muted">
+                      <td className="px-6 py-4 text-sm text-[#667085]">
                         {q.service?.title || "—"}
                         {q.projectType?.title && (
                           <span className="text-xs"> / {q.projectType.title}</span>
@@ -226,16 +226,16 @@ export default function AdminRequirementQuestionsPage() {
               <motion.div
                 key={q.id}
                 variants={rowVariants}
-                className="glass rounded-2xl p-5 space-y-3"
+                className="portal-card rounded-2xl p-5 space-y-3"
               >
                 <div className="flex items-start justify-between">
-                  <code className="text-sm font-mono text-gold">{q.question_key}</code>
+                  <code className="text-sm font-mono text-[#5B4CF0]">{q.question_key}</code>
                   <Badge variant={q.is_required ? "success" : "info"}>
                     {q.is_required ? "Required" : "Optional"}
                   </Badge>
                 </div>
                 <p className="text-sm text-white">{q.question}</p>
-                <div className="flex items-center gap-2 pt-2 border-t border-white/5 text-xs text-muted">
+                <div className="flex items-center gap-2 pt-2 border-t border-[#ECEFF5] text-xs text-[#667085]">
                   <Badge variant="info">{q.type}</Badge>
                   {q.service?.title && <span>{q.service.title}</span>}
                   {q.projectType?.title && <span>/ {q.projectType.title}</span>}
@@ -263,10 +263,10 @@ export default function AdminRequirementQuestionsPage() {
               transition={{ ease: [0.16, 1, 0.3, 1] as const }}
               className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-50 md:w-full md:max-w-lg max-h-[90vh] overflow-y-auto"
             >
-              <form onSubmit={handleSubmit} className="glass rounded-2xl p-6 space-y-5">
+              <form onSubmit={handleSubmit} className="portal-card rounded-2xl p-6 space-y-5">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-white">Create Requirement Question</h2>
-                  <button type="button" onClick={() => setShowForm(false)} className="text-muted hover:text-white transition-colors">
+                  <button type="button" onClick={() => setShowForm(false)} className="text-[#667085] hover:text-white transition-colors">
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -302,21 +302,21 @@ export default function AdminRequirementQuestionsPage() {
                         type="checkbox"
                         checked={form.is_required}
                         onChange={(e) => setForm({ ...form, is_required: e.target.checked })}
-                        className="w-4 h-4 rounded border-white/10 bg-white/5 text-gold focus:ring-gold/20"
+                        className="w-4 h-4 rounded border-[#ECEFF5] bg-gray-50 text-[#5B4CF0] focus:ring-gold/20"
                       />
-                      <span className="text-sm text-white/80 font-medium">Required</span>
+                      <span className="text-sm text-[#667085] font-medium">Required</span>
                     </label>
                   </div>
                 </div>
 
                 {(form.type === "select" || form.type === "multi_select") && (
                   <div className="space-y-1.5">
-                    <label className="block text-sm text-white/80 font-medium">Options (one per line)</label>
+                    <label className="block text-sm text-[#667085] font-medium">Options (one per line)</label>
                     <textarea
                       value={form.options}
                       onChange={(e) => setForm({ ...form, options: e.target.value })}
                       rows={4}
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
                       placeholder="Option 1&#10;Option 2&#10;Option 3"
                     />
                   </div>

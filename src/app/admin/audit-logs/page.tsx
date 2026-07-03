@@ -125,7 +125,7 @@ export default function AuditLogsPage() {
       header: "Timestamp",
       sortable: true,
       render: (log) => (
-        <span className="text-sm text-muted whitespace-nowrap">{formatDate(log.created_at)}</span>
+        <span className="text-sm text-[#667085] whitespace-nowrap">{formatDate(log.created_at)}</span>
       ),
     },
     {
@@ -145,19 +145,19 @@ export default function AuditLogsPage() {
     {
       key: "description",
       header: "Description",
-      render: (log) => <span className="text-sm text-white/80">{log.description}</span>,
+      render: (log) => <span className="text-sm text-[#667085]">{log.description}</span>,
     },
     {
       key: "ip_address",
       header: "IP Address",
       hideOnMobile: true,
-      render: (log) => <span className="text-sm text-muted font-mono">{log.ip_address}</span>,
+      render: (log) => <span className="text-sm text-[#667085] font-mono">{log.ip_address}</span>,
     },
     {
       key: "device",
       header: "Device",
       hideOnMobile: true,
-      render: (log) => <span className="text-sm text-muted">{log.device}</span>,
+      render: (log) => <span className="text-sm text-[#667085]">{log.device}</span>,
     },
   ];
 

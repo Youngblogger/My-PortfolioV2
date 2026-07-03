@@ -87,7 +87,7 @@ export default function DeliveryTab({ projectId }: { projectId: string }) {
 
   if (loading) {
     return (
-      <div className="glass rounded-2xl p-6 space-y-4">
+      <div className="portal-card rounded-2xl p-6 space-y-4">
         <Skeleton className="h-6 w-48" />
         <Skeleton className="h-24 w-full" />
         <Skeleton className="h-24 w-full" />
@@ -100,9 +100,9 @@ export default function DeliveryTab({ projectId }: { projectId: string }) {
   }
 
   return (
-    <div className="glass rounded-2xl p-6 md:p-8">
+    <div className="portal-card rounded-2xl p-6 md:p-8">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">Final Delivery</h3>
+        <h3 className="text-sm font-semibold text-[#667085] uppercase tracking-wider">Final Delivery</h3>
         <Button size="sm" onClick={() => setShowForm(!showForm)}>
           {showForm ? "Cancel" : "Add Item"}
         </Button>
@@ -117,17 +117,17 @@ export default function DeliveryTab({ projectId }: { projectId: string }) {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden mb-6"
           >
-            <div className="bg-white/5 rounded-xl p-4 space-y-3">
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3">
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Item name (e.g. Live Website URL, Source Code)"
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-muted focus:outline-none focus:border-gold/50"
+                className="w-full bg-gray-50 border border-[#ECEFF5] rounded-lg px-3 py-2 text-sm text-[#101828] placeholder:text-[#667085] focus:outline-none focus:border-[#5B4CF0]/50"
               />
               <select
                 value={itemType}
                 onChange={(e) => setItemType(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-gold/50"
+                className="w-full bg-gray-50 border border-[#ECEFF5] rounded-lg px-3 py-2 text-sm text-[#101828] focus:outline-none focus:border-[#5B4CF0]/50"
               >
                 <option value="url">URL / Link</option>
                 <option value="text">Text / Information</option>
@@ -139,7 +139,7 @@ export default function DeliveryTab({ projectId }: { projectId: string }) {
                   ref={fileInputRef}
                   type="file"
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  className="w-full text-sm text-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-gold/10 file:text-gold hover:file:bg-gold/20"
+                  className="w-full text-sm text-[#667085] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-[#5B4CF0]/10 file:text-[#5B4CF0] hover:file:bg-[#5B4CF0]/20"
                 />
               ) : (
                 <textarea
@@ -147,7 +147,7 @@ export default function DeliveryTab({ projectId }: { projectId: string }) {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder={itemType === "url" ? "https://..." : "Enter details..."}
                   rows={2}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder:text-muted focus:outline-none focus:border-gold/50 resize-none"
+                  className="w-full bg-gray-50 border border-[#ECEFF5] rounded-lg px-3 py-2 text-sm text-[#101828] placeholder:text-[#667085] focus:outline-none focus:border-[#5B4CF0]/50 resize-none"
                 />
               )}
               <div className="flex justify-end">
@@ -164,8 +164,8 @@ export default function DeliveryTab({ projectId }: { projectId: string }) {
       {items.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-4xl mb-3 opacity-30">📦</div>
-          <p className="text-sm text-muted">No delivery items published yet.</p>
-          <p className="text-xs text-muted/50 mt-1">Add final deliverables for the client to access.</p>
+          <p className="text-sm text-[#667085]">No delivery items published yet.</p>
+          <p className="text-xs text-[#667085]/50 mt-1">Add final deliverables for the client to access.</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -176,14 +176,14 @@ export default function DeliveryTab({ projectId }: { projectId: string }) {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, x: -8 }}
-                className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-colors group"
+                className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors group"
               >
                 <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
                   {item.has_file ? <span className="text-lg">📦</span> : item.type === "url" ? <span className="text-lg">🔗</span> : <span className="text-lg">📝</span>}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{item.name}</p>
-                  <div className="flex items-center gap-3 text-xs text-muted mt-0.5">
+                  <p className="text-sm font-medium text-[#101828] truncate">{item.name}</p>
+                  <div className="flex items-center gap-3 text-xs text-[#667085] mt-0.5">
                     <span className="px-1.5 py-0.5 rounded text-[10px] border bg-green-500/10 text-green-400 border-green-500/20">
                       {item.type || "delivery"}
                     </span>
@@ -192,14 +192,14 @@ export default function DeliveryTab({ projectId }: { projectId: string }) {
                     <span>{formatDate(item.created_at)}</span>
                   </div>
                   {item.description && (
-                    <p className="text-xs text-muted/70 mt-1 truncate">{item.description}</p>
+                    <p className="text-xs text-[#667085]/70 mt-1 truncate">{item.description}</p>
                   )}
                 </div>
                 <div className="flex gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                   {item.has_file && (
                     <button
                       onClick={() => handleDownload(item)}
-                      className="text-xs px-2 py-1 rounded bg-white/5 text-muted hover:text-white"
+                      className="text-xs px-2 py-1 rounded bg-gray-50 text-[#667085] hover:text-white"
                     >
                       Download
                     </button>

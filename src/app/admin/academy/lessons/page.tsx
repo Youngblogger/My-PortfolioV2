@@ -202,20 +202,20 @@ export default function AdminLessonsPage() {
     {
       key: "module_name",
       header: "Module",
-      render: (lesson) => <span className="text-sm text-muted">{lesson.module_name}</span>,
+      render: (lesson) => <span className="text-sm text-[#667085]">{lesson.module_name}</span>,
       hideOnMobile: true,
     },
     {
       key: "course_title",
       header: "Course",
-      render: (lesson) => <span className="text-sm text-muted">{lesson.course_title}</span>,
+      render: (lesson) => <span className="text-sm text-[#667085]">{lesson.course_title}</span>,
       hideOnMobile: true,
     },
     {
       key: "duration_minutes",
       header: "Duration",
       render: (lesson) => (
-        <span className="text-sm text-muted">{lesson.duration_minutes ? `${lesson.duration_minutes}m` : "—"}</span>
+        <span className="text-sm text-[#667085]">{lesson.duration_minutes ? `${lesson.duration_minutes}m` : "—"}</span>
       ),
       hideOnMobile: true,
     },
@@ -231,7 +231,7 @@ export default function AdminLessonsPage() {
     {
       key: "sort_order",
       header: "Sort Order",
-      render: (lesson) => <span className="text-sm text-muted">{lesson.sort_order}</span>,
+      render: (lesson) => <span className="text-sm text-[#667085]">{lesson.sort_order}</span>,
       hideOnMobile: true,
     },
     {
@@ -328,12 +328,12 @@ export default function AdminLessonsPage() {
             <Input label="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} required />
           </div>
           <div>
-            <label className="block text-sm text-white/80 font-medium mb-1.5">Content</label>
+            <label className="block text-sm text-[#667085] font-medium mb-1.5">Content</label>
             <textarea
               value={form.content}
               onChange={(e) => setForm({ ...form, content: e.target.value })}
               rows={6}
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-muted/50 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-[#ECEFF5] text-[#101828] placeholder:text-[#667085]/50 focus:outline-none focus:border-[#5B4CF0]/50 focus:ring-1 focus:ring-gold/20 transition-all duration-300 resize-none"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
